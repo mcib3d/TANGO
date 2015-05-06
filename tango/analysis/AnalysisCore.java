@@ -30,8 +30,31 @@ import tango.mongo.MongoConnector;
 import tango.plugin.measurement.MeasurementKey;
 import tango.plugin.measurement.MeasurementObject;
 import tango.plugin.measurement.MeasurementStructure;
-import tango.util.utils;
+import tango.util.Utils;
 /**
+ *
+ **
+ * /**
+ * Copyright (C) 2012 Julien Cochennec
+ *
+ *
+ *
+ * This file is part of tango
+ *
+ * tango is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * /**
  *
  **
  * /**
@@ -354,7 +377,7 @@ public class AnalysisCore {
             if (i[j]>=0 & i[j]<names.length) labels[j]=names[i[j]];
             else labels[j]="noNRame";
         }
-        return "["+utils.join(labels,",")+"]";
+        return "["+Utils.join(labels,",")+"]";
     }
     
     
@@ -396,7 +419,7 @@ public class AnalysisCore {
         for (Map.Entry<String, String> entry : objectNumberStrings.entrySet()){
             if(!"".equals(entry.getValue())) objectNumberRDescriptions.add("'" + entry.getKey() + "'=" + entry.getValue());
         }
-        String objectnumbersperstructure = "list("+utils.join(objectNumberRDescriptions.toArray(new String[0]),",")+")";
+        String objectnumbersperstructure = "list("+Utils.join(objectNumberRDescriptions.toArray(new String[0]),",")+")";
         return "filter = xp$getFilterFromSelectionsTagsAndObjectNumbers("+selections+","+tags+","+objectnumbersperstructure+")";
     }
     
@@ -407,7 +430,7 @@ public class AnalysisCore {
     public String getExtractionCommand(String varname,int type,int [] structures,ArrayList<String> keys){
         String fct;
         String st;
-        String k=",keys=c('"+utils.join(keys.toArray(new String[0]),"','")+"')";
+        String k=",keys=c('"+Utils.join(keys.toArray(new String[0]),"','")+"')";
         String a=")";
         String [] sstructures = new String [structures.length];
         for(int m = 0;m<structures.length;m++){
@@ -416,12 +439,12 @@ public class AnalysisCore {
         ArrayList<String> rCommands = new ArrayList();
         if(type==MeasurementObject.Number){
             fct="=xp$extractObjectData(";
-            st="structure=c("+utils.join(sstructures,",")+")";
+            st="structure=c("+Utils.join(sstructures,",")+")";
             a=",addIdx=TRUE,filter=filter)";
         }
         else{
             fct="=xp$extractStructureData(";
-            st="structures=c("+utils.join(sstructures,",")+")";
+            st="structures=c("+Utils.join(sstructures,",")+")";
             if(type==MeasurementStructure.ArrayO2O){
                 a=",addIdx=TRUE,filter=filter)";
             } else if(type==MeasurementStructure.ArrayMisc){

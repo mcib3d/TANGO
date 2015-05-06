@@ -11,7 +11,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import javax.swing.JComboBox;
 import tango.gui.util.Refreshable;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -166,7 +166,7 @@ public class ChoiceParameter extends Parameter implements ActionnableParameter {
     public void setContent(Parameter p) {
         if (p instanceof ChoiceParameter) {
             String s = ((ChoiceParameter)p).getSelectedItem();
-            if (utils.contains(choice, s, true)) this.choice.setSelectedItem(s);
+            if (Utils.contains(choice, s, true)) this.choice.setSelectedItem(s);
         }
     }
     

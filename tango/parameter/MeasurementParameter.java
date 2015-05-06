@@ -23,7 +23,7 @@ import tango.plugin.measurement.MeasurementStructure;
 import tango.plugin.thresholder.Thresholder;
 import tango.plugin.thresholder.ThresholderHistogram;
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluator;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -128,7 +128,7 @@ public class MeasurementParameter extends PluginParameter {
 
     @Override
     public Parameter duplicate(String newLabel, String newId) {
-        return new MeasurementParameter(newLabel, newId, utils.getSelectedString(choice));
+        return new MeasurementParameter(newLabel, newId, Utils.getSelectedString(choice));
     }
 
     @Override

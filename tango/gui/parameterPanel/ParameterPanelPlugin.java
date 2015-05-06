@@ -23,7 +23,7 @@ import tango.plugin.measurement.Measurement;
 import tango.plugin.measurement.MeasurementObject;
 import tango.plugin.measurement.MeasurementStructure;
 import tango.plugin.sampler.Sampler;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -88,7 +88,7 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
     public Color getColor() {
         Color c = Color.black;
         for (int i = 0; i<currentParameters.length; i++) {
-            c = utils.compareColor(c, currentParameters[i].getColor());
+            c = Utils.compareColor(c, currentParameters[i].getColor());
         }
         return c;
     }

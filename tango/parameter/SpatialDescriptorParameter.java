@@ -7,7 +7,7 @@ import tango.parameter.ThresholdParameter;
 import tango.plugin.PluginFactory;
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluator;
 import tango.spatialStatistics.spatialDescriptors.SpatialDescriptor;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -62,7 +62,7 @@ public class SpatialDescriptorParameter extends PluginParameter {
 
     @Override
     public Parameter duplicate(String newLabel, String newId) {
-        return new SpatialDescriptorParameter(newLabel, newId, utils.getSelectedString(choice));
+        return new SpatialDescriptorParameter(newLabel, newId, Utils.getSelectedString(choice));
     }
 
     @Override

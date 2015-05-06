@@ -13,7 +13,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import tango.gui.Core;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **

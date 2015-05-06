@@ -10,7 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JToggleButton;
 import tango.gui.util.PanelElementAbstract;
-import tango.util.utils;
+import tango.util.Utils;
 
 public class PanelElementPlugin extends PanelElementAbstract implements ActionListener {
 
@@ -36,7 +36,7 @@ public class PanelElementPlugin extends PanelElementAbstract implements ActionLi
         if (parameterPanel.getMethod() != null) {
             method.setSelectedItem(parameterPanel.getMethod());
         }
-        utils.addHorizontalScrollBar(method);
+        Utils.addHorizontalScrollBar(method);
         method.addActionListener(this);
         //method.setMinimumSize(method.getPreferredSize());
         //method.setMaximumSize(method.getPreferredSize());

@@ -38,7 +38,7 @@ import tango.parameter.*;
 public class Simple_MeasureNumbering implements MeasurementObject {
     // DB
     StructureParameter channel1 = new StructureParameter("Structure reference :", "structRef", -1, true);
-    StructureParameter channel2 = new StructureParameter("Structure objects:", "structObj", -1, false);
+    StructureParameter channel2 = new StructureParameter("Structure objects:", "structObj", -1, true);
     SliderParameter SliderPcIn = new SliderParameter("% inside", "pcIn", 50, 100, 100);
     SliderParameter SliderPcOut = new SliderParameter("% outside", "pcOut", 50, 100, 100);
     Parameter[] parameters = {channel1, channel2, SliderPcIn, SliderPcOut};

@@ -11,7 +11,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import tango.gui.Core;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -84,7 +84,7 @@ public class DuplicateXPOptionPane extends JOptionPane {
                 if(ae.getSource() == btnNew) {
                     res=new DuplicateXP();
                     res.xp = ta.getText();
-                    res.set = utils.getSelectedString(sets);
+                    res.set = Utils.getSelectedString(sets);
                     dispose();
                 } else dispose();
             }

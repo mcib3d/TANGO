@@ -7,7 +7,7 @@ import tango.gui.FieldManager;
 import tango.helper.HelpManager;
 import tango.helper.ID;
 import tango.helper.RetrieveHelp;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -40,7 +40,7 @@ public class FieldManagerLayout extends javax.swing.JPanel {
         this.fieldManager=fieldManager;
         initComponents();  
         //this.thumbnailsCB.setMaximumSize(new Dimension(viewPanel.getPreferredSize().width, thumbnailsCB.getPreferredSize().height));
-        utils.addHorizontalScrollBar(thumbnailsCB);
+        Utils.addHorizontalScrollBar(thumbnailsCB);
     }
     
     public void setStructures(String[] structures) {
@@ -50,11 +50,11 @@ public class FieldManagerLayout extends javax.swing.JPanel {
     }
     
     public String getThumbnailStructure() {
-        return utils.getSelectedString(thumbnailsCB);
+        return Utils.getSelectedString(thumbnailsCB);
     }
     
     public void setStructure(String structure) {
-        if (utils.contains(thumbnailsCB, structure, true)) thumbnailsCB.setSelectedItem(structure);
+        if (Utils.contains(thumbnailsCB, structure, true)) thumbnailsCB.setSelectedItem(structure);
     }
     
     public void registerComponents(HelpManager hm) {

@@ -13,7 +13,7 @@ import tango.plugin.PluginFactory;
 import tango.plugin.segmenter.SpotSegmenter;
 import tango.plugin.thresholder.Thresholder;
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluator;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -54,7 +54,7 @@ public class SegmenterParameter extends PluginParameter {
 
     @Override
     public Parameter duplicate(String newLabel, String newId) {
-        return new SegmenterParameter(newLabel, newId, utils.getSelectedString(choice));
+        return new SegmenterParameter(newLabel, newId, Utils.getSelectedString(choice));
     }
 
     @Override

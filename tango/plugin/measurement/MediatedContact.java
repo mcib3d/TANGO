@@ -16,7 +16,7 @@ import tango.plugin.measurement.Measurement;
 import tango.plugin.measurement.*;
 import tango.plugin.measurement.distance.Distance;
 import tango.processing.geodesicDistanceMap.GeodesicMap;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -126,7 +126,7 @@ public class MediatedContact implements MeasurementStructure {
                         }
                         for (int i2 = i1+1; i2<list.size(); i2++) {
                             idx2 = list.get(i2);
-                            int idx = utils.getIdxSameStructure(idx1, idx2, o1.length);
+                            int idx = Utils.getIdxSameStructure(idx1, idx2, o1.length);
                             medObjIdx[idx] = key+1;
                             if (mask!=null) adist[idx] = map.getMinDistance(o1[idx2], true);
                         }
@@ -162,7 +162,7 @@ public class MediatedContact implements MeasurementStructure {
                                 }
                             }
                             for (int idx2 :list2) {
-                                int idx = utils.getIdx(idx1, idx2, o2.length);
+                                int idx = Utils.getIdx(idx1, idx2, o2.length);
                                 medObjIdx[idx] = key;
                                 if (mask!=null) adist[idx] = map.getMinDistance(o2[idx2], true);
                             }
@@ -177,7 +177,7 @@ public class MediatedContact implements MeasurementStructure {
                                 }
                             }
                             for (int idx1 :list1) {
-                                int idx = utils.getIdx(idx1, idx2, o2.length);
+                                int idx = Utils.getIdx(idx1, idx2, o2.length);
                                 medObjIdx[idx] = key+1;
                                 if (mask!=null) adist[idx] = map.getMinDistance(o1[idx1], true);
                             }

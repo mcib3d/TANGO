@@ -12,7 +12,7 @@ import tango.plugin.PluginFactory;
 import tango.plugin.filter.PostFilter;
 import tango.plugin.filter.PreFilter;
 import tango.plugin.thresholder.Thresholder;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -53,7 +53,7 @@ public class PostFilterParameter extends PluginParameter {
 
     @Override
     public Parameter duplicate(String newLabel, String newId) {
-        return new PostFilterParameter(newLabel, newId, utils.getSelectedString(choice));
+        return new PostFilterParameter(newLabel, newId, Utils.getSelectedString(choice));
     }
 
     @Override

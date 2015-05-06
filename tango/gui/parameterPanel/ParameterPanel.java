@@ -11,7 +11,7 @@ import tango.helper.Helper;
 import tango.parameter.StructureParameter;
 import tango.parameter.Parameter;
 import tango.parameter.TextParameter;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **

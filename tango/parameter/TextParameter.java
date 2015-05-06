@@ -10,7 +10,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import tango.gui.util.Refreshable;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -49,7 +49,7 @@ public class TextParameter extends Parameter  { //implements ActionnableParamete
         text.setMaximumSize(new Dimension(160, 20));
         box.add(this.text);
         //addToPanel(text);
-        if (defaultValue!=null && defaultValue.length()>0 && utils.isValid(defaultValue, true)) text.setText(defaultValue);
+        if (defaultValue!=null && defaultValue.length()>0 && Utils.isValid(defaultValue, true)) text.setText(defaultValue);
         addColorListener();
     }
     
@@ -108,7 +108,7 @@ public class TextParameter extends Parameter  { //implements ActionnableParamete
     @Override
     public boolean isValid() {
         if (!this.compulsary) return true;
-        return utils.isValid(getText(), allowSpecial);
+        return Utils.isValid(getText(), allowSpecial);
     }
 
     @Override

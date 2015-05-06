@@ -17,7 +17,7 @@ import tango.plugin.TangoPlugin;
 import tango.plugin.thresholder.Thresholder;
 import tango.plugin.thresholder.ThresholderHistogram;
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluator;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -58,7 +58,7 @@ public class ThresholdParameter extends PluginParameter {
 
     @Override
     public Parameter duplicate(String newLabel, String newId) {
-        return new ThresholdParameter(newLabel, newId, utils.getSelectedString(choice));
+        return new ThresholdParameter(newLabel, newId, Utils.getSelectedString(choice));
     }
 
     @Override

@@ -21,7 +21,7 @@ import tango.helper.RetrieveHelp;
 import tango.mongo.MongoConnector;
 import tango.parameter.*;
 import tango.util.SystemEnvironmentVariable;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -172,7 +172,7 @@ public class Connector extends javax.swing.JPanel {
             if (usernames.getItemCount() > 0) {
                 SystemEnvironmentVariable mongoUser = new SystemEnvironmentVariable("mongoUser", null, false, false, false);
                 String user = mongoUser.getValue();
-                if (user!=null && user.length() != 0 && utils.contains(usernames, user, true)) {
+                if (user!=null && user.length() != 0 && Utils.contains(usernames, user, true)) {
                     setUser(user);
                 }
                 mongoUser.writeToPrefs();
@@ -192,7 +192,7 @@ public class Connector extends javax.swing.JPanel {
     }
 
     private void setUser(String usr) {
-        if (utils.contains(usernames, usr, true)) {
+        if (Utils.contains(usernames, usr, true)) {
             usernames.setSelectedItem(usr);
         }
         BasicDBObject user = Core.mongoConnector.setUser(usr, false);
@@ -498,11 +498,11 @@ public class Connector extends javax.swing.JPanel {
     private void newUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newUserActionPerformed
         String name = JOptionPane.showInputDialog("Username (no special char):");
         if (name==null) return;
-        if (!utils.isValid(name, false)) {
+        if (!Utils.isValid(name, false)) {
             IJ.error("Name should not contain any special character");
             return;
         }
-        if (utils.contains(usernames, name, false)) {
+        if (Utils.contains(usernames, name, false)) {
             IJ.error("Name should not contain any special character");
             return;
         }
@@ -536,7 +536,7 @@ public class Connector extends javax.swing.JPanel {
                 "");
         String folder = (String) selectedFolder;
         if (folder != null && folder.length() > 0) {
-            File dir = utils.chooseDir("Select Export directory", null);
+            File dir = Utils.chooseDir("Select Export directory", null);
             if (dir != null) {
                 Core.mongoConnector.mongoDumpProject(folder, dir.getAbsolutePath(), this.exportInput.isSelected(), exportOutput.isSelected());
             }
@@ -548,11 +548,11 @@ public class Connector extends javax.swing.JPanel {
             IJ.error("connect first");
             return;
         }
-        File dir = utils.chooseDir("Select Import directory containing .bson files", null);
+        File dir = Utils.chooseDir("Select Import directory containing .bson files", null);
         if (dir != null) {
             String name = JOptionPane.showInputDialog("Project name (no special char):");
             if (name==null) return;
-            if (!utils.isValid(name, false)) IJ.error("Invalid name");
+            if (!Utils.isValid(name, false)) IJ.error("Invalid name");
             if (name.length()>30) IJ.error("Name length must be <30");
             if (!Core.mongoConnector.getProjects().contains(name)) {
                 try {
@@ -573,7 +573,7 @@ public class Connector extends javax.swing.JPanel {
             IJ.error("connect first");
             return;
         }
-        File dir = utils.chooseDir("Select Export directory", null);
+        File dir = Utils.chooseDir("Select Export directory", null);
         if (dir != null) {
             Core.mongoConnector.mongoDumpSettings(dir.getAbsolutePath());
         }
@@ -584,7 +584,7 @@ public class Connector extends javax.swing.JPanel {
             IJ.error("connect first");
             return;
         }
-        File dir = utils.chooseDir("Select Import directory containing .bson files", null);
+        File dir = Utils.chooseDir("Select Import directory containing .bson files", null);
         if (dir != null) {
             try {
                 Core.mongoConnector.mongoRestoreSettings(dir.getAbsolutePath());

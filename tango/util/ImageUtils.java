@@ -134,7 +134,7 @@ public class ImageUtils {
         for (Voxel3D v : object.getVoxels()) v.setValue(dm.getPixel(v.getRoundX()-xMin, v.getRoundY()-yMin, v.getRoundZ()-zMin)); // TODO enlever border 1 lorsque bug EDT résolu
     }
     
-    public static Object3DVoxels[][] getObjectLayers(Object3DVoxels[] objects, double[][] layers, int nbCPUs, boolean verbose) {
+    public static Object3DVoxels[][] getObjectLayers(Object3DVoxels[] objects, double[][] layers, boolean correctionLimit, int nbCPUs, boolean verbose) {
         /*if (objects==null && objectMap!=null) objects = objectMap.getObjects3D();
         else if (objects!=null && objectMap==null) {
             // get bounding box
@@ -151,7 +151,7 @@ public class ImageUtils {
         ImageFloat dm = objectMap.getDistanceMapInsideMask(nbCPUs);
         */
         Object3DVoxels[][] res = new Object3DVoxels[objects.length][layers.length];
-        for (int i = 0; i<objects.length; i++) res[i] = getLayers(objects[i], layers);
+        for (int i = 0; i<objects.length; i++) res[i] = getLayers(objects[i], layers, correctionLimit);
         
         if (verbose) {
             // get bounding box
@@ -176,13 +176,29 @@ public class ImageUtils {
         return res;
     }
     
-    public static Object3DVoxels[] getLayers(Object3DVoxels object, double[][] layers) {
+    public static Object3DVoxels[] getLayers(Object3DVoxels object, double[][] layers, boolean correctionLimit) {
         Object3DVoxels[] objectLayers = new Object3DVoxels[layers.length];
         ArrayList<Voxel3D> vox = object.getVoxels();
         Collections.sort(vox);
         for (int i = 0; i<layers.length; i++) {
             int idxStart = (int)(layers[i][0] * vox.size() + 0.5);
-            int idxStop = (int)(layers[i][1] * vox.size() + 0.5);
+            int idxStop = (int)(layers[i][1] * (vox.size()-1) + 0.5);
+            IJ.log("idxStart: "+idxStart+ " idxStop: "+idxStop+" value0: "+vox.get(0).getValue() + " value end:"+vox.get(vox.size()-1));
+            // Correction valeurs limites
+            if (correctionLimit) {
+                if (vox.get(0).getValue()==vox.get(idxStart).getValue() && vox.get(0).getValue()==vox.get(idxStop).getValue()) {
+                    IJ.log("correction limit ext: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(0).getValue());
+                    idxStop = getRightIndex(vox, idxStop);
+                    IJ.log("correction limit ext: new idxStop: "+idxStop);
+                }
+                if (vox.get(vox.size()-1).getValue()==vox.get(idxStop).getValue() && vox.get(0).getValue()==vox.get(idxStart).getValue() ) {
+                    IJ.log("correction limit int: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(vox.size()-1).getValue());
+                    idxStart = getRightIndex(vox, idxStart);
+                    if (idxStart<vox.size()-2) idxStart++;
+                    IJ.log("correction limit int: new idxStart: "+idxStart+" value: "+vox.get(idxStart).getValue());
+                }
+            }
+            
             ArrayList<Voxel3D> voxObj = new ArrayList<Voxel3D>(idxStop-idxStart+1);
             for (int j = idxStart; j<idxStop; j++) voxObj.add(vox.get(j));
             if (voxObj.isEmpty()) {
@@ -195,6 +211,23 @@ public class ImageUtils {
         }
         return objectLayers;
     }
+    
+    private static int getLeftIndex(ArrayList<Voxel3D> sorted, int idx) {
+        int idxMin=idx;
+        double ref = sorted.get(idx).getValue();
+        while(idxMin>0 && sorted.get(idxMin-1).getValue()==ref) idxMin--;
+        return idxMin;
+    }
+    
+    private static int getRightIndex(ArrayList<Voxel3D> sorted, int idx) {
+        int idxMax=idx;
+        double ref = sorted.get(idx).getValue();
+        int limit= sorted.size()-1;
+        while(idxMax<limit && sorted.get(idxMax+1).getValue()==ref) idxMax++;
+        return idxMax;
+    }
+    
+    
     
     public static int[][] getNeighbourhood(float radius, float radiusZ) {
         float r = (float) radius / radiusZ;

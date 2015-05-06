@@ -10,7 +10,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import tango.gui.Core;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **

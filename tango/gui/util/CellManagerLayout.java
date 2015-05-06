@@ -14,8 +14,30 @@ import tango.gui.PanelDisplayer;
 import tango.helper.HelpManager;
 import tango.helper.ID;
 import tango.helper.RetrieveHelp;
-import tango.util.utils;
+import tango.util.Utils;
 /**
+ *
+ **
+ * /**
+ * Copyright (C) 2012 Jean Ollion
+ *
+ *
+ *
+ * This file is part of tango
+ *
+ * tango is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  *
  **
  * /**
@@ -52,9 +74,9 @@ public class CellManagerLayout extends javax.swing.JPanel {
         // taille des JCB
         // FIXME fonctionnne pas pour les thumbnails???
         this.thumbnailsCB.setMaximumSize(new Dimension(viewPanel.getPreferredSize().width, thumbnailsCB.getPreferredSize().height));
-        utils.addHorizontalScrollBar(thumbnailsCB);
+        Utils.addHorizontalScrollBar(thumbnailsCB);
         this.sortByCB.setMaximumSize(new Dimension(sortPanel.getPreferredSize().width, sortByCB.getPreferredSize().height));
-        utils.addHorizontalScrollBar(sortByCB);
+        Utils.addHorizontalScrollBar(sortByCB);
         
     }
     
@@ -103,7 +125,7 @@ public class CellManagerLayout extends javax.swing.JPanel {
     }
     
     public String getSortKey() {
-        return utils.getSelectedString(sortByCB);
+        return Utils.getSelectedString(sortByCB);
     }
     
     public boolean getAscendingOrder() {
@@ -134,11 +156,11 @@ public class CellManagerLayout extends javax.swing.JPanel {
     }
     
     public String getThumbnailStructure() {
-        return utils.getSelectedString(thumbnailsCB);
+        return Utils.getSelectedString(thumbnailsCB);
     }
     
     public void setStructure(String structure) {
-        if (utils.contains(thumbnailsCB, structure, true)) thumbnailsCB.setSelectedItem(structure);
+        if (Utils.contains(thumbnailsCB, structure, true)) thumbnailsCB.setSelectedItem(structure);
     }
     
     

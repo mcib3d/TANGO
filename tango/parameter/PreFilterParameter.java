@@ -10,7 +10,7 @@ import tango.gui.Core;
 import tango.plugin.PluginFactory;
 import tango.plugin.filter.PreFilter;
 import tango.plugin.thresholder.Thresholder;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -51,7 +51,7 @@ public class PreFilterParameter extends PluginParameter {
 
     @Override
     public Parameter duplicate(String newLabel, String newId) {
-        return new PreFilterParameter(newLabel, newId, utils.getSelectedString(choice));
+        return new PreFilterParameter(newLabel, newId, Utils.getSelectedString(choice));
     }
 
     @Override

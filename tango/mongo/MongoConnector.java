@@ -30,7 +30,7 @@ import tango.util.ImageOpener;
 import tango.util.SystemEnvironmentVariable;
 import static tango.util.SystemMethods.execProcess;
 import static tango.util.SystemMethods.executeBatchScript;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -182,7 +182,7 @@ public class MongoConnector {
         while (cur.hasNext()) {
             BasicDBObject u = (BasicDBObject)cur.next();
             String name = u.getString("name");
-            if (utils.isValid(name, false)) res.add(name);
+            if (Utils.isValid(name, false)) res.add(name);
         }
         cur.close();
         Collections.sort(res);

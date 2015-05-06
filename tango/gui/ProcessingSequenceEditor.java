@@ -33,7 +33,7 @@ import tango.parameter.SettingsParameter;
 import tango.parameter.StructureParameter;
 import tango.plugin.PluginFactory;
 import tango.plugin.filter.PreFilterSequence;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -132,13 +132,13 @@ public class ProcessingSequenceEditor  implements ActionListener {
         structure.addActionListener(this);
         structure.setAlignmentX(0);
         structure.setMaximumSize(new Dimension(layout.controlDim.width, structure.getPreferredSize().height));
-        utils.addHorizontalScrollBar(structure);
+        Utils.addHorizontalScrollBar(structure);
         controlPanel.add(structure);
         templateLabel = new JLabel("Choose template:");
         controlPanel.add(templateLabel);
         template = new JComboBox();
         this.getTemplates(currentStructure==0);
-        utils.addHorizontalScrollBar(template);
+        Utils.addHorizontalScrollBar(template);
         template.addActionListener(this);
         template.setAlignmentX(0);
         template.setMaximumSize(new Dimension(layout.controlDim.width, template.getPreferredSize().height));
@@ -194,18 +194,18 @@ public class ProcessingSequenceEditor  implements ActionListener {
         if (structureSegmenterPanel!=null) this.structureSegmenterPanel.refreshParameters();
         if (nucleusSegmenterPanel!=null) this.nucleusSegmenterPanel.refreshParameters();
         //refresh structures:
-        String selectedStructure=utils.getSelectedString(structure);
+        String selectedStructure=Utils.getSelectedString(structure);
         populatingStructures=true;
         structure.removeAllItems();
         for (String s : StructureParameter.getStructures()) structure.addItem(s);
-        if (utils.contains(structure, selectedStructure, true)) structure.setSelectedItem(selectedStructure);
+        if (Utils.contains(structure, selectedStructure, true)) structure.setSelectedItem(selectedStructure);
         else this.setStructure(0);
         populatingStructures=false;
         //refresh templates
-        String t = utils.getSelectedString(template);
+        String t = Utils.getSelectedString(template);
         this.getTemplates(structure.getSelectedIndex()==0);
         populatingTemplates=true;
-        if (utils.contains(template, t, true)) template.setSelectedItem(t);
+        if (Utils.contains(template, t, true)) template.setSelectedItem(t);
         populatingTemplates=false;
     }
     
@@ -254,7 +254,7 @@ public class ProcessingSequenceEditor  implements ActionListener {
             else if (structureIdx==0 && currentStructure>0) getTemplates(true);
             currentStructure=structureIdx;
             createMultiPanels();
-            if (data!=null && data.containsField("name") && utils.contains(template, data.get("name"), true)) {
+            if (data!=null && data.containsField("name") && Utils.contains(template, data.get("name"), true)) {
                 setCurrentTemplate(data.getString("name"));
             }
             else {
@@ -274,7 +274,7 @@ public class ProcessingSequenceEditor  implements ActionListener {
     
     protected void save(boolean record) {
         try {
-            data=new BasicDBObject("name", utils.getSelectedString(template));
+            data=new BasicDBObject("name", Utils.getSelectedString(template));
             data.append("preFilters", preFilterPanel.save());
             if (currentStructure==0) data.append("segmentation", nucleusSegmenterPanel.save());
             else data.append("segmentation", structureSegmenterPanel.save());
@@ -351,7 +351,7 @@ public class ProcessingSequenceEditor  implements ActionListener {
         if (e.getSource() == structure && !populatingStructures) {
             setStructure(structure.getSelectedIndex());
         } else if (e.getSource() == template && !populatingTemplates) {
-            String name = utils.getSelectedString(template);
+            String name = Utils.getSelectedString(template);
             if (name==null || name.length()==0) return;
             setCurrentTemplate(name);
         } else if (source==copyFromTemplate) {
@@ -360,7 +360,7 @@ public class ProcessingSequenceEditor  implements ActionListener {
             }
             data=(BasicDBObject)currentTemplate.copy();
             data.removeField("_id");
-            data.append("name", utils.getSelectedString(template));
+            data.append("name", Utils.getSelectedString(template));
             Core.getExperiment().setProcessingChain(currentStructure, data);
             setStructure(currentStructure);
         } else if (source==copyToTemplate) {
@@ -370,12 +370,12 @@ public class ProcessingSequenceEditor  implements ActionListener {
                 if (currentStructure==0) Core.mongoConnector.saveNucSettings(data);
                 else Core.mongoConnector.saveStructureProcessingChain(data);
                 core.updateSettings();
-                setCurrentTemplate(utils.getSelectedString(template));
+                setCurrentTemplate(Utils.getSelectedString(template));
             }
             } else if (source==createNewTemplate) {
             String name = JOptionPane.showInputDialog("Template Name");
             if (name==null) return;
-            if (utils.isValid(name, false) && !utils.contains(template, name, false)) {
+            if (Utils.isValid(name, false) && !Utils.contains(template, name, false)) {
                 save(false);
                 data.append("name", name);
                 if (currentStructure==0) Core.mongoConnector.saveNucSettings(data);

@@ -4,6 +4,7 @@ package tango.util;
 import ij.IJ;
 import java.awt.Color;
 import java.io.File;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
@@ -33,7 +34,7 @@ import javax.swing.*;
  *
  * @author Jean Ollion
  */
-public class utils {
+public class Utils {
     static Pattern p = Pattern.compile("[^a-z0-9_-]", Pattern.CASE_INSENSITIVE);
     
     public static Color compareColor(Color oldC, Color newC) {
@@ -137,4 +138,50 @@ public class utils {
     public static int getIdx(int idx1, int idx2, int size2) {
         return idx1*size2 + idx2;
     }
+    
+    public static float getMedianIndex(float[] sorted, float value) {
+        int idxMin, idxMax;
+        idxMin = Arrays.binarySearch(sorted, value);
+        //duplicate => median value
+        idxMax=idxMin;
+        while(idxMin>0 && sorted[idxMin-1]==sorted[idxMax]) idxMin--;
+        while(idxMax<sorted.length-1 && sorted[idxMax+1]==sorted[idxMin]) idxMax++;
+        if (idxMax!=idxMin) return (idxMin+idxMax)/2.0f;
+        else return idxMin;
+    }
+    
+    public static float getMedianIndex(double[] sorted, double value) {
+        int idxMin, idxMax;
+        idxMin = Arrays.binarySearch(sorted, value);
+        //duplicate => median value
+        idxMax=idxMin;
+        while(idxMin>0 && sorted[idxMin-1]==sorted[idxMax]) idxMin--;
+        while(idxMax<sorted.length-1 && sorted[idxMax+1]==sorted[idxMin]) idxMax++;
+        if (idxMax!=idxMin) return (idxMin+idxMax)/2.0f;
+        else return idxMin;
+    }
+    
+    public static int getLeftIndex(float[] sorted, float value) {
+        int idx = Arrays.binarySearch(sorted, value);
+        int idxMin=idx;
+        while(idxMin>0 && sorted[idxMin-1]==sorted[idx]) idxMin--;
+        return idxMin;
+    }
+    
+    public static int getRightIndex(float[] sorted, float value) {
+        int idx = Arrays.binarySearch(sorted, value);
+        int idxMax = idx;
+        while(idxMax<sorted.length-1 && sorted[idxMax+1]==sorted[idx]) idxMax++;
+        return idxMax;
+    }
+    
+    public static int factorial(int n) {
+        int fact = 1; // this  will be the result
+        for (int i = 1; i <= n; i++) {
+            fact *= i;
+        }
+        return fact;
+    }
+    
+    
 }

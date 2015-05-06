@@ -4,7 +4,7 @@ import ij.gui.GenericDialog;
 import tango.plugin.PluginFactory;
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluator;
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluatorFactory;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -59,7 +59,7 @@ public class SDIEvaluatorParameter extends PluginParameter {
 
     @Override
     public Parameter duplicate(String newLabel, String newId) {
-        return new SDIEvaluatorParameter(newLabel, newId, utils.getSelectedString(choice));
+        return new SDIEvaluatorParameter(newLabel, newId, Utils.getSelectedString(choice));
     }
 
     @Override

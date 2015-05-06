@@ -13,7 +13,7 @@ import javax.swing.border.BevelBorder;
 import tango.gui.util.CollapsiblePanel;
 import tango.gui.util.Displayer;
 import tango.gui.util.Refreshable;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *

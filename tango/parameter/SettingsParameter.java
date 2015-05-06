@@ -21,7 +21,7 @@ import tango.gui.util.Refreshable;
 import tango.mongo.MongoConnector;
 import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.filter.PreFilterSequence;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -105,7 +105,7 @@ public class SettingsParameter extends Parameter implements Refreshable {
 
     @Override
     public void refresh() {
-        String type = utils.getSelectedString(choice);
+        String type = Utils.getSelectedString(choice);
         choice.removeAllItems();
         addItems();
         if (type != null) {
@@ -125,7 +125,7 @@ public class SettingsParameter extends Parameter implements Refreshable {
     public void dbGet(BasicDBObject DBO) {
         if (DBO.containsField(id)) {
             String settings = DBO.getString(id);
-            if (utils.contains(choice, settings, true)) {
+            if (Utils.contains(choice, settings, true)) {
                 choice.setSelectedItem(settings);
             }
         }
@@ -137,12 +137,12 @@ public class SettingsParameter extends Parameter implements Refreshable {
         if (p instanceof SettingsParameter) {
             SettingsParameter s = (SettingsParameter)p;
             String ss = s.getSettings();
-            if (utils.contains(choice, s, true)) this.choice.setSelectedItem(ss);
+            if (Utils.contains(choice, s, true)) this.choice.setSelectedItem(ss);
         }
     }
 
     public String getSettings() {
-        return utils.getSelectedString(choice);
+        return Utils.getSelectedString(choice);
     }
 
     public ImageHandler preFilter(ImageHandler in, InputImages images, int nbCPUs, boolean verbose) {

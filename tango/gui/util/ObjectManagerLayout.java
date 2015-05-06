@@ -8,8 +8,31 @@ import tango.gui.ObjectManager;
 import tango.helper.HelpManager;
 import tango.helper.ID;
 import tango.helper.RetrieveHelp;
-import tango.util.utils;
+import tango.util.Utils;
 /**
+ *
+ **
+ * /**
+ * Copyright (C) 2012 Jean Ollion
+ *
+ *
+ *
+ * This file is part of tango
+ *
+ * tango is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * /**
  *
  **
  * /**
@@ -43,7 +66,7 @@ public class ObjectManagerLayout extends javax.swing.JPanel {
         this.objectManager=objectManager;
         initComponents();
         this.sortByCB.setMaximumSize(new Dimension(sortByPanel.getPreferredSize().width, sortByCB.getPreferredSize().height));
-        utils.addHorizontalScrollBar(sortByCB);
+        Utils.addHorizontalScrollBar(sortByCB);
     }
     
     public void toggleIsRunning(boolean isRunning) {
@@ -80,7 +103,7 @@ public class ObjectManagerLayout extends javax.swing.JPanel {
     }
     
     public String getSortKey() {
-        return utils.getSelectedString(sortByCB);
+        return Utils.getSelectedString(sortByCB);
     }
     
     public boolean getAscendingOrder() {
@@ -98,7 +121,7 @@ public class ObjectManagerLayout extends javax.swing.JPanel {
         if (keys!=null) {
             for (String key : keys) sortByCB.addItem(key);
         }
-        if (utils.contains(sortByCB, lastKey, true)) sortByCB.setSelectedItem(lastKey);
+        if (Utils.contains(sortByCB, lastKey, true)) sortByCB.setSelectedItem(lastKey);
         else this.sortByCB.setSelectedIndex(0);
         this.sortByCB.setMaximumSize(dim);
         this.populateKeys=false;

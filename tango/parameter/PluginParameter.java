@@ -14,7 +14,7 @@ import tango.gui.parameterPanel.ParameterPanelPlugin;
 import tango.gui.util.CollapsiblePanel;
 import tango.gui.util.Refreshable;
 import tango.plugin.TangoPlugin;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -142,7 +142,7 @@ public abstract class PluginParameter extends Parameter  implements ItemListener
     }
     
     public String getMethod() {
-        return utils.getSelectedString(choice);
+        return Utils.getSelectedString(choice);
     }
     
     @Override

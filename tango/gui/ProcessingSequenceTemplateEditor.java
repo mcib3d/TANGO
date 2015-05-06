@@ -31,7 +31,7 @@ import tango.mongo.MongoConnector;
 import tango.parameter.SettingsParameter;
 import tango.plugin.PluginFactory;
 import tango.plugin.filter.PreFilterSequence;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **
@@ -118,7 +118,7 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
         controlPanel.setPreferredSize(layout.controlDim);
         processingSequences = new JComboBox();
         this.get();
-        utils.addHorizontalScrollBar(processingSequences);
+        Utils.addHorizontalScrollBar(processingSequences);
         processingSequences.addActionListener(this);
         processingSequences.setAlignmentX(0);
         processingSequences.setMaximumSize(new Dimension(layout.controlDim.width, processingSequences.getPreferredSize().height));
@@ -255,7 +255,7 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
         } else if (source==newPS) {
             String name = JOptionPane.showInputDialog("Processing Sequence Name");
             if (name==null) return;
-            if (utils.isValid(name, false) && !utils.contains(processingSequences, name, false)) {
+            if (Utils.isValid(name, false) && !Utils.contains(processingSequences, name, false)) {
                 create(name);
                 get();
                 set(name);
@@ -264,11 +264,11 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
                 IJ.error("Invalid Command/Processing Chain already exists");
             }
         } else if (source==rename) {
-            String oldName = utils.getSelectedString(processingSequences);
+            String oldName = Utils.getSelectedString(processingSequences);
             if (oldName!=null && oldName.length()>0) {
                 String name = JOptionPane.showInputDialog("New Name", oldName);
                 if (name==null) return;
-                if (utils.isValid(name, false) && !utils.contains(processingSequences, name, false)) {
+                if (Utils.isValid(name, false) && !Utils.contains(processingSequences, name, false)) {
                     rename(oldName, name);
                     get();
                     set(name);
@@ -278,11 +278,11 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
                 }
             } else IJ.error("Select Processing Chain First");
         } else if (source==duplicate) {
-            String oldName = utils.getSelectedString(processingSequences);
+            String oldName = Utils.getSelectedString(processingSequences);
             if (oldName!=null && oldName.length()>0) {
                 String name = JOptionPane.showInputDialog("New Name", oldName);
                 if (name==null) return;
-                if (!name.equals("") && !utils.contains(processingSequences, name, false)) {
+                if (!name.equals("") && !Utils.contains(processingSequences, name, false)) {
                     duplicate(oldName, name);
                     get();
                     set(name);
@@ -292,7 +292,7 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
                 }
             } else IJ.error("Select Processing Sequence First");
         } else if (source==remove){
-            String name = utils.getSelectedString(processingSequences);
+            String name = Utils.getSelectedString(processingSequences);
             if (name!=null && name.length()>0) {
                 if (JOptionPane.showConfirmDialog(controlPanel, "Remove selected Processing Sequence?", "tango", JOptionPane.OK_CANCEL_OPTION)==0) {
                     remove(name);

@@ -31,7 +31,7 @@ import tango.rEditor.CloseableTabbedPane;
 import tango.rEditor.RInputHandler;
 import tango.rEditor.JEditTextArea;
 import tango.rEditor.RTokenMarker;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -122,7 +122,7 @@ public class AnalysisGUI extends javax.swing.JPanel {
     protected void fixComboWidth(JComboBox jcb){
         jcb.setAlignmentX(0);
         jcb.setMaximumSize(new Dimension(80, 20)); // fixer la taille. mets les valeurs de tes // rêves
-        utils.addHorizontalScrollBar(jcb); // ajoute les ascenseurs !! pratique! 
+        Utils.addHorizontalScrollBar(jcb); // ajoute les ascenseurs !! pratique! 
     }
 
     /**
@@ -976,11 +976,11 @@ public class AnalysisGUI extends javax.swing.JPanel {
 
     private void ggplotEcdfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ggplotEcdfButtonActionPerformed
         // TODO add your handling code here:
-        String dataframeName = utils.getSelectedString(ggplotDataframeComboBox);
-        String varName = utils.getSelectedString(ggplotVarComboBox);
-        String colorName = utils.getSelectedString(ggplotColorComboBox);
-        String linetype = utils.getSelectedString(this.ggplotLintypeComboBox);
-        String facet = utils.getSelectedString(ggplotFacetComboBox);
+        String dataframeName = Utils.getSelectedString(ggplotDataframeComboBox);
+        String varName = Utils.getSelectedString(ggplotVarComboBox);
+        String colorName = Utils.getSelectedString(ggplotColorComboBox);
+        String linetype = Utils.getSelectedString(this.ggplotLintypeComboBox);
+        String facet = Utils.getSelectedString(ggplotFacetComboBox);
         analysisCore.plotECDF(dataframeName,varName,colorName, linetype, facet);
     }//GEN-LAST:event_ggplotEcdfButtonActionPerformed
 
@@ -1196,8 +1196,8 @@ public class AnalysisGUI extends javax.swing.JPanel {
         iplotVar2ComboBox.setModel(new DefaultComboBoxModel(numericColumnNames.toArray()));
         groupByComboBox.setModel(new DefaultComboBoxModel(allColumnNames.toArray()));
         
-        ArrayList<String> numericColumnNamesGGplot = analysisCore.getDataFrameNumericColumnNames(utils.getSelectedString(this.ggplotDataframeComboBox));
-        ArrayList<String> qualColumnNamesGGplot = analysisCore.getDataFrameStringColumnNames(utils.getSelectedString(this.ggplotDataframeComboBox));
+        ArrayList<String> numericColumnNamesGGplot = analysisCore.getDataFrameNumericColumnNames(Utils.getSelectedString(this.ggplotDataframeComboBox));
+        ArrayList<String> qualColumnNamesGGplot = analysisCore.getDataFrameStringColumnNames(Utils.getSelectedString(this.ggplotDataframeComboBox));
         qualColumnNamesGGplot.add(0, "");
         ggplotVarComboBox.setModel(new DefaultComboBoxModel(numericColumnNamesGGplot.toArray()));
         ggplotColorComboBox.setModel(new DefaultComboBoxModel(qualColumnNamesGGplot.toArray()));

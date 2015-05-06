@@ -22,7 +22,7 @@ import tango.helper.ID;
 import tango.helper.RetrieveHelp;
 import tango.util.ImageUtils;
 import tango.util.RoiInterpolator;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -289,7 +289,7 @@ public class SelectionManager extends javax.swing.JPanel implements ListSelectio
     private void newSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newSelectionActionPerformed
         // TODO refresh cell manager?
         String name = JOptionPane.showInputDialog("Selection Name");
-        if (utils.isValid(name, false)) {
+        if (Utils.isValid(name, false)) {
             for (int i = 0; i<listModel.getSize(); i++) {
                 Selection s = (Selection) listModel.getElementAt(i);
                 if (name.equals(s.getName())) {
@@ -321,7 +321,7 @@ public class SelectionManager extends javax.swing.JPanel implements ListSelectio
         if (s==null) return;
         int idx = list.getSelectedIndex();
         String name = JOptionPane.showInputDialog("Selection Name");
-        if (utils.isValid(name, false)) {
+        if (Utils.isValid(name, false)) {
             for (int i = 0; i<listModel.getSize(); i++) {
                 Selection ss = (Selection) listModel.getElementAt(i);
                 if (name.equals(ss.getName())) {

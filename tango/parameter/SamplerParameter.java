@@ -16,7 +16,7 @@ import tango.dataStructure.SegmentedCellImages;
 import tango.gui.Core;
 import tango.plugin.PluginFactory;
 import tango.plugin.sampler.Sampler;
-import tango.util.utils;
+import tango.util.Utils;
 /**
  *
  **

@@ -17,6 +17,7 @@ import tango.plugin.TangoPlugin;
 import tango.plugin.thresholder.AutoThreshold;
 import tango.plugin.thresholder.Thresholder;
 import tango.util.ImageUtils;
+import tango.util.SpearmanPairWiseCorrelationTest;
 
 /**
  *
@@ -46,9 +47,10 @@ import tango.util.ImageUtils;
 public class EraseSpots implements PostFilter {
     boolean debug;
     int nbCPUs=1;
+    final int LAYER_SIZE_LIMIT=5;
     BooleanParameter useFiltered = new BooleanParameter("Use filtered Image", "useFiltered", true);
     PreFilterSequenceParameter preFilters = new PreFilterSequenceParameter("Pre-Filters:", "filters");
-    static String[] methods = new String[]{"SNR", "Absolute Intensity"};
+    static String[] methods = new String[]{"SNR", "Absolute Intensity", "Layer Comparison", "Correlation Distance Map/Intensity"};
     static String[] methodsBackground = new String[]{"whole nucleus", "nucleus minus spots"}; //, "nucleus minus dialted spots"
     static String[] methodsSignal = new String[]{"mean intensity", "max intensity", "quantile"};
     ChoiceParameter criterionChoice = new ChoiceParameter("Criterion:", "criterionChoice", methods, methods[1]);
@@ -63,10 +65,30 @@ public class EraseSpots implements PostFilter {
         //dilCond.setCondition(methodsBackground[2], new Parameter[]{new IntParameter("Radius (pixels)", "radius", 1)});
         ChoiceParameter signalChoice = new ChoiceParameter("Intensity estimation:", "signalChoice", methodsSignal, methodsSignal[0]);
         ConditionalParameter signalCond = new ConditionalParameter(signalChoice);
-        signalCond.setDefaultParameter(new Parameter[]{new SliderDoubleParameter("Erode object? Proprotion of object erosion:", "erode", 0, 1, 0, 2)});
-        signalCond.setCondition(methodsSignal[2], new Parameter[]{new SliderDoubleParameter("Quantile", "quantile", 0, 1, 0.9d, 4), new SliderDoubleParameter("Erode object? Proprotion of object erosion:", "erode", 0, 1, 0, 2)});
-        criterion.setCondition(methods[0], new Parameter[]{minSNR, signalCond, dilCond});
-        criterion.setCondition(methods[1], new Parameter[]{signalCond, new ThresholdParameter("Threshold estimation", "thld", "Percentage Of Bright Pixels" )}); //"AutoThreshold", new Parameter[]{new ChoiceParameter("", "", new String[]{"OTSU"}, "OTSU")})}
+        signalCond.setCondition(methodsSignal[2], new Parameter[]{new SliderDoubleParameter("Quantile", "quantile", 0, 1, 0.9d, 4)});
+        criterion.setCondition(methods[0], new Parameter[]{minSNR, signalCond, new SliderDoubleParameter("Erode object? Proprotion of object erosion:", "erode", 0, 1, 0, 2), new BooleanParameter("Keep only eroded fraction?", "keepEroded", false), dilCond});
+        criterion.setCondition(methods[1], new Parameter[]{signalCond, new SliderDoubleParameter("Erode object? Proprotion of object erosion:", "erode", 0, 1, 0, 2), new BooleanParameter("Keep only eroded fraction?", "keepEroded", false), new ThresholdParameter("Threshold estimation", "thld", "Percentage Of Bright Pixels" )}); //"AutoThreshold", new Parameter[]{new ChoiceParameter("", "", new String[]{"OTSU"}, "OTSU")})}
+        criterion.setCondition(methods[2], new Parameter[]{
+            new DoubleParameter("Dilate spots? Radius:", "dilate", 1d, Parameter.nfDEC2),
+            new GroupParameter("Layer 1", "layer1", new Parameter[]{
+                new SliderDoubleParameter("Min", "l1min", 0, 1, 0, 2),
+                new SliderDoubleParameter("Miax", "l1max", 0, 1, 0, 2),
+                signalCond
+            }),
+            new GroupParameter("Layer 2", "layer2", new Parameter[]{
+                new SliderDoubleParameter("Min", "l2min", 0, 1, 0, 2),
+                new SliderDoubleParameter("Miax", "l2max", 0, 1, 0, 2),
+                signalCond
+            }), 
+            new DoubleParameter("Erase spot if I(L1)/I(L2) > threshold. Threhsold?", "thld", 1d, Parameter.nfDEC3)
+        });
+        ConditionalParameter corrCond = new ConditionalParameter(new ChoiceParameter("Compute (Spearman correlation test):", "compute", new String[]{"p-value", "rho"}, "p-value"));
+        corrCond.setCondition("p-value", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for p-value:", "thldpvalue", 0.05d, Parameter.nfDEC5)});
+        corrCond.setCondition("rho", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for roh:", "thldrho", 0.9d, Parameter.nfDEC3)});
+        criterion.setCondition(methods[3], new Parameter[]{
+            new DoubleParameter("Dilate spots? Radius:", "dilate", 1d, Parameter.nfDEC2),
+            corrCond
+        });
         criteria = new MultiParameter("Criteria", "criteria", defaultParameters, 1, 100, 1);
     }
     
@@ -90,19 +112,18 @@ public class EraseSpots implements PostFilter {
                 if (sig==1) quant=1;
                 else if (sig==2) quant = ((SliderDoubleParameter)signalCond.getParameters()[0]).getValue();
                 double erode = -1;
-                if (sig==2) erode = ((SliderDoubleParameter)signalCond.getParameters()[1]).getValue();
-                else erode = ((SliderDoubleParameter)signalCond.getParameters()[0]).getValue();
+                erode = ((SliderDoubleParameter)crit.getParameters()[2]).getValue();
                 if (erode>0 && erode<1 && !isDistanceToPeripherySet) {
                     for (Object3DVoxels o : objects) ImageUtils.setObjectDistancesToPeriphery(o, nbCPUs);
                     isDistanceToPeripherySet=true;
                 }
-                ConditionalParameter dilCond = (ConditionalParameter)crit.getParameters()[2];
+                ConditionalParameter dilCond = (ConditionalParameter)crit.getParameters()[4];
                 int bck = ((ChoiceParameter)dilCond.getActionnableParameter()).getSelectedIndex();
                 int dilate = 0;
                 if (bck==0) dilate=-1;
                 else if (bck==2) dilate = ((IntParameter)dilCond.getParameters()[0]).getIntValue(1);
-               
-                eraseObjectsSNR(objects, in, dilate, images.getMask(), intensityMap, quant, snr.getDoubleValue(2), erode);
+                boolean periphery = ((BooleanParameter)crit.getParameters()[3]).isSelected();
+                eraseObjectsSNR(objects, in, dilate, images.getMask(), intensityMap, quant, snr.getDoubleValue(2), erode, periphery);
             } else if (idx==1) { //intensity
                 ConditionalParameter signalCond = (ConditionalParameter)crit.getParameters()[0];
                 int sig = ((ChoiceParameter)signalCond.getActionnableParameter()).getSelectedIndex();
@@ -110,22 +131,67 @@ public class EraseSpots implements PostFilter {
                 if (sig==1) quant=1;
                 else if (sig==2) quant = ((SliderDoubleParameter)signalCond.getParameters()[0]).getValue();
                 double erode = -1;
-                if (sig==2) erode = ((SliderDoubleParameter)signalCond.getParameters()[1]).getValue();
-                else erode = ((SliderDoubleParameter)signalCond.getParameters()[0]).getValue();
+                erode = ((SliderDoubleParameter)crit.getParameters()[1]).getValue();
                 if (erode>0 && erode<1 && !isDistanceToPeripherySet) {
                     for (Object3DVoxels o : objects) ImageUtils.setObjectDistancesToPeriphery(o, nbCPUs);
                     isDistanceToPeripherySet=true;
                 }
-                ThresholdParameter thld = (ThresholdParameter)crit.getParameters()[1];
+                ThresholdParameter thld = (ThresholdParameter)crit.getParameters()[3];
                 double thldValue = thld.getThreshold(intensityMap, images, nbCPUs, debug);
-                objects = eraseObjectsIntensity(objects, in, intensityMap, quant, thldValue, erode);
+                boolean periphery = ((BooleanParameter)crit.getParameters()[2]).isSelected();
+                objects = eraseObjectsIntensity(objects, in, intensityMap, quant, thldValue, erode, periphery);
+            } else if (idx==2) { //layer comparison
+                
+                if (!isDistanceToPeripherySet) {
+                    for (Object3DVoxels o : objects) ImageUtils.setObjectDistancesToPeriphery(o, nbCPUs);
+                    isDistanceToPeripherySet=true;
+                }
+                // layer 1
+                GroupParameter l1 = (GroupParameter)crit.getParameters()[1];
+                double l1Min = ((SliderDoubleParameter)l1.getParameters()[0]).getValue();
+                double l1Max = ((SliderDoubleParameter)l1.getParameters()[1]).getValue();
+                ConditionalParameter signalCond1 = (ConditionalParameter)l1.getParameters()[2];
+                int sig1 = ((ChoiceParameter)signalCond1.getActionnableParameter()).getSelectedIndex();
+                double quant1 = -1;
+                if (sig1==1) quant1=1;
+                else if (sig1==2) quant1 = ((SliderDoubleParameter)signalCond1.getParameters()[0]).getValue();
+                
+                //layer 2
+                GroupParameter l2 = (GroupParameter)crit.getParameters()[2];
+                double l2Min = ((SliderDoubleParameter)l2.getParameters()[0]).getValue();
+                double l2Max = ((SliderDoubleParameter)l2.getParameters()[1]).getValue();
+                ConditionalParameter signalCond2 = (ConditionalParameter)l2.getParameters()[2];
+                int sig2 = ((ChoiceParameter)signalCond2.getActionnableParameter()).getSelectedIndex();
+                double quant2 = -1;
+                if (sig2==1) quant2=1;
+                else if (sig2==2) quant2 = ((SliderDoubleParameter)signalCond2.getParameters()[0]).getValue();
+                
+                double thld = ((DoubleParameter)crit.getParameters()[3]).getDoubleValue(1);
+                double dilate = ((DoubleParameter)crit.getParameters()[0]).getDoubleValue(1);
+                
+                objects = eraseObjectsLayerComparison(objects, in, intensityMap, (float)dilate, quant1, l1Min, l1Max, quant2, l2Min, l2Max, thld);
+                
+            } else if (idx==3) { //correlation
+                double dilate = ((DoubleParameter)crit.getParameters()[0]).getDoubleValue(1);
+                ConditionalParameter corrCond = (ConditionalParameter)crit.getParameters()[1];
+                boolean pValue = ((ChoiceParameter)corrCond.getActionnableParameter()).getSelectedIndex()==0;
+                double thld;
+                int corr;
+                int expecting = ((ChoiceParameter)corrCond.getParameters()[0]).getSelectedIndex();
+                thld = ((DoubleParameter)corrCond.getParameters()[1]).getDoubleValue(0.9);
+                if (expecting == 0) corr=1;
+                else if (expecting ==1) corr=-1;
+                else corr=0;
+                
+               
+                objects = eraseObjectsCorrelation(objects, in, intensityMap, (float)dilate, thld, pValue, corr);
             }
         }
         return in;
     }
     
     
-    public void eraseObjectsSNR(ArrayList<Object3DVoxels> objects, ImageInt in, int dilate, ImageInt mask, ImageHandler intensity, double quantile, double thld, double erode) {
+    public void eraseObjectsSNR(ArrayList<Object3DVoxels> objects, ImageInt in, int dilate, ImageInt mask, ImageHandler intensity, double quantile, double thld, double erode, boolean periphery) {
         if (objects.isEmpty()) return;
         // get noise
         Object3DVoxels bcg;
@@ -148,17 +214,20 @@ public class EraseSpots implements PostFilter {
         int count = 0;
         int nbInit=objects.size();
         Object3DVoxels[][] eroded=null;
-        if (erode>0 && erode<1) eroded = ImageUtils.getObjectLayers(objects.toArray(new Object3DVoxels[objects.size()]), new double[][]{{0, 1-erode}}, nbCPUs, debug);
+        if (erode>0 && erode<1) {
+            double[][] layers = periphery? new double[][]{{1-erode, 1}} : new double[][]{{0, 1-erode}};
+            eroded = ImageUtils.getObjectLayers(objects.toArray(new Object3DVoxels[objects.size()]), layers, true, nbCPUs, debug);
+        }
         Iterator<Object3DVoxels> it = objects.iterator();
         while(it.hasNext()) {
             Object3DVoxels o = it.next();
             double I;
             if (quantile<0) {
-                if (eroded!=null) I= eroded[count][0].getPixMeanValue(intensity);
+                if (eroded!=null) I= eroded[count][periphery?1:0].getPixMeanValue(intensity);
                 else I= o.getPixMeanValue(intensity);
             }
             else {
-                if (eroded!=null) I= eroded[count][0].getQuantilePixValue(intensity, quantile);
+                if (eroded!=null) I= eroded[count][periphery?1:0].getQuantilePixValue(intensity, quantile);
                 else I=o.getQuantilePixValue(intensity, quantile);
                 
             }
@@ -173,10 +242,13 @@ public class EraseSpots implements PostFilter {
         if (debug) ij.IJ.log("erase spots: remaining objects: "+objects.size()+"/"+nbInit);
     }
     
-    public ArrayList<Object3DVoxels> eraseObjectsIntensity(ArrayList<Object3DVoxels> objects, ImageInt in, ImageHandler intensity, double quantile, double thld, double erode) {
+    public ArrayList<Object3DVoxels> eraseObjectsIntensity(ArrayList<Object3DVoxels> objects, ImageInt in, ImageHandler intensity, double quantile, double thld, double erode, boolean periphery) {
         if (objects.isEmpty()) return objects;
         Object3DVoxels[][] eroded=null;
-        if (erode>0 && erode<1) eroded = ImageUtils.getObjectLayers(objects.toArray(new Object3DVoxels[objects.size()]), new double[][]{{0, 1-erode}}, nbCPUs, debug);
+        if (erode>0 && erode<1) {
+            double[][] layers = periphery? new double[][]{{1-erode, 1}} : new double[][]{{0, 1-erode}};
+            eroded = ImageUtils.getObjectLayers(objects.toArray(new Object3DVoxels[objects.size()]), layers, true, nbCPUs, debug);
+        }
         if (debug) ij.IJ.log("EraseSpots::nb objects:"+objects.size());
         Iterator<Object3DVoxels> it = objects.iterator();
         int count = 0;
@@ -191,7 +263,7 @@ public class EraseSpots implements PostFilter {
                 if (eroded!=null) I=eroded[count][0].getQuantilePixValue(intensity, quantile);
                 else I=o.getQuantilePixValue(intensity, quantile);
             }
-            if (debug) ij.IJ.log("EraseSpots::Intensity::spot:"+o.getValue()+ " intensity:"+I+ " thld:"+thld+ (I<thld?"erased":"") + "count:"+count);
+            if (debug) ij.IJ.log("EraseSpots::Intensity::spot:"+o.getValue()+ " intensity: "+I+ " thld:"+thld+ (I<thld?"erased":"") + "count:"+count);
             if (I<thld) {
                 o.draw(in, 0);
                 it.remove();
@@ -200,7 +272,99 @@ public class EraseSpots implements PostFilter {
         }
         return objects;
     }
+    
+    public ArrayList<Object3DVoxels> eraseObjectsLayerComparison(ArrayList<Object3DVoxels> objects, ImageInt in, ImageHandler intensity, float dilate, double quantileL1, double l1Min, double l1Max, double quantileL2, double l2Min, double l2Max, double thld) {
+        if (objects.isEmpty()) return objects;
+        Object3DVoxels[] dilObjects=null;
+        if (dilate>0) {
+            dilObjects = new Object3DVoxels[objects.size()];
+            int idx = 0;
+            for (Object3DVoxels o : objects) {
+                dilObjects[idx] = o.dilate(dilate, in, nbCPUs);
+                ImageUtils.setObjectDistancesToPeriphery(dilObjects[idx], nbCPUs);
+                idx++;
+            }
+            if (debug) {
+                ImageInt objDilate = (ImageInt) ImageInt.newBlankImageHandler("dilated objects", in);
+                for (Object3DVoxels o : dilObjects) o.draw(objDilate);
+                objDilate.show();
+            }
+        }
+        
+        double[][] layers = new double[][]{{l1Min, l1Max}, {l2Min, l2Max}};
+        Object3DVoxels[][] objectLayers = ImageUtils.getObjectLayers(dilate>0?dilObjects:objects.toArray(new Object3DVoxels[objects.size()]), layers, true, nbCPUs, debug);
+        
+        if (debug) ij.IJ.log("EraseSpots::nb objects:"+objects.size());
+        Iterator<Object3DVoxels> it = objects.iterator();
+        int count = 0;
+        while(it.hasNext()) {
+            Object3DVoxels o = it.next();
+            double I1;
+            if (quantileL1<0) I1 = objectLayers[count][0].getPixMeanValue(intensity);
+            else I1=objectLayers[count][0].getQuantilePixValue(intensity, quantileL1);
+            double I2;
+            if (quantileL2<0) I2 = objectLayers[count][1].getPixMeanValue(intensity);
+            else I2=objectLayers[count][1].getQuantilePixValue(intensity, quantileL2);
+            
+            if (debug) ij.IJ.log("EraseSpots::Intensity::spot:"+o.getValue()+ " intensity layer 1: "+I1+ " intensity Layer 2: "+I2+ "I1/I2: "+I1/I2+ " threshold: "+thld);
+            if (I2>0 && I1/I2>thld) {
+                o.draw(in, 0);
+                it.remove();
+            }
+            count++;
+        }
+        return objects;
+    }
 
+    public ArrayList<Object3DVoxels> eraseObjectsCorrelation(ArrayList<Object3DVoxels> objects, ImageInt in, ImageHandler intensity, float dilate, double thld, boolean pValue, int tail) {
+        if (objects.isEmpty()) return objects;
+        Object3DVoxels[] dilObjects=null;
+        if (dilate>0) {
+            dilObjects = new Object3DVoxels[objects.size()];
+            int idx = 0;
+            for (Object3DVoxels o : objects) {
+                dilObjects[idx] = o.dilate(dilate, in, nbCPUs);
+                ImageUtils.setObjectDistancesToPeriphery(dilObjects[idx], nbCPUs);
+                idx++;
+            }
+            if (debug) {
+                ImageInt objDilate = (ImageInt) ImageInt.newBlankImageHandler("dilated objects", in);
+                for (Object3DVoxels o : dilObjects) o.draw(objDilate);
+                objDilate.show();
+            }
+        }if (debug) ij.IJ.log("EraseSpots::nb objects:"+objects.size());
+        Iterator<Object3DVoxels> it = objects.iterator();
+        int count = 0;
+        while(it.hasNext()) {
+            Object3DVoxels o = it.next();
+            Object3DVoxels dilO = dilate>0?dilObjects[count]:o;
+            float[] values = dilO.getValueArray(intensity);
+            float[] distances = new float[values.length];
+            int idx=0;
+            for (Voxel3D v : dilO.getVoxels()) distances[idx++] = (float)v.getValue();
+            if (pValue) {
+                double[] res = SpearmanPairWiseCorrelationTest.performTest(values, distances, tail, 5000);
+                if (res[1]>thld) {
+                    o.draw(in, 0);
+                    it.remove();
+                }
+                if (debug) ij.IJ.log("EraseSpots::Correlation::spot:"+o.getValue()+ " rho: "+res[0]+ "p-value: "+ res[1]*1000 +"*10-3 thld: "+thld+ (res[1]>thld?"erased":"") + "count:"+count);
+                
+            } else {
+                double rho = SpearmanPairWiseCorrelationTest.computeRho(SpearmanPairWiseCorrelationTest.computeD2(values, distances), distances.length);
+                boolean erase=false;
+                if ((tail>0 && rho>=thld) || (tail<0&& rho<=thld) || (tail==0 && rho>=Math.abs(rho) ) ) {
+                    o.draw(in, 0);
+                    it.remove();
+                    erase=true;
+                } 
+                if (debug) ij.IJ.log("EraseSpots::Correlation::spot:"+o.getValue()+ " rho: "+rho+" thld: "+thld+ (erase?"erased":"") + "count:"+count);
+            }
+            count++;
+        }
+        return objects;
+    }
+    
     @Override
     public void setVerbose(boolean debug) {
         this.debug=debug;

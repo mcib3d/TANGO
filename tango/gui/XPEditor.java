@@ -31,7 +31,7 @@ import tango.helper.RetrieveHelp;
 import tango.mongo.MongoConnector;
 import tango.parameter.*;
 import tango.plugin.sampler.SampleRunner;
-import tango.util.utils;
+import tango.util.Utils;
 
 /**
  *
@@ -125,7 +125,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         
         getFolders();
         String folder = Prefs.get(MongoConnector.getPrefix() + "_" + Core.mongoConnector.getUserName() + "_folder.String", "");
-        if (folders.getItemCount() > 0 && utils.contains(folders, folder, true)) {
+        if (folders.getItemCount() > 0 && Utils.contains(folders, folder, true)) {
             folders.setSelectedItem(folder);
             setProject(folder);
         }
@@ -290,7 +290,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         getXPs();
         if (experiments.getItemCount() > 0 && init) {
             String defaultXP = (String) Prefs.get(MongoConnector.getPrefix() + "_" + Core.mongoConnector.getUserName() + "_xp.String", "");
-            if (defaultXP.length() > 0 && utils.contains(experiments, defaultXP, true)) {
+            if (defaultXP.length() > 0 && Utils.contains(experiments, defaultXP, true)) {
                 experiments.setSelectedItem(defaultXP);
                 setXP(defaultXP);
             } else toggleEnableButtons(true, false);
@@ -726,7 +726,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
     private void newExperimentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newExperimentActionPerformed
         String name = JOptionPane.showInputDialog("Experiment Name");
         if (name==null) return;
-        if (utils.isValid(name, false) && !utils.contains(experiments, name, false)) {
+        if (Utils.isValid(name, false) && !Utils.contains(experiments, name, false)) {
             Core.mongoConnector.createExperiment(name);
             getXPs();
             experiments.setSelectedItem(name);
@@ -738,11 +738,11 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
 
     private void renameExperimentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameExperimentActionPerformed
         if (experiments.getSelectedIndex() >= 0) {
-            String old_name = utils.getSelectedString(experiments);
+            String old_name = Utils.getSelectedString(experiments);
             String name = JOptionPane.showInputDialog("Rename Experiment from:" + old_name + " to:", old_name);
             //IJ.log("rename XP debug:: xp source:"+old_name+ " destination :"+name);
             if (name==null || name.equals(old_name)) return;
-            if (utils.isValid(name, false) && !utils.contains(experiments, name, false)) {
+            if (Utils.isValid(name, false) && !Utils.contains(experiments, name, false)) {
                 //IJ.log("rename XP debug::process...");
                 Core.mongoConnector.renameExperiment(old_name, name);
                 //IJ.log("rename XP debug::OK");
@@ -770,7 +770,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
     private void newFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newFolderActionPerformed
         String name = JOptionPane.showInputDialog("Project Name (no special chars)");
         if (name==null) return;
-        if (!utils.isValid(name, false)) {
+        if (!Utils.isValid(name, false)) {
             IJ.error("Invalid name (no speical chars allowed)");
             return;
         }
@@ -778,7 +778,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
             IJ.error("Name is too long");
             return;
         }
-        if (!utils.contains(folders, name, false)) {
+        if (!Utils.contains(folders, name, false)) {
             Core.mongoConnector.createProject(name);
             getFolders();
             folders.setSelectedItem(name);
@@ -804,7 +804,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
     private void duplicateExperimentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duplicateExperimentActionPerformed
         if (experiments.getSelectedIndex() >= 0) {
             //String[] dest = TextChoiceJOptionPane.showInputDialog("Enter Name and Destination Set:", Core.mongoConnector.getProjects());
-            DuplicateXP d = DuplicateXPOptionPane.showInputDialog(core,"Duplicate Experiment:", Core.mongoConnector.getProjects(), utils.getSelectedString(experiments));
+            DuplicateXP d = DuplicateXPOptionPane.showInputDialog(core,"Duplicate Experiment:", Core.mongoConnector.getProjects(), Utils.getSelectedString(experiments));
             if (d == null) {
                 return;
             }
