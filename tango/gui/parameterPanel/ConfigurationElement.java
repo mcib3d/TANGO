@@ -1,11 +1,10 @@
 package tango.gui.parameterPanel;
 
-import com.mongodb.BasicDBObject;
-import java.awt.Choice;
-import java.awt.event.ItemEvent;
-import java.util.Set;
-import tango.plugin.segmenter.NucleusSegmenter;
-import tango.plugin.PluginFactory;
+import tango.gui.parameterPanel.MultiParameterPanel;
+import tango.gui.parameterPanel.ParameterPanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
 /**
  *
  **
@@ -31,31 +30,13 @@ import tango.plugin.PluginFactory;
  *
  * @author Jean Ollion
  */
-public class NucleiSegmenterPanel extends ParameterPanelPlugin {
+public class ConfigurationElement extends ConfigurationElementAbstract {
     
-    public NucleiSegmenterPanel() {
-        super();
+    public ConfigurationElement(ParameterPanel parameterPanel, int idx) {
+        super(parameterPanel);
+        
+        parameterPanel.setIdx(idx);
+        updateValidity();
     }
 
-    @Override
-    public Set<String> getMethods() {
-        return PluginFactory.getNucleiSegmenterList();
-    }
-
-    @Override
-    protected void getPlugin(String method) {
-        plugin = PluginFactory.getNucleiSegmenter(method);
-    }
-
-    @Override
-    public String getMPPLabel() {
-        return this.curMethod;
-    }
-    
-    @Override
-    public void itemStateChanged(ItemEvent ie) {
-    }
-    
-    @Override
-    protected void registerChannelParameters() {}
 }

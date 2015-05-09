@@ -111,6 +111,6 @@ public class VirtualStructurePanel extends ParameterPanel {
     
     @Override
     public boolean checkValidity() {
-        return name.isValidOrNotCompulsary() && pcColoc.isValidOrNotCompulsary() && this.outputStructure.isValidOrNotCompulsary() && this.outputType.isValidOrNotCompulsary() && this.structures.isValidOrNotCompulsary();
+        return Parameter.isValidOrNotCompulsary(parameters);
     }
 }

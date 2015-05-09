@@ -14,6 +14,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.ColorModel;
 import java.util.ArrayList;
 import java.util.Collections;
+import javax.swing.ImageIcon;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageByte;
@@ -47,6 +48,24 @@ import mcib3d.image3d.ImageShort;
  * @author Jean Ollion
  */
 public class ImageUtils {
+    public static ImageIcon edit, editDiff, editError, add, remove, up, down, test;
+    
+    private static ImageIcon getIcon(String URL) {
+        ImageIcon icon = new ImageIcon(ImageUtils.class.getResource(URL));
+        Image img = icon.getImage() ;  
+        Image newimg = img.getScaledInstance( 16, 16,  java.awt.Image.SCALE_SMOOTH ) ;  
+        return new ImageIcon( newimg );
+    }
+    public static void initIcons() {
+        edit = getIcon("/tango/icons/edit.png");
+        editDiff = getIcon("/tango/icons/edit_diff.png");
+        editError = getIcon("/tango/icons/edit_error.png");
+        add = getIcon("/tango/icons/add.png");
+        remove = getIcon("/tango/icons/remove.png");
+        up = getIcon("/tango/icons/up.png");
+        down = getIcon("/tango/icons/down.png");
+        test = getIcon("/tango/icons/test.png");
+    }
     
     public static void zoom(ImagePlus image, double magnitude) {
         ImageCanvas ic = image.getCanvas();

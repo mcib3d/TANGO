@@ -63,7 +63,7 @@ public class ChannelImagePanel extends ParameterPanel {
 
     @Override
     public String getMPPLabel() {
-        return keyword.getText();
+        return "Channel Image: "+idx+ " | " + keyword.getText();
     }
     
     public String getName() {

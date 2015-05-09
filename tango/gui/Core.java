@@ -21,6 +21,7 @@ import tango.helper.Helper;
 import tango.mongo.MongoConnector;
 import tango.parameter.SettingsParameter;
 import tango.plugin.PluginFactory;
+import tango.util.ImageUtils;
 import tango.util.Progressor;
 /**
  *
@@ -83,6 +84,7 @@ public class Core extends JFrame implements Displayer {
         init();
         selectedTab = 0;
         experimentModifiedFromAnalyzer = true;
+        if (GUIMode) ImageUtils.initIcons();
     }
     
     public static boolean experimentModifiedFromAnalyzer() {

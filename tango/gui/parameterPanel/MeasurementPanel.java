@@ -139,10 +139,10 @@ public class MeasurementPanel extends ParameterPanelPlugin  {
     public String getMPPLabel() {
         if (plugin instanceof MeasurementStructure) {
             int[] s = ((MeasurementStructure)plugin).getStructures();
-            return "Structures: "+MeasurementKey.arrayToString(s);
+            return curMethod+ " | Structures: "+MeasurementKey.arrayToString(s);
         } else if (plugin instanceof MeasurementObject) {
             int s = ((MeasurementObject)plugin).getStructure();
-            return "Structure: "+s;
+            return curMethod+" | Structure: "+s;
         }
         return null;
     }

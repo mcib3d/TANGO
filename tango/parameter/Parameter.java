@@ -380,5 +380,14 @@ public abstract class Parameter implements MouseListener {
         }
         return ids;
     }
+    
+    public static boolean isValidOrNotCompulsary(Parameter[] parameters) {
+        boolean res = true;
+        for (Parameter p : parameters) {
+            res = res && p.isValidOrNotCompulsary();
+            if (!res) return res;
+        }
+        return res;
+    }
 
 }

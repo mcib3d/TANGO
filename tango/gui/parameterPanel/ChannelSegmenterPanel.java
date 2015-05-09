@@ -57,6 +57,6 @@ public class ChannelSegmenterPanel extends ParameterPanelPlugin {
 
     @Override
     public String getMPPLabel() {
-        return "";
+        return this.curMethod;
     }
 }

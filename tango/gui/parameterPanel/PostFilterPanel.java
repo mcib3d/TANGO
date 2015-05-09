@@ -56,7 +56,7 @@ public class PostFilterPanel extends ParameterPanelPlugin {
 
     @Override
     public String getMPPLabel() {
-        return "";
+        return this.curMethod;
     }
     
 }

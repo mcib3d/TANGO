@@ -15,10 +15,7 @@ import tango.gui.util.Displayer;
 import tango.gui.util.PanelElementAbstract;
 import tango.gui.util.PanelElementMono;
 import tango.helper.Helper;
-import tango.plugin.filter.PostFilter;
-import tango.plugin.filter.PreFilter;
-import tango.plugin.segmenter.NucleusSegmenter;
-import tango.plugin.segmenter.SpotSegmenter;
+
 /**
  *
  **

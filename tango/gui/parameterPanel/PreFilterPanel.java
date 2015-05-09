@@ -56,7 +56,7 @@ public class PreFilterPanel extends ParameterPanelPlugin {
 
     @Override
     public String getMPPLabel() {
-        return "";
+        return this.curMethod;
     }
     
 }

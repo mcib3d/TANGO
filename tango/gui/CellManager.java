@@ -23,9 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import mcib3d.geom.*;
-import mcib3d.image3d.ImageByte;
-import mcib3d.image3d.ImageFloat;
 import tango.spatialStatistics.StochasticProcess.RandomPoint3DGenerator;
 import tango.spatialStatistics.StochasticProcess.RandomPoint3DGeneratorUniform;
 import mcib3d.image3d.ImageHandler;
@@ -349,13 +346,13 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
             Image5D raw = c.getImage5D(true);
             
             raw.show();
-            //raw.getCanvas().setMagnification(3);
             ImageUtils.zoom(raw, core.getConnector().magnitude.getDoubleValue(2));
-            //raw.getCanvas().zoomIn(raw.getWidth() * 6, raw.getHeight() * 6);
-            Image5D seg = c.getImage5D(false);
-            seg.show();
-            ImageUtils.zoom(seg, core.getConnector().magnitude.getDoubleValue(2));
-            //seg.getCanvas().zoomIn(seg.getWidth() * 6, seg.getHeight() * 6);
+            
+            if (Connector.openSegmentedImages.isSelected()) {
+                Image5D seg = c.getImage5D(false);
+                seg.show();
+                ImageUtils.zoom(seg, core.getConnector().magnitude.getDoubleValue(2));
+            }
 
         } catch (Exception e) {
             exceptionPrinter.print(e, "show channel", Core.GUIMode);
@@ -377,19 +374,19 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
     
     private void openStructure(AbstractStructure ass) {
         try {
-            ImageHandler S = ass.getSegmented();
-            if (S != null) {
-                
-                S.show();
-                ImageUtils.zoom(S.getImagePlus(), core.getConnector().magnitude.getDoubleValue(2));
-            }
-            if (ass instanceof Structure) {
-                ImageHandler sp = ((Structure) ass).getProbabilityMap();
-                if (sp != null) {
-                    sp.show();
-                    ImageUtils.zoom(sp.getImagePlus(), core.getConnector().magnitude.getDoubleValue(2));
+            if (Connector.openSegmentedImages.isSelected()) {
+                ImageHandler S = ass.getSegmented();
+                if (S != null) {
+                    S.show();
+                    ImageUtils.zoom(S.getImagePlus(), core.getConnector().magnitude.getDoubleValue(2));
                 }
-                //((Structure) ass).showContours();
+                if (ass instanceof Structure) {
+                    ImageHandler sp = ((Structure) ass).getProbabilityMap();
+                    if (sp != null) {
+                        sp.show();
+                        ImageUtils.zoom(sp.getImagePlus(), core.getConnector().magnitude.getDoubleValue(2));
+                    }
+                }
             }
             if (!(ass instanceof VirtualStructure)) {
                 ImageHandler raw = ass.getRaw();

@@ -53,33 +53,39 @@ public class Connector extends javax.swing.JPanel {
     Core core;
     boolean connecting;
     String currentUser;
-    public DoubleParameter magnitude = new DoubleParameter("Zoom Magnitude:", "zoom", 2d, Parameter.nfDEC1);
+    public DoubleParameter magnitude = new DoubleParameter("Zoom Magnitude:", "zoom", 4d, Parameter.nfDEC1);
     public static SliderParameter maxThreads = new SliderParameter("Max Threads:", "maxThreads", 1, Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors());
     public static SliderParameter maxCellsProcess = new SliderParameter("Max Cells (process):", "maxCellsProcess", 1, Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors());
     public static SliderParameter maxCellsMeasure = new SliderParameter("Max Cells (measure):", "maxCellsMeasure", 1, Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors());
     public static BooleanParameter recordWindowsPosition = new BooleanParameter("Record Cell Image Windows Position:", "windowPos", true);
     public static ChoiceParameter roiColor = new ChoiceParameter("ROI Color", "RoiColor", new String[]{"Red", "Yellow", "Blue", "Green"}, "Red"); //, "Structure Color"
+    public static BooleanParameter openSegmentedImages = new BooleanParameter("Open Segmented Images:", "openSegmentedImages", true);
     
     //public BooleanParameter multithreadProcess = new BooleanParameter("Multithread Cell Process", "multithreadProcess", true);
-    Parameter[] parameters = new Parameter[]{magnitude, maxThreads, maxCellsProcess, maxCellsMeasure, recordWindowsPosition, roiColor};
+    Parameter[] parameters = new Parameter[]{maxThreads, maxCellsProcess, maxCellsMeasure, magnitude,recordWindowsPosition, roiColor, openSegmentedImages};
+    Parameter[] parametersGeneral = new Parameter[] {maxThreads, maxCellsProcess, maxCellsMeasure};
+    Parameter[] parametersImage = new Parameter[]{magnitude,recordWindowsPosition, roiColor, openSegmentedImages};
     public GroupParameter options = new GroupParameter("Options", "options", parameters);
-
+    
     public Connector(Core core) {
         this.core = core;
         initComponents();
-        options.setHelp("General options. Saved For the current user", true);
+        
+        //options.setHelp("General options. Saved For the current user", true);
         magnitude.setHelp("Zoom magnitude factor when opening cell images (buttons overlay/ open structures)", true);
         maxThreads.setHelp("Limits the maximium number of threads used dureing process & measurements", true);
         maxCellsProcess.setHelp("During cell process: one cell is processed by one thread. If this causes out of memory errors, lower this value", true);
         maxCellsMeasure.setHelp("During cell quantifications: one cell is processed by one thread. If this causes out of memory errors, lower this value", true);
         recordWindowsPosition.setHelp("Record cell image windows position when browsing cells in the data tab.", true);
         roiColor.setHelp("Color of displayed ROIs (Region-Of-Interest, contours of objects) on the active image. ", true); //If Structure Color is selected, the color of the ROI will be the color of the corresponding structure
+        openSegmentedImages.setHelp("If selected, when displaying an image both the raw and segmented images will be opened, if no only the raw image will be opened", true);
         toggleEnableButtons(false, false);
-        JPanel mainSettingsPanel = new JPanel(new FlowLayout());
-        options.addToContainer(mainSettingsPanel);
-        this.optionPanel.add(mainSettingsPanel);
-        optionPanel.repaint();
-        optionPanel.revalidate();
+        //JPanel mainSettingsPanel = new JPanel(new FlowLayout());
+        //options.addToContainer(mainSettingsPanel);
+        //this.optionPanel.add(mainSettingsPanel);
+        for (Parameter p : parametersGeneral) p.addToContainer(optionPanel);
+        for (Parameter p : parametersImage) p.addToContainer(optionImagePanel);
+        
     }
     
     private String trim(String s, int size) {
@@ -253,6 +259,7 @@ public class Connector extends javax.swing.JPanel {
         exportSettings = new javax.swing.JButton();
         importSettings = new javax.swing.JButton();
         optionPanel = new javax.swing.JPanel();
+        optionImagePanel = new javax.swing.JPanel();
 
         setMaximumSize(new java.awt.Dimension(1024, 600));
         setMinimumSize(new java.awt.Dimension(1024, 600));
@@ -417,7 +424,7 @@ public class Connector extends javax.swing.JPanel {
                 .addComponent(exportData)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(importData)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         exportImportPCPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Import/Export Processing Chains"));
@@ -452,12 +459,14 @@ public class Connector extends javax.swing.JPanel {
             .addGroup(exportImportPCPanelLayout.createSequentialGroup()
                 .addComponent(exportSettings)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(importSettings)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addComponent(importSettings))
         );
 
         optionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("General Options"));
-        optionPanel.setLayout(new java.awt.GridLayout());
+        optionPanel.setLayout(new javax.swing.BoxLayout(optionPanel, javax.swing.BoxLayout.PAGE_AXIS));
+
+        optionImagePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Image Display Options"));
+        optionImagePanel.setLayout(new javax.swing.BoxLayout(optionImagePanel, javax.swing.BoxLayout.PAGE_AXIS));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -465,15 +474,15 @@ public class Connector extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(optionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(connectionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(ExportImportPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(exportImportPCPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(469, Short.MAX_VALUE))
+                .addComponent(connectionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(ExportImportPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(exportImportPCPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(optionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(optionImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -481,39 +490,20 @@ public class Connector extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(ExportImportPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(optionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exportImportPCPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(connectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(optionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                        .addComponent(optionImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(connectionPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(ExportImportPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(exportImportPCPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(322, 322, 322))))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectActionPerformed
-        connect();
-    }//GEN-LAST:event_connectActionPerformed
-
-    private void newUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newUserActionPerformed
-        String name = JOptionPane.showInputDialog("Username (no special char):");
-        if (name==null) return;
-        if (!Utils.isValid(name, false)) {
-            IJ.error("Name should not contain any special character");
-            return;
-        }
-        if (Utils.contains(usernames, name, false)) {
-            IJ.error("Name should not contain any special character");
-            return;
-        }
-        if (name.length()>15) {
-            IJ.error("Name should be shorter than 15 characters");
-            return;
-        }
-        Core.mongoConnector.setUser(name, true);
-        getUsers();
-        setUser(name);
-    }//GEN-LAST:event_newUserActionPerformed
 
     private void exportDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportDataActionPerformed
         if (Core.mongoConnector == null || !Core.mongoConnector.isConnected()) {
@@ -595,24 +585,13 @@ public class Connector extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_importSettingsActionPerformed
 
-    private void usernamesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_usernamesItemStateChanged
-        if (connecting) {
-            return;
+    private void websiteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_websiteButtonActionPerformed
+        try {
+            BrowserLauncher.openURL("http://biophysique.mnhn.fr/tango/HomePage");
+        } catch (IOException ex) {
+            Logger.getLogger(Connector.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (evt.getStateChange() == 1) {
-            String name = (String) usernames.getSelectedItem();
-            if (name != null) {
-                setUser(name);
-            }
-        }
-    }//GEN-LAST:event_usernamesItemStateChanged
-    
-    private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
-        if (Core.helper != null) {
-            Core.helper.close();
-        }
-        Core.helper = new Helper(core);
-    }//GEN-LAST:event_helpButtonActionPerformed
+    }//GEN-LAST:event_websiteButtonActionPerformed
 
     private void deleteUsrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteUsrActionPerformed
         if (this.currentUser == null) {
@@ -626,18 +605,53 @@ public class Connector extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_deleteUsrActionPerformed
 
-    private void websiteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_websiteButtonActionPerformed
-        try {
-            BrowserLauncher.openURL("http://biophysique.mnhn.fr/tango/HomePage");
-        } catch (IOException ex) {
-            Logger.getLogger(Connector.class.getName()).log(Level.SEVERE, null, ex);
+    private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
+        if (Core.helper != null) {
+            Core.helper.close();
         }
-    }//GEN-LAST:event_websiteButtonActionPerformed
+        Core.helper = new Helper(core);
+    }//GEN-LAST:event_helpButtonActionPerformed
+
+    private void newUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newUserActionPerformed
+        String name = JOptionPane.showInputDialog("Username (no special char):");
+        if (name==null) return;
+        if (!Utils.isValid(name, false)) {
+            IJ.error("Name should not contain any special character");
+            return;
+        }
+        if (Utils.contains(usernames, name, false)) {
+            IJ.error("Name should not contain any special character");
+            return;
+        }
+        if (name.length()>15) {
+            IJ.error("Name should be shorter than 15 characters");
+            return;
+        }
+        Core.mongoConnector.setUser(name, true);
+        getUsers();
+        setUser(name);
+    }//GEN-LAST:event_newUserActionPerformed
+
+    private void usernamesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_usernamesItemStateChanged
+        if (connecting) {
+            return;
+        }
+        if (evt.getStateChange() == 1) {
+            String name = (String) usernames.getSelectedItem();
+            if (name != null) {
+                setUser(name);
+            }
+        }
+    }//GEN-LAST:event_usernamesItemStateChanged
+
+    private void connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectActionPerformed
+        connect();
+    }//GEN-LAST:event_connectActionPerformed
 
     private void hostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hostActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_hostActionPerformed
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel ExportImportPanel;
     private javax.swing.JButton connect;
@@ -654,6 +668,7 @@ public class Connector extends javax.swing.JPanel {
     private javax.swing.JButton importData;
     private javax.swing.JButton importSettings;
     private javax.swing.JButton newUser;
+    private javax.swing.JPanel optionImagePanel;
     private javax.swing.JPanel optionPanel;
     private javax.swing.JLabel userLabel;
     private javax.swing.JComboBox usernames;

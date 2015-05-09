@@ -85,7 +85,7 @@ public class StructurePanel extends ParameterPanel {
 
     @Override
     public String getMPPLabel() {
-        return " "+ idx+": "+name.getText();
+        return "Structure: "+ idx+" | "+name.getText();
     }
     
     

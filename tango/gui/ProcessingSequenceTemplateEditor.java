@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import tango.gui.parameterPanel.ConfigurationList;
+import tango.gui.parameterPanel.ConfigurationListMaster;
 import tango.gui.util.*;
 import tango.helper.HelpManager;
 import tango.helper.Helper;
@@ -60,19 +62,24 @@ import tango.util.Utils;
 public abstract class ProcessingSequenceTemplateEditor  implements ActionListener {
     protected JPanel controlPanel;
     protected JComboBox processingSequences;
-    protected MultiParameterPanel<PreFilterPanel> preFilterPanel;
-    protected MultiParameterPanel<? extends ParameterPanelPlugin> segmenterPanel;
-    protected MultiParameterPanel<PostFilterPanel> postFilterPanel;
+    protected ConfigurationList<PreFilterPanel> preFilterPanel;
+    protected ConfigurationList<? extends ParameterPanelPlugin> segmenterPanel;
+    protected ConfigurationList<PostFilterPanel> postFilterPanel;
     protected Core core;
     protected BasicDBObject data;
     protected String currentProcessingSequence;
     protected boolean populatingProcessingSequences;
     protected ProcessingSequenceManagerLayout layout;
+    protected ProcessingSequenceEditorLayout layoutEditor;
     protected JButton newPS, rename ,duplicate, remove, save;
     protected Helper ml;
+    protected ConfigurationListMaster master;
     public ProcessingSequenceTemplateEditor(Core main) {
         this.core=main;
-        this.layout = new ProcessingSequenceManagerLayout(main, getTitle());
+        this.layout = new ProcessingSequenceManagerLayout(getTitle());
+        this.layoutEditor=new ProcessingSequenceEditorLayout(main);
+        layout.editPanel.add(layoutEditor);
+        this.master = new ConfigurationListMaster(layoutEditor, layoutEditor.choicePanel);
         try {
             init();
         } catch (Exception e) {
@@ -86,9 +93,9 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
         hm.objectIDs.put(duplicate, new ID(RetrieveHelp.editPSPage, "Duplicate"));
         hm.objectIDs.put(remove, new ID(RetrieveHelp.editPSPage, "Remove"));
         hm.objectIDs.put(save, new ID(RetrieveHelp.editPSPage, "Save"));
-        hm.objectIDs.put(layout.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
-        hm.objectIDs.put(layout.segmentationPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
-        hm.objectIDs.put(layout.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
+        hm.objectIDs.put(layoutEditor.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
+        hm.objectIDs.put(layoutEditor.segPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
+        hm.objectIDs.put(layoutEditor.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
     }
     
     public void register(Helper ml) {
@@ -202,8 +209,8 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
             if (this.ml!=null) unRegister(ml);
             createMultiPanels();
             register(Core.helper);
-            layout.hidePanel();
-            layout.showListPanels(this.preFilterPanel.getPanel(), this.segmenterPanel.getPanel(), this.postFilterPanel.getPanel());
+            layoutEditor.hidePanel();
+            //layout.showListPanels(this.preFilterPanel.getPanel(), this.segmenterPanel.getPanel(), this.postFilterPanel.getPanel());
             populatingProcessingSequences=false;
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
@@ -296,7 +303,7 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
             if (name!=null && name.length()>0) {
                 if (JOptionPane.showConfirmDialog(controlPanel, "Remove selected Processing Sequence?", "tango", JOptionPane.OK_CANCEL_OPTION)==0) {
                     remove(name);
-                    layout.hidePanel();
+                    layoutEditor.hidePanel();
                     get();
                     core.updateSettings();
                 }

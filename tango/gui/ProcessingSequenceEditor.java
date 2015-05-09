@@ -65,20 +65,25 @@ public class ProcessingSequenceEditor  implements ActionListener {
     int currentStructure=0;
     BasicDBObject currentTemplate;
     protected JComboBox template;
-    protected MultiParameterPanel<PreFilterPanel> preFilterPanel, templatePreFilterPanel;
-    protected MultiParameterPanel<ChannelSegmenterPanel> structureSegmenterPanel, templateStructureSegmenterPanel;
-    protected MultiParameterPanel<NucleiSegmenterPanel> nucleusSegmenterPanel, templateNucleusSegmenterPanel;
-    protected MultiParameterPanel<PostFilterPanel> postFilterPanel, templatePostFilterPanel;
+    protected ConfigurationList<PreFilterPanel> preFilterPanel, templatePreFilterPanel;
+    protected ConfigurationList<ChannelSegmenterPanel> structureSegmenterPanel, templateStructureSegmenterPanel;
+    protected ConfigurationList<NucleiSegmenterPanel> nucleusSegmenterPanel, templateNucleusSegmenterPanel;
+    protected ConfigurationList<PostFilterPanel> postFilterPanel, templatePostFilterPanel;
+    protected ConfigurationListMaster master;
     protected Core core;
     protected BasicDBObject data;
     protected boolean populatingTemplates, populatingStructures;
+    protected ProcessingSequenceEditorLayout layoutEditor;
     protected ProcessingSequenceManagerLayout layout;
     protected JButton copyFromTemplate, copyToTemplate ,createNewTemplate, save, test;
     protected JLabel structureLabel, templateLabel;
     protected Helper ml;
     public ProcessingSequenceEditor(Core main) {
         this.core=main;
-        this.layout = new ProcessingSequenceManagerLayout(main, "Current Structures");
+        this.layout = new ProcessingSequenceManagerLayout("Current Structures");
+        this.layoutEditor = new ProcessingSequenceEditorLayout(main);
+        layout.editPanel.add(layoutEditor);
+        this.master = new ConfigurationListMaster(layoutEditor, layoutEditor.choicePanel);
         try {
             init();
         } catch (Exception e) {
@@ -94,9 +99,9 @@ public class ProcessingSequenceEditor  implements ActionListener {
         hm.objectIDs.put(test, new ID(RetrieveHelp.editPSPage, "Test"));
         hm.objectIDs.put(structureLabel, new ID(RetrieveHelp.editPSPage, "Choose_Structure"));
         hm.objectIDs.put(templateLabel, new ID(RetrieveHelp.editPSPage, "Choose_Template"));
-        hm.objectIDs.put(layout.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
-        hm.objectIDs.put(layout.segmentationPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
-        hm.objectIDs.put(layout.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
+        hm.objectIDs.put(layoutEditor.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
+        hm.objectIDs.put(layoutEditor.segPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
+        hm.objectIDs.put(layoutEditor.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
     }
     
     public void register(Helper ml) {
@@ -228,12 +233,14 @@ public class ProcessingSequenceEditor  implements ActionListener {
     }
     
     protected void createMultiPanels() {
+        layoutEditor.flush();
+        master.flush();
         //ij.IJ.log("prefilters dataPF:"+(dataPF.get("preFilters")));
         try {
-            this.preFilterPanel=new MultiParameterPanel<PreFilterPanel> (core, getPreFilters(), 0, 10, layout.preFilterPanel.getMinimumSize(), layout, true, PreFilterPanel.class);
-            if (this.currentStructure>0) this.structureSegmenterPanel=new MultiParameterPanel<ChannelSegmenterPanel> (core, getSegmentation(), 1, 1, layout.segmentationPanel.getMinimumSize(), layout, true, ChannelSegmenterPanel.class);
-            else this.nucleusSegmenterPanel=new MultiParameterPanel<NucleiSegmenterPanel> (core, getSegmentation(), 1, 1, layout.segmentationPanel.getMinimumSize(), layout, true, NucleiSegmenterPanel.class);
-            this.postFilterPanel=new MultiParameterPanel<PostFilterPanel> (core, getPostFilters(), 0,10, layout.postFilterPanel.getMinimumSize(), layout, true, PostFilterPanel.class);
+            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layoutEditor.preFilterList, layoutEditor.preFilterButtonPanel , false, false, PreFilterPanel.class);
+            if (this.currentStructure>0) this.structureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, ChannelSegmenterPanel.class);
+            else this.nucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, NucleiSegmenterPanel.class);
+            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layoutEditor.postFilterList, layoutEditor.postFilterButtonPanel , false, false, PostFilterPanel.class);
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }
@@ -264,8 +271,8 @@ public class ProcessingSequenceEditor  implements ActionListener {
                 currentTemplate=null;
             }
             register(Core.helper);
-            layout.hidePanel();
-            layout.showListPanels(this.preFilterPanel.getPanel(), currentStructure==0?this.nucleusSegmenterPanel.getPanel():this.structureSegmenterPanel.getPanel(), this.postFilterPanel.getPanel());
+            //layout.hidePanel();
+            //layout.showListPanels(this.preFilterPanel.getPanel(), currentStructure==0?this.nucleusSegmenterPanel.getPanel():this.structureSegmenterPanel.getPanel(), this.postFilterPanel.getPanel());
             populatingStructures=false;
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
@@ -329,10 +336,10 @@ public class ProcessingSequenceEditor  implements ActionListener {
         else currentTemplate=getTemplate(name);
         if (data!=null) data.append("name", name);
         if (currentTemplate!=null) {
-            this.templatePreFilterPanel=new MultiParameterPanel<PreFilterPanel> (core, (DBObject)currentTemplate.get("preFilters"), 0, 10, layout.preFilterPanel.getMinimumSize(), layout, true, PreFilterPanel.class);
-            if (this.currentStructure>0) this.templateStructureSegmenterPanel=new MultiParameterPanel<ChannelSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), 1, 1, layout.segmentationPanel.getMinimumSize(), layout, true, ChannelSegmenterPanel.class);
-            else this.templateNucleusSegmenterPanel=new MultiParameterPanel<NucleiSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), 1, 1, layout.segmentationPanel.getMinimumSize(), layout, true, NucleiSegmenterPanel.class);
-            this.templatePostFilterPanel=new MultiParameterPanel<PostFilterPanel> (core, (DBObject)currentTemplate.get("postFilters"), 0,10, layout.postFilterPanel.getMinimumSize(), layout, true, PostFilterPanel.class);
+            this.templatePreFilterPanel=new ConfigurationList<PreFilterPanel> (core, (DBObject)currentTemplate.get("preFilters"), null, null, null, false, false, PreFilterPanel.class);
+            if (this.currentStructure>0) this.templateStructureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), null, null, null, true, true, ChannelSegmenterPanel.class);
+            else this.templateNucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), null, null, null, true, true, NucleiSegmenterPanel.class);
+            this.templatePostFilterPanel=new ConfigurationList<PostFilterPanel> (core, (DBObject)currentTemplate.get("postFilters"),null, null, null , false, false, PostFilterPanel.class);
         } else {
             templatePreFilterPanel=null;
             templateStructureSegmenterPanel=null;

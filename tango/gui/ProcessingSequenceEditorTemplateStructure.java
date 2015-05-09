@@ -15,6 +15,7 @@ import java.awt.Dimension;
 import mcib3d.image3d.ImageInt;
 import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.InputCellImages;
+import tango.gui.parameterPanel.ConfigurationList;
 import tango.mongo.MongoConnector;
 import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.filter.PreFilterSequence;
@@ -82,11 +83,13 @@ public class ProcessingSequenceEditorTemplateStructure extends ProcessingSequenc
     }
     @Override
     protected void createMultiPanels() {
+        master.flush();
+        layoutEditor.flush();
         //ij.IJ.log("prefilters data:"+(data.get("preFilters")));
         try {
-            this.preFilterPanel=new MultiParameterPanel<PreFilterPanel> (core, getPreFilters(), 0, 10, layout.preFilterPanel.getMinimumSize(), layout, false, PreFilterPanel.class);
-            this.segmenterPanel=new MultiParameterPanel<ChannelSegmenterPanel> (core, getSegmentation(), 1, 1, layout.segmentationPanel.getMinimumSize(), layout, false, ChannelSegmenterPanel.class);
-            this.postFilterPanel=new MultiParameterPanel<PostFilterPanel> (core, getPostFilters(), 0,10, layout.postFilterPanel.getMinimumSize(), layout, false, PostFilterPanel.class);
+            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layoutEditor.preFilterList, layoutEditor.preFilterButtonPanel , false, false, PreFilterPanel.class);
+            this.segmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, ChannelSegmenterPanel.class);
+            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layoutEditor.postFilterList, layoutEditor.postFilterButtonPanel , false, false, PostFilterPanel.class);
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }

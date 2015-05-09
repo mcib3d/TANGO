@@ -16,6 +16,8 @@ import mcib3d.image3d.ImageInt;
 import java.awt.Choice;
 import java.awt.Dimension;
 import tango.dataStructure.InputFieldImages;
+import tango.gui.parameterPanel.ChannelSegmenterPanel;
+import tango.gui.parameterPanel.ConfigurationList;
 import tango.mongo.MongoConnector;
 import tango.plugin.segmenter.NucleusSegmenterRunner;
 import tango.plugin.filter.PostFilterSequence;
@@ -86,9 +88,11 @@ public class ProcessingSequenceEditorTemplateNucleus extends ProcessingSequenceT
     }
     @Override
     protected void createMultiPanels() {
-        this.preFilterPanel=new MultiParameterPanel<PreFilterPanel> (core, getPreFilters(), 0, 10, layout.postFilterPanel.getMinimumSize(), layout, false, PreFilterPanel.class);
-        this.segmenterPanel=new MultiParameterPanel<NucleiSegmenterPanel> (core, getSegmentation(), 1, 1, layout.segmentationPanel.getMinimumSize(), layout, false, NucleiSegmenterPanel.class);
-        this.postFilterPanel=new MultiParameterPanel<PostFilterPanel> (core, getPostFilters(), 0,10, layout.postFilterPanel.getMinimumSize(), layout, false, PostFilterPanel.class);
+        master.flush();
+        layoutEditor.flush();
+        this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layoutEditor.preFilterList, layoutEditor.preFilterButtonPanel , false, false, PreFilterPanel.class);
+        this.segmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, NucleiSegmenterPanel.class);
+        this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layoutEditor.postFilterList, layoutEditor.postFilterButtonPanel , false, false, PostFilterPanel.class);
     }
 
     @Override

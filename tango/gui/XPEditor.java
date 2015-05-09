@@ -22,6 +22,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.Experiment;
+import tango.gui.parameterPanel.ConfigurationList;
+import tango.gui.parameterPanel.ConfigurationListMaster;
 import tango.gui.util.*;
 import tango.gui.util.DuplicateXPOptionPane.DuplicateXP;
 import tango.helper.HelpManager;
@@ -75,14 +77,13 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
     Core core;
     JPanel currentEditPanel;
     boolean init;
-    MultiParameterPanel<StructurePanel> structures;
-    MultiParameterPanel<VirtualStructurePanel> virtualStructures;
-    MultiParameterPanel<MeasurementPanel> measurements;
-    MultiParameterPanel<ChannelImagePanel> channelImages;
-    MultiParameterPanel<SamplerPanel> samples;
+    ConfigurationList<StructurePanel> structures;
+    ConfigurationList<VirtualStructurePanel> virtualStructures;
+    ConfigurationList<MeasurementPanel> measurements;
+    ConfigurationList<ChannelImagePanel> channelImages;
+    ConfigurationList<SamplerPanel> samples;
+    ConfigurationListMaster configurationListMaster;
     JPanel mainSettingsPanel;
-    JScrollPane listScroll;
-    Dimension listDim;
     Helper ml;
     int selectedTab;
     JButton importImages;
@@ -91,28 +92,18 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         this.core = core;
         init = true;
         initComponents();
-        editTab.addTab("Channel Images", new JPanel());
-        editTab.addTab("Structures", new JPanel());
-        editTab.addTab("Virtual Structures", new JPanel());
-        editTab.addTab("Measurements", new JPanel());
-        editTab.addTab("Samplers", new JPanel());
+        configurationListMaster = new ConfigurationListMaster(this, null);
         editTab.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 selectTab(editTab.getSelectedIndex());
             }
         });
-        listScroll = new JScrollPane();
         toggleEnableTabs(false);
-        listDim = new Dimension(this.editTab.getPreferredSize().width - 10, this.editTab.getPreferredSize().height - 10);
         mainSettingsPanel = new JPanel(new FlowLayout()); //new GridLayout(0, 1, 0, 0)
         globalScale.addToContainer(mainSettingsPanel);
         unit.allowSpecialCharacter(true);
-        
-        //scalexy.addToContainer(mainSettingsPanel);
-        //scalez.addToContainer(mainSettingsPanel);
-        //unit.addToContainer(mainSettingsPanel);
-        //inputFile.addToContainer(mainSettingsPanel);
+
         this.settingsPanel.add(mainSettingsPanel);
         importFileMethod.addToContainer(mainSettingsPanel);
         importImages=new JButton("Import Images");
@@ -129,6 +120,8 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
             folders.setSelectedItem(folder);
             setProject(folder);
         }
+        
+        
         init = false;
     }
 
@@ -154,18 +147,21 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         hm.objectIDs.put(importFileMethod.getChoice(), new ID(RetrieveHelp.editXPPage, "Import_File_Method"));
         hm.objectIDs.put(importFileMethod.label(), new ID(RetrieveHelp.editXPPage, "Import_File_Method"));
         hm.objectIDs.put(importImages, new ID(RetrieveHelp.editXPPage, "Import_Images"));
-        
-        
         registerXPComponents(hm);
         
     }
     
     public void registerXPComponents(HelpManager hm) {
-        if (channelImages!=null) hm.objectIDs.put(channelImages.getPanel(), new ID(RetrieveHelp.editXPPage, "Channel_Images"));
-        if (structures!=null) hm.objectIDs.put(structures.getPanel(), new ID(RetrieveHelp.editXPPage, "Structures"));
-        if (virtualStructures!=null) hm.objectIDs.put(virtualStructures.getPanel(), new ID(RetrieveHelp.editXPPage, "Virtual_Structures"));
-        if (measurements!=null) hm.objectIDs.put(measurements.getPanel(), new ID(RetrieveHelp.editXPPage, "Quantitative_Image_Analysis"));
-        if (samples!=null) hm.objectIDs.put(samples.getPanel(), new ID(RetrieveHelp.editXPPage, "Samples"));
+        hm.objectIDs.put(channelImageJSP, new ID(RetrieveHelp.editXPPage, "Channel_Images"));
+        hm.objectIDs.put(channelImageButtonPanel, new ID(RetrieveHelp.editXPPage, "Channel_Images"));
+        hm.objectIDs.put(structureJSP, new ID(RetrieveHelp.editXPPage, "Structures"));
+        hm.objectIDs.put(structureButtonPanel, new ID(RetrieveHelp.editXPPage, "Structures"));
+        hm.objectIDs.put(virtualStructureJSP, new ID(RetrieveHelp.editXPPage, "Virtual_Structures"));
+        hm.objectIDs.put(virtualStructureButtonPanel, new ID(RetrieveHelp.editXPPage, "Virtual_Structures"));
+        hm.objectIDs.put(mesurementJSP, new ID(RetrieveHelp.editXPPage, "Quantitative_Image_Analysis"));
+        hm.objectIDs.put(mesurementButtonPanel, new ID(RetrieveHelp.editXPPage, "Quantitative_Image_Analysis"));
+        hm.objectIDs.put(samplerJSP, new ID(RetrieveHelp.editXPPage, "Samples"));
+        hm.objectIDs.put(samplerButtonPanel, new ID(RetrieveHelp.editXPPage, "Samples"));
     }
 
     public void register(Helper ml) {
@@ -260,7 +256,6 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
     private void importImages() {
         this.save(true);
         this.core.getFieldManager().importImages();
-        
     }
 
     private void getFolders() {
@@ -310,24 +305,19 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
             for (Parameter p : xpParams) {
                 p.dbGet(Core.getExperiment().getData());
             }
-            /*measurements = new MultiParameterPanel<MeasurementPanel>(Core.getExperiment().getMeasurementSettings(), 0, 200, listDim, this, MeasurementPanel.class);
-            channelImages = new MultiParameterPanel<ChannelImagePanel>(Core.getExperiment().getChannelImages(), 1, 20, listDim, this, ChannelImagePanel.class);
-            structures = new MultiParameterPanel<StructurePanel>(Core.getExperiment().getStructures(), 1, 20, listDim, this, StructurePanel.class);
-            virtualStructures = new MultiParameterPanel<VirtualStructurePanel>(Core.getExperiment().getVirtualStructures(), 0, 20, listDim, this, VirtualStructurePanel.class);
-            samples = new MultiParameterPanel<SamplerPanel>(Core.getExperiment().getSampleChannels(), 0, 100, listDim, this, SamplerPanel.class);
-            */
-            measurements = new MultiParameterPanel<MeasurementPanel>(core, Core.getExperiment().getMeasurementSettings(), 0, 200, listDim, this, true, MeasurementPanel.class); 
-            channelImages = new MultiParameterPanel<ChannelImagePanel>(core, Core.getExperiment().getChannelImages(), 1, 20, listDim, this, false, ChannelImagePanel.class);
-            structures = new MultiParameterPanel<StructurePanel>(core, Core.getExperiment().getStructures(), 1, 20, listDim, this, false, StructurePanel.class);
-            virtualStructures = new MultiParameterPanel<VirtualStructurePanel>(core, Core.getExperiment().getVirtualStructures(), 0, 20, listDim, this, false, VirtualStructurePanel.class);
-            samples = new MultiParameterPanel<SamplerPanel>(core, Core.getExperiment().getSampleChannels(), 0, 100, listDim, this, true, SamplerPanel.class);
+            
+            measurements = new ConfigurationList<MeasurementPanel>(core, Core.getExperiment().getMeasurementSettings(), this.configurationListMaster, this.mesurementList, this.mesurementButtonPanel, false, false, MeasurementPanel.class);
+            channelImages = new ConfigurationList<ChannelImagePanel>(core, Core.getExperiment().getChannelImages(), configurationListMaster, this.channelImageList, this.channelImageButtonPanel ,false, true, ChannelImagePanel.class);
+            structures = new ConfigurationList<StructurePanel>(core, Core.getExperiment().getStructures(), configurationListMaster, this.structureList, this.structureButtonPanel, false, true, StructurePanel.class);
+            virtualStructures = new ConfigurationList<VirtualStructurePanel>(core, Core.getExperiment().getVirtualStructures(), this.configurationListMaster, this.virtualStructureList, this.virtualStructureButtonPanel, false, false, VirtualStructurePanel.class);
+            samples = new ConfigurationList<SamplerPanel>(core, Core.getExperiment().getSampleChannels(), configurationListMaster, this.samplerList, this.samplerButtonPanel, false, false, SamplerPanel.class);
             
             register();
             if (ml!=null && ml instanceof Helper) registerXPComponents(((Helper)ml).getHelpManager());
             core.toggleEnableTabs(true);
             toggleEnableTabs(true);
-            editTab.setSelectedIndex(0);
-            selectTab(0);
+            //editTab.setSelectedIndex(0);
+            //selectTab(0);
             Prefs.set(MongoConnector.getPrefix() + "_" + Core.mongoConnector.getUserName() + "_xp.String", name);
             toggleEnableButtons(true, true);
             IJ.log("xp:" + name + " set");
@@ -343,7 +333,8 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
             editTab.setEnabledAt(i, enable);
             if (enable && editTab.getSelectedIndex()==i) selectTab(i);
         }
-        if (!enable) editTab.setComponentAt(editTab.getSelectedIndex(), new JPanel());
+        if (!enable) editTab.setEnabled(false);
+        else editTab.setEnabled(true);
         if (!Core.SPATIALSTATS) editTab.setEnabledAt(4, false);
         if (!Core.VIRTUALSTRUCTURES) editTab.setEnabledAt(2, false); //virtual structures
     }
@@ -417,12 +408,12 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         if (Core.getExperiment() == null) {
             return;
         }
-        measurements.refreshDisplay();
-        channelImages.refreshDisplay();
-        structures.refreshDisplay();
-        virtualStructures.refreshDisplay();
-        samples.refreshDisplay();
-        //register();
+        mesurementList.updateUI();
+        channelImageList.updateUI();
+        structureList.updateUI();
+        virtualStructureList.updateUI();
+        samplerList.updateUI();
+        // TODO Validate??
     }
     
     
@@ -431,52 +422,18 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         if (Core.getExperiment() == null) {
             return;
         }
-        measurements.allOff();
-        channelImages.allOff();
-        structures.allOff();
-        virtualStructures.allOff();
-        samples.allOff();
+        this.configurationListMaster.hideConfigurationPanel(true);
     }
     
     public void selectTab(int newTab) {
-        editTab.setComponentAt(selectedTab, new JPanel());
         if (Core.getExperiment() == null) {
             return;
         }
         refreshParameters();
         allOff();
-        //switch mainPanel
-        /*if ((selectedTab == 4)) {
-            if (newTab < 4) {
-                this.settingsPanel.removeAll();
-                this.settingsPanel.add(mainSettingsPanel);
-                this.refreshDisplay();
-            }
-        } else if (newTab >= 4) {
-            this.settingsPanel.removeAll();
-            this.settingsPanel.add(sampleSettingsPanel);
-            this.refreshDisplay();
-        }
-        * 
-        */
+        
         selectedTab=newTab;
         this.hidePanel();
-        editTab.setComponentAt(selectedTab, listScroll);
-        if (selectedTab==0) {
-            listScroll.setViewportView(channelImages.getPanel());
-        } else if (selectedTab==1) {
-            listScroll.setViewportView(structures.getPanel());
-            //editTab.setComponentAt(selectedTab, structures.getPanel());
-        } else if (selectedTab==2) {
-            listScroll.setViewportView(virtualStructures.getPanel());
-            //editTab.setComponentAt(selectedTab, virtualStructures.getPanel());
-        } else if (selectedTab==3) {
-            listScroll.setViewportView(measurements.getPanel());
-            //editTab.setComponentAt(selectedTab, measurements.getPanel());
-        } else if (selectedTab==4) {
-            listScroll.setViewportView(samples.getPanel());
-            //editTab.setComponentAt(selectedTab, samples.getPanel());
-        }
     }
 
     public void save(boolean record) {
@@ -487,11 +444,11 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         for (Parameter p : xpParams) {
             p.dbPut(Core.getExperiment().getData());
         }
-        Core.getExperiment().setChannelImages(this.channelImages.saveAll());
-        Core.getExperiment().setStructures(this.structures.saveAll(), true);
-        Core.getExperiment().setVirtualStructures(this.virtualStructures.saveAll());
-        Core.getExperiment().setMeasurements(this.measurements.saveAll());
-        Core.getExperiment().setSamples(this.samples.saveAll());
+        Core.getExperiment().setChannelImages(this.channelImages.saveMulti());
+        Core.getExperiment().setStructures(this.structures.saveMulti(), true);
+        Core.getExperiment().setVirtualStructures(this.virtualStructures.saveMulti());
+        Core.getExperiment().setMeasurements(this.measurements.saveMulti());
+        Core.getExperiment().setSamples(this.samples.saveMulti());
         if (record) {
             Core.getExperiment().save();
             Core.setExperimentModifiedFromAnalyzer(true);
@@ -524,6 +481,26 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         save = new javax.swing.JButton();
         override = new javax.swing.JButton();
         editTab = new javax.swing.JTabbedPane();
+        channelImagePanel = new javax.swing.JPanel();
+        channelImageButtonPanel = new javax.swing.JPanel();
+        channelImageJSP = new javax.swing.JScrollPane();
+        channelImageList = new javax.swing.JList();
+        structurePanel = new javax.swing.JPanel();
+        structureButtonPanel = new javax.swing.JPanel();
+        structureJSP = new javax.swing.JScrollPane();
+        structureList = new javax.swing.JList();
+        virtualStructurePanel = new javax.swing.JPanel();
+        virtualStructureButtonPanel = new javax.swing.JPanel();
+        virtualStructureJSP = new javax.swing.JScrollPane();
+        virtualStructureList = new javax.swing.JList();
+        mesurementPanel = new javax.swing.JPanel();
+        mesurementJSP = new javax.swing.JScrollPane();
+        mesurementList = new javax.swing.JList();
+        mesurementButtonPanel = new javax.swing.JPanel();
+        samplerPanel = new javax.swing.JPanel();
+        samplerButtonPanel = new javax.swing.JPanel();
+        samplerJSP = new javax.swing.JScrollPane();
+        samplerList = new javax.swing.JList();
         editScroll = new javax.swing.JScrollPane();
         editPanel = new javax.swing.JPanel();
 
@@ -650,7 +627,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         connectPanelLayout.setVerticalGroup(
             connectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(connectPanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 2, Short.MAX_VALUE)
                 .addComponent(sfLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(folders, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -679,6 +656,143 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
 
         editTab.setMinimumSize(new java.awt.Dimension(644, 280));
         editTab.setPreferredSize(new java.awt.Dimension(644, 280));
+
+        channelImageButtonPanel.setLayout(new javax.swing.BoxLayout(channelImageButtonPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        channelImageList.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item1", "Item2" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        channelImageList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        channelImageJSP.setViewportView(channelImageList);
+
+        javax.swing.GroupLayout channelImagePanelLayout = new javax.swing.GroupLayout(channelImagePanel);
+        channelImagePanel.setLayout(channelImagePanelLayout);
+        channelImagePanelLayout.setHorizontalGroup(
+            channelImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(channelImagePanelLayout.createSequentialGroup()
+                .addComponent(channelImageButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 372, Short.MAX_VALUE))
+            .addGroup(channelImagePanelLayout.createSequentialGroup()
+                .addComponent(channelImageJSP)
+                .addContainerGap())
+        );
+        channelImagePanelLayout.setVerticalGroup(
+            channelImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(channelImagePanelLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(channelImageButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(channelImageJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
+        );
+
+        editTab.addTab("Channel Image", channelImagePanel);
+
+        structureButtonPanel.setLayout(new javax.swing.BoxLayout(structureButtonPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        structureList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        structureJSP.setViewportView(structureList);
+
+        javax.swing.GroupLayout structurePanelLayout = new javax.swing.GroupLayout(structurePanel);
+        structurePanel.setLayout(structurePanelLayout);
+        structurePanelLayout.setHorizontalGroup(
+            structurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(structurePanelLayout.createSequentialGroup()
+                .addComponent(structureButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(structurePanelLayout.createSequentialGroup()
+                .addComponent(structureJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        structurePanelLayout.setVerticalGroup(
+            structurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(structurePanelLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(structureButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(structureJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
+        );
+
+        editTab.addTab("Structures", structurePanel);
+
+        virtualStructureButtonPanel.setLayout(new javax.swing.BoxLayout(virtualStructureButtonPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        virtualStructureList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        virtualStructureJSP.setViewportView(virtualStructureList);
+
+        javax.swing.GroupLayout virtualStructurePanelLayout = new javax.swing.GroupLayout(virtualStructurePanel);
+        virtualStructurePanel.setLayout(virtualStructurePanelLayout);
+        virtualStructurePanelLayout.setHorizontalGroup(
+            virtualStructurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(virtualStructurePanelLayout.createSequentialGroup()
+                .addComponent(virtualStructureButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 372, Short.MAX_VALUE))
+            .addComponent(virtualStructureJSP)
+        );
+        virtualStructurePanelLayout.setVerticalGroup(
+            virtualStructurePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(virtualStructurePanelLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(virtualStructureButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(virtualStructureJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
+        );
+
+        editTab.addTab("Virtual Structures", virtualStructurePanel);
+
+        mesurementList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        mesurementJSP.setViewportView(mesurementList);
+
+        mesurementButtonPanel.setAlignmentX(0.0F);
+        mesurementButtonPanel.setAlignmentY(0.5F);
+        mesurementButtonPanel.setPreferredSize(new java.awt.Dimension(260, 26));
+        mesurementButtonPanel.setLayout(new javax.swing.BoxLayout(mesurementButtonPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        javax.swing.GroupLayout mesurementPanelLayout = new javax.swing.GroupLayout(mesurementPanel);
+        mesurementPanel.setLayout(mesurementPanelLayout);
+        mesurementPanelLayout.setHorizontalGroup(
+            mesurementPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mesurementJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+            .addGroup(mesurementPanelLayout.createSequentialGroup()
+                .addComponent(mesurementButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        mesurementPanelLayout.setVerticalGroup(
+            mesurementPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mesurementPanelLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(mesurementButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(mesurementJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
+        );
+
+        editTab.addTab("Measurements", mesurementPanel);
+
+        samplerButtonPanel.setLayout(new javax.swing.BoxLayout(samplerButtonPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        samplerList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        samplerJSP.setViewportView(samplerList);
+
+        javax.swing.GroupLayout samplerPanelLayout = new javax.swing.GroupLayout(samplerPanel);
+        samplerPanel.setLayout(samplerPanelLayout);
+        samplerPanelLayout.setHorizontalGroup(
+            samplerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(samplerPanelLayout.createSequentialGroup()
+                .addComponent(samplerButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 372, Short.MAX_VALUE))
+            .addComponent(samplerJSP)
+        );
+        samplerPanelLayout.setVerticalGroup(
+            samplerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(samplerPanelLayout.createSequentialGroup()
+                .addGap(2, 2, 2)
+                .addComponent(samplerButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(samplerJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
+        );
+
+        editTab.addTab("Samplers", samplerPanel);
 
         editPanel.setMinimumSize(new java.awt.Dimension(625, 250));
         editPanel.setPreferredSize(new java.awt.Dimension(625, 250));
@@ -901,6 +1015,10 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         SampleRunner.test();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel channelImageButtonPanel;
+    private javax.swing.JScrollPane channelImageJSP;
+    private javax.swing.JList channelImageList;
+    private javax.swing.JPanel channelImagePanel;
     private javax.swing.JPanel connectPanel;
     private javax.swing.JButton deleteExperiment;
     private javax.swing.JButton duplicateExperiment;
@@ -910,13 +1028,29 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
     private javax.swing.JTabbedPane editTab;
     private javax.swing.JComboBox experiments;
     private javax.swing.JComboBox folders;
+    private javax.swing.JPanel mesurementButtonPanel;
+    private javax.swing.JScrollPane mesurementJSP;
+    private javax.swing.JList mesurementList;
+    private javax.swing.JPanel mesurementPanel;
     private javax.swing.JButton newExperiment;
     private javax.swing.JButton newFolder;
     private javax.swing.JButton override;
     private javax.swing.JButton removeFolder;
     private javax.swing.JButton renameExperiment;
+    private javax.swing.JPanel samplerButtonPanel;
+    private javax.swing.JScrollPane samplerJSP;
+    private javax.swing.JList samplerList;
+    private javax.swing.JPanel samplerPanel;
     private javax.swing.JButton save;
     private javax.swing.JPanel settingsPanel;
     private javax.swing.JLabel sfLabel;
+    private javax.swing.JPanel structureButtonPanel;
+    private javax.swing.JScrollPane structureJSP;
+    private javax.swing.JList structureList;
+    private javax.swing.JPanel structurePanel;
+    private javax.swing.JPanel virtualStructureButtonPanel;
+    private javax.swing.JScrollPane virtualStructureJSP;
+    private javax.swing.JList virtualStructureList;
+    private javax.swing.JPanel virtualStructurePanel;
     // End of variables declaration//GEN-END:variables
 }
