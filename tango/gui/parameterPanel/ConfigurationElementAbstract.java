@@ -1,14 +1,8 @@
 package tango.gui.parameterPanel;
 
 import java.awt.Color;
-import tango.gui.parameterPanel.MultiParameterPanel;
 import tango.gui.parameterPanel.ParameterPanelAbstract;
-import java.awt.Container;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.*;
-import tango.gui.parameterPanel.ConfigurationList;
 import tango.helper.Helper;
 
 /**

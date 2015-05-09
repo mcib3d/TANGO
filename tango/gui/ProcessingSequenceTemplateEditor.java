@@ -1,27 +1,19 @@
 package tango.gui;
 
-import tango.gui.parameterPanel.MultiParameterPanel;
 import tango.gui.parameterPanel.PreFilterPanel;
 import tango.gui.parameterPanel.ParameterPanelPlugin;
 import tango.gui.parameterPanel.PostFilterPanel;
 import mcib3d.utils.exceptionPrinter;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import ij.IJ;
-import ij.ImagePlus;
-import ij.gui.GenericDialog;
-import mcib3d.image3d.ImageHandler;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import tango.gui.parameterPanel.ConfigurationList;
 import tango.gui.parameterPanel.ConfigurationListMaster;
 import tango.gui.util.*;
@@ -29,10 +21,6 @@ import tango.helper.HelpManager;
 import tango.helper.Helper;
 import tango.helper.ID;
 import tango.helper.RetrieveHelp;
-import tango.mongo.MongoConnector;
-import tango.parameter.SettingsParameter;
-import tango.plugin.PluginFactory;
-import tango.plugin.filter.PreFilterSequence;
 import tango.util.Utils;
 /**
  *

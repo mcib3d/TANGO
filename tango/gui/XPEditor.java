@@ -1,6 +1,5 @@
 package tango.gui;
 
-import tango.gui.parameterPanel.MultiParameterPanel;
 import tango.gui.parameterPanel.VirtualStructurePanel;
 import tango.gui.parameterPanel.StructurePanel;
 import tango.gui.parameterPanel.SamplerPanel;
@@ -10,14 +9,11 @@ import tango.gui.parameterPanel.ChannelImagePanel;
 import com.mongodb.BasicDBObject;
 import ij.IJ;
 import ij.Prefs;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import mcib3d.utils.exceptionPrinter;

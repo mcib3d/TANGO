@@ -1,28 +1,19 @@
 package tango.gui;
-
-import tango.gui.parameterPanel.MultiParameterPanel;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import tango.gui.parameterPanel.NucleiSegmenterPanel;
 import tango.gui.parameterPanel.PostFilterPanel;
 import tango.gui.parameterPanel.PreFilterPanel;
 import mcib3d.utils.exceptionPrinter;
 import ij.IJ;
 import ij.gui.GenericDialog;
-import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import java.awt.Choice;
-import java.awt.Dimension;
 import tango.dataStructure.InputFieldImages;
-import tango.gui.parameterPanel.ChannelSegmenterPanel;
 import tango.gui.parameterPanel.ConfigurationList;
-import tango.mongo.MongoConnector;
 import tango.plugin.segmenter.NucleusSegmenterRunner;
 import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.filter.PreFilterSequence;
-import tango.plugin.segmenter.SpotSegmenterRunner;
 /**
  *
  **

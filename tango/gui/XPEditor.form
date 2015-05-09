@@ -498,7 +498,6 @@
             <Container class="javax.swing.JPanel" name="mesurementButtonPanel">
               <Properties>
                 <Property name="alignmentX" type="float" value="0.0"/>
-                <Property name="alignmentY" type="float" value="0.5"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[260, 26]"/>
                 </Property>

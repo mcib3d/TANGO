@@ -1,10 +1,5 @@
 package tango.gui.parameterPanel;
-
-import tango.gui.parameterPanel.MultiParameterPanel;
 import tango.gui.parameterPanel.ParameterPanel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.*;
 /**
  *
  **

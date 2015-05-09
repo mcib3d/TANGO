@@ -7,16 +7,11 @@ import ij.IJ;
 import mcib3d.utils.exceptionPrinter;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import tango.gui.Core;
-import tango.gui.PanelDisplayer;
 import tango.gui.util.ConfigurationListCellRenderer;
-import tango.gui.util.Displayer;
-import tango.gui.util.PanelElementAbstract;
-import tango.gui.util.PanelElementMono;
 import tango.helper.Helper;
 import tango.util.ImageUtils;
 import tango.util.Utils;
@@ -372,14 +367,14 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     public void setTemplate(ConfigurationList<T> mpp) {
         this.template=mpp;
         for (int i = 0; i<this.listModel.size(); i++) {
-            if (listModel.get(i) instanceof PanelElementPlugin) {
+            if (listModel.get(i) instanceof ConfigurationElementPlugin) {
                 if (mpp!=null) {
                     if (i<mpp.listModel.size()) {
-                        if (mpp.listModel.get(i) instanceof PanelElementPlugin) {
-                            ((PanelElementPlugin)listModel.get(i)).setTemplate((PanelElementPlugin)mpp.listModel.get(i));
+                        if (mpp.listModel.get(i) instanceof ConfigurationElementPlugin) {
+                            ((ConfigurationElementPlugin)listModel.get(i)).setTemplate((ConfigurationElementPlugin)mpp.listModel.get(i));
                         }
-                    } else ((PanelElementPlugin)listModel.get(i)).setTemplate(null);
-                } else ((PanelElementPlugin)listModel.get(i)).removeTemplate();
+                    } else ((ConfigurationElementPlugin)listModel.get(i)).setTemplate(null);
+                } else ((ConfigurationElementPlugin)listModel.get(i)).removeTemplate();
             }
         }
         updateValidity();
