@@ -78,12 +78,12 @@ public class ProcessingSequenceEditorTemplateStructure extends ProcessingSequenc
     @Override
     protected void createMultiPanels() {
         master.flush();
-        layoutEditor.flush();
+        layout.flush();
         //ij.IJ.log("prefilters data:"+(data.get("preFilters")));
         try {
-            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layoutEditor.preFilterList, layoutEditor.preFilterButtonPanel , false, false, PreFilterPanel.class);
-            this.segmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, ChannelSegmenterPanel.class);
-            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layoutEditor.postFilterList, layoutEditor.postFilterButtonPanel , false, false, PostFilterPanel.class);
+            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layout.preFilterList, layout.preFilterButtonPanel , false, false, PreFilterPanel.class);
+            this.segmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, ChannelSegmenterPanel.class);
+            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layout.postFilterList, layout.postFilterButtonPanel , false, false, PostFilterPanel.class);
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }

@@ -7,7 +7,6 @@ package tango.gui.parameterPanel;
 
 import ij.IJ;
 import java.awt.FlowLayout;
-import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -39,7 +38,6 @@ public class ConfigurationListMaster {
     public void showConfigurationPanel(ConfigurationElementAbstract c, ConfigurationList list) {
         pd.hidePanel();
         if (currentCL!=null && !list.equals(currentCL)) {
-            IJ.log("new != current CL");
             currentCL.editOff();
             currentCL.updateValidity();
         }
@@ -66,11 +64,9 @@ public class ConfigurationListMaster {
     }
     
     public void hideConfigurationPanel(boolean editOff) {
-        IJ.log("hide configuration panel");
         pd.hidePanel();
         if (currentJCB!=null && choicePanel!=null) choicePanel.remove(currentJCB);
         if (editOff && this.currentCL!=null) {
-            IJ.log("hide panel & edit off");
             currentCL.editOff();
         }
     }

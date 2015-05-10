@@ -80,10 +80,10 @@ public class ProcessingSequenceEditorTemplateNucleus extends ProcessingSequenceT
     @Override
     protected void createMultiPanels() {
         master.flush();
-        layoutEditor.flush();
-        this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layoutEditor.preFilterList, layoutEditor.preFilterButtonPanel , false, false, PreFilterPanel.class);
-        this.segmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, NucleiSegmenterPanel.class);
-        this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layoutEditor.postFilterList, layoutEditor.postFilterButtonPanel , false, false, PostFilterPanel.class);
+        layout.flush();
+        this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layout.preFilterList, layout.preFilterButtonPanel , false, false, PreFilterPanel.class);
+        this.segmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, NucleiSegmenterPanel.class);
+        this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layout.postFilterList, layout.postFilterButtonPanel , false, false, PostFilterPanel.class);
     }
 
     @Override

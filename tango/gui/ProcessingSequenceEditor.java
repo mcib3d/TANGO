@@ -61,17 +61,14 @@ public class ProcessingSequenceEditor  implements ActionListener {
     protected Core core;
     protected BasicDBObject data;
     protected boolean populatingTemplates, populatingStructures;
-    protected ProcessingSequenceEditorLayout layoutEditor;
-    protected ProcessingSequenceManagerLayout layout;
+    protected ProcessingSequenceEditorLayout layout;
     protected JButton copyFromTemplate, copyToTemplate ,createNewTemplate, save, test;
     protected JLabel structureLabel, templateLabel;
     protected Helper ml;
     public ProcessingSequenceEditor(Core main) {
         this.core=main;
-        this.layout = new ProcessingSequenceManagerLayout("Current Structures");
-        this.layoutEditor = new ProcessingSequenceEditorLayout(main);
-        layout.editPanel.add(layoutEditor);
-        this.master = new ConfigurationListMaster(layoutEditor, layoutEditor.choicePanel);
+        this.layout = new ProcessingSequenceEditorLayout(main, "Current Structures");
+        this.master = new ConfigurationListMaster(layout, layout.choicePanel);
         try {
             init();
         } catch (Exception e) {
@@ -87,9 +84,9 @@ public class ProcessingSequenceEditor  implements ActionListener {
         hm.objectIDs.put(test, new ID(RetrieveHelp.editPSPage, "Test"));
         hm.objectIDs.put(structureLabel, new ID(RetrieveHelp.editPSPage, "Choose_Structure"));
         hm.objectIDs.put(templateLabel, new ID(RetrieveHelp.editPSPage, "Choose_Template"));
-        hm.objectIDs.put(layoutEditor.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
-        hm.objectIDs.put(layoutEditor.segPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
-        hm.objectIDs.put(layoutEditor.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
+        hm.objectIDs.put(layout.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
+        hm.objectIDs.put(layout.segPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
+        hm.objectIDs.put(layout.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
     }
     
     public void register(Helper ml) {
@@ -221,14 +218,14 @@ public class ProcessingSequenceEditor  implements ActionListener {
     }
     
     protected void createMultiPanels() {
-        layoutEditor.flush();
+        layout.flush();
         master.flush();
         //ij.IJ.log("prefilters dataPF:"+(dataPF.get("preFilters")));
         try {
-            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layoutEditor.preFilterList, layoutEditor.preFilterButtonPanel , false, false, PreFilterPanel.class);
-            if (this.currentStructure>0) this.structureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, ChannelSegmenterPanel.class);
-            else this.nucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layoutEditor.segList, layoutEditor.segButtonPanel, true, true, NucleiSegmenterPanel.class);
-            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layoutEditor.postFilterList, layoutEditor.postFilterButtonPanel , false, false, PostFilterPanel.class);
+            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layout.preFilterList, layout.preFilterButtonPanel , false, false, PreFilterPanel.class);
+            if (this.currentStructure>0) this.structureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, ChannelSegmenterPanel.class);
+            else this.nucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, NucleiSegmenterPanel.class);
+            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layout.postFilterList, layout.postFilterButtonPanel , false, false, PostFilterPanel.class);
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }

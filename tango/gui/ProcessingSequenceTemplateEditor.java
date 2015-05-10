@@ -57,17 +57,14 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
     protected BasicDBObject data;
     protected String currentProcessingSequence;
     protected boolean populatingProcessingSequences;
-    protected ProcessingSequenceManagerLayout layout;
-    protected ProcessingSequenceEditorLayout layoutEditor;
+    protected ProcessingSequenceEditorLayout layout;
     protected JButton newPS, rename ,duplicate, remove, save;
     protected Helper ml;
     protected ConfigurationListMaster master;
     public ProcessingSequenceTemplateEditor(Core main) {
         this.core=main;
-        this.layout = new ProcessingSequenceManagerLayout(getTitle());
-        this.layoutEditor=new ProcessingSequenceEditorLayout(main);
-        layout.editPanel.add(layoutEditor);
-        this.master = new ConfigurationListMaster(layoutEditor, layoutEditor.choicePanel);
+        this.layout = new ProcessingSequenceEditorLayout(main, getTitle());
+        this.master = new ConfigurationListMaster(layout, layout.choicePanel);
         try {
             init();
         } catch (Exception e) {
@@ -81,9 +78,9 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
         hm.objectIDs.put(duplicate, new ID(RetrieveHelp.editPSPage, "Duplicate"));
         hm.objectIDs.put(remove, new ID(RetrieveHelp.editPSPage, "Remove"));
         hm.objectIDs.put(save, new ID(RetrieveHelp.editPSPage, "Save"));
-        hm.objectIDs.put(layoutEditor.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
-        hm.objectIDs.put(layoutEditor.segPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
-        hm.objectIDs.put(layoutEditor.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
+        hm.objectIDs.put(layout.preFilterPanel, new ID(RetrieveHelp.editPSPage, "Pre-filtering"));
+        hm.objectIDs.put(layout.segPanel, new ID(RetrieveHelp.editPSPage, "Segmentation"));
+        hm.objectIDs.put(layout.postFilterPanel, new ID(RetrieveHelp.editPSPage, "Post-filtering"));
     }
     
     public void register(Helper ml) {
@@ -197,7 +194,7 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
             if (this.ml!=null) unRegister(ml);
             createMultiPanels();
             register(Core.helper);
-            layoutEditor.hidePanel();
+            layout.hidePanel();
             //layout.showListPanels(this.preFilterPanel.getPanel(), this.segmenterPanel.getPanel(), this.postFilterPanel.getPanel());
             populatingProcessingSequences=false;
         } catch (Exception e) {
@@ -291,7 +288,7 @@ public abstract class ProcessingSequenceTemplateEditor  implements ActionListene
             if (name!=null && name.length()>0) {
                 if (JOptionPane.showConfirmDialog(controlPanel, "Remove selected Processing Sequence?", "tango", JOptionPane.OK_CANCEL_OPTION)==0) {
                     remove(name);
-                    layoutEditor.hidePanel();
+                    layout.hidePanel();
                     get();
                     core.updateSettings();
                 }

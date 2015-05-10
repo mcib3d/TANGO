@@ -36,12 +36,16 @@ import tango.gui.PanelDisplayer;
 
 public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implements PanelDisplayer {
     public Dimension controlDim, editDim;
-    Core core;
-    public ProcessingSequenceEditorLayout(Core core)  {
+    protected Core core;
+    public ProcessingSequenceEditorLayout(Core core, String controlTitle)  {
+        initComponents();
+        controlDim = new Dimension(this.controlPanel.getPreferredSize().width-10, this.controlPanel.getPreferredSize().height-15);
+        this.controlPanel.setBorder(BorderFactory.createTitledBorder(controlTitle));
         this.core=core;
         initComponents();
         editDim = new Dimension(this.editPanel.getPreferredSize().width-15, this.editPanel.getPreferredSize().height-15);
     }
+    
     
     public void flush() {
         this.preFilterButtonPanel.removeAll();
@@ -51,11 +55,9 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
         this.segList.removeAll();
         this.postFilterList.removeAll();
         
-        IJ.log("avt flush: "+ this.preFilterList.getListSelectionListeners().length);
         for (ListSelectionListener lsl : this.preFilterList.getListSelectionListeners()) preFilterList.removeListSelectionListener(lsl);
         for (ListSelectionListener lsl : this.segList.getListSelectionListeners()) segList.removeListSelectionListener(lsl);
         for (ListSelectionListener lsl : this.postFilterList.getListSelectionListeners()) postFilterList.removeListSelectionListener(lsl);
-        IJ.log("apres flush: "+ this.preFilterList.getListSelectionListeners().length);
         this.choicePanel.removeAll();
     }
     
@@ -65,7 +67,6 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
         this.editScroll.setViewportView(panel);
         panel.setMinimumSize(editPanel.getMinimumSize());
         refreshDisplay();
-        IJ.log("show panel");
     }
 
     @Override
@@ -81,28 +82,7 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
         core.refreshDisplay();
     }
     
-    /*public void hideListPanels() {
-        refreshListPanels();
-    }*/
-    
-    /*public void showListPanels(JPanel prefilter, JPanel segmentation, JPanel postfilter) {
-        hideListPanels();
-        prefilter.setMinimumSize(preFilterPanel.getMinimumSize());
-        this.preFilterScroll.setViewportView(prefilter);
-        segmentation.setMinimumSize(segmentationPanel.getMinimumSize());
-        this.segmentationScoll.setViewportView(segmentation);
-        postfilter.setMinimumSize(postFilterPanel.getMinimumSize());
-        this.postFilterScroll.setViewportView(postfilter);
-        refreshListPanels();
-    }*/
-    
     public void refreshListPanels() {
-        /*this.preFilterScroll.repaint();
-        this.preFilterScroll.revalidate();
-        this.segmentationScoll.repaint();
-        this.segmentationScoll.revalidate();
-        this.postFilterScroll.repaint();
-        this.postFilterScroll.revalidate();*/
         preFilterList.updateUI();
         segList.updateUI();
         postFilterList.updateUI();
@@ -118,6 +98,7 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        controlPanel = new javax.swing.JPanel();
         editScroll = new javax.swing.JScrollPane();
         editPanel = new javax.swing.JPanel();
         preFilterPanel = new javax.swing.JPanel();
@@ -134,18 +115,20 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
         postFilterList = new javax.swing.JList();
         choicePanel = new javax.swing.JPanel();
 
-        setMaximumSize(new java.awt.Dimension(738, 600));
-        setMinimumSize(new java.awt.Dimension(738, 600));
-        setPreferredSize(new java.awt.Dimension(738, 600));
+        setMaximumSize(new java.awt.Dimension(1024, 600));
+        setMinimumSize(new java.awt.Dimension(1024, 600));
+        setPreferredSize(new java.awt.Dimension(1024, 600));
 
-        editPanel.setMinimumSize(new java.awt.Dimension(430, 574));
-        editPanel.setPreferredSize(new java.awt.Dimension(430, 574));
+        controlPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Controls"));
+        controlPanel.setMaximumSize(new java.awt.Dimension(201, 286));
+        controlPanel.setMinimumSize(new java.awt.Dimension(201, 286));
+        controlPanel.setPreferredSize(new java.awt.Dimension(201, 286));
 
         javax.swing.GroupLayout editPanelLayout = new javax.swing.GroupLayout(editPanel);
         editPanel.setLayout(editPanelLayout);
         editPanelLayout.setHorizontalGroup(
             editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 430, Short.MAX_VALUE)
+            .addGap(0, 519, Short.MAX_VALUE)
         );
         editPanelLayout.setVerticalGroup(
             editPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -239,35 +222,36 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(6, 6, 6)
+                .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(postFilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(preFilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(segPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(segPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(editScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
-                        .addGap(11, 11, 11))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(choicePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap())
+                    .addComponent(editScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(choicePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(editScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(preFilterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(2, 2, 2)
-                        .addComponent(segPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(2, 2, 2)
-                        .addComponent(postFilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(6, 6, 6))
+                .addContainerGap(159, Short.MAX_VALUE)
+                .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(155, 155, 155))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(choicePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(editScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(preFilterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(segPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(postFilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -275,6 +259,7 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JPanel choicePanel;
+    public javax.swing.JPanel controlPanel;
     public javax.swing.JPanel editPanel;
     private javax.swing.JScrollPane editScroll;
     public javax.swing.JPanel postFilterButtonPanel;

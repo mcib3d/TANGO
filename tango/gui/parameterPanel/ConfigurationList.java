@@ -78,10 +78,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
                     if (lse.getValueIsAdjusting()) return;
                     int selIdx = jlist.getSelectedIndex();
                     //int lastSelectedIndex = selIdx == lse.getFirstIndex() ? lse.getLastIndex() : lse.getFirstIndex();
-                    IJ.log("last selection index = "+lastSelectedIndex);
-                    IJ.log("sel idx = "+selIdx);
                     if (lastSelectedIndex>=0 && lastSelectedIndex!=selIdx && lastSelectedIndex<listModel.size()) {
-                        IJ.log("deselected index = "+lastSelectedIndex);
                         if (edit.isSelected()) master.hideConfigurationPanel(false);
                         ((ConfigurationElementAbstract)listModel.get(lastSelectedIndex)).updateValidity();
                     }
@@ -92,7 +89,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
                         master.showConfigurationPanel((ConfigurationElementAbstract)listModel.get(selIdx), instance);
                     }
                     lastSelectedIndex=selIdx;
-                    IJ.log("new last selected index: "+lastSelectedIndex);
                 }
             });
         }
@@ -282,11 +278,9 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             ConfigurationElementAbstract b = createConfigurationElement(DBO, idx);
             if (ml!=null) b.register(ml);
             if (idx==listModel.size()) {
-                IJ.log("add element: "+b.getLabel());
                 listModel.addElement(b);
             }
             else {
-                IJ.log("add element:"+b.getLabel()+" " + (idx+1));
                 listModel.add(idx+1, b);
             } // TODO décaler les autres indices?
             if (jlist!=null) jlist.setSelectedIndex(idx+1);
@@ -338,7 +332,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     }
     
     public void editOff() {
-        IJ.log("edit off");
         edit.setSelected(false);
         jlist.clearSelection();
         lastSelectedIndex=-1;
