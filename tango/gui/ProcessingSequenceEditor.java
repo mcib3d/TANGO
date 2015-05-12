@@ -218,6 +218,10 @@ public class ProcessingSequenceEditor  implements ActionListener {
     }
     
     protected void createMultiPanels() {
+        if (preFilterPanel!=null) preFilterPanel.flushList();
+        if (structureSegmenterPanel!=null) structureSegmenterPanel.flushList();
+        if (nucleusSegmenterPanel!=null) nucleusSegmenterPanel.flushList();
+        if (postFilterPanel!=null) postFilterPanel.flushList();
         layout.flush();
         master.flush();
         //ij.IJ.log("prefilters dataPF:"+(dataPF.get("preFilters")));

@@ -52,7 +52,7 @@ public class StructurePanel extends ParameterPanel {
         file.setHelp("The file associated to this structure", true);
         //settings = new SettingsParameter("Processing:", "settings", idx == 0);
         //settings.setHelp("The processing sequence to segment the structure", true);
-        color = new ChoiceParameter("Color: ", "color", tango.gui.util.Colors.colorNames, tango.gui.util.Colors.colorNames[this.idx + 1]);
+        color = new ChoiceParameter("Color: ", "color", tango.gui.util.Colors.colorNames, tango.gui.util.Colors.colorNames[(idx<7)?this.idx + 1:1]);
         color.setHelp("The color to display the structure in overlay views", true);
         color.getChoice().addActionListener(
             new ActionListener(){

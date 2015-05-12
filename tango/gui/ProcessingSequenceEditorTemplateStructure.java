@@ -79,6 +79,9 @@ public class ProcessingSequenceEditorTemplateStructure extends ProcessingSequenc
     protected void createMultiPanels() {
         master.flush();
         layout.flush();
+        if (preFilterPanel!=null) preFilterPanel.flushList();
+        if (segmenterPanel!=null) segmenterPanel.flushList();
+        if (postFilterPanel!=null) postFilterPanel.flushList();
         //ij.IJ.log("prefilters data:"+(data.get("preFilters")));
         try {
             this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layout.preFilterList, layout.preFilterButtonPanel , false, false, PreFilterPanel.class);

@@ -77,7 +77,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
                 public void valueChanged(ListSelectionEvent lse) {
                     if (lse.getValueIsAdjusting()) return;
                     int selIdx = jlist.getSelectedIndex();
-                    //int lastSelectedIndex = selIdx == lse.getFirstIndex() ? lse.getLastIndex() : lse.getFirstIndex();
                     if (lastSelectedIndex>=0 && lastSelectedIndex!=selIdx && lastSelectedIndex<listModel.size()) {
                         if (edit.isSelected()) master.hideConfigurationPanel(false);
                         ((ConfigurationElementAbstract)listModel.get(lastSelectedIndex)).updateValidity();
@@ -114,7 +113,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             add.setActionCommand("Add");
             
             add.setIcon(ImageUtils.add);
-            add.setToolTipText("Remove");
+            add.setToolTipText("Add");
             add.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent ae) {
@@ -229,6 +228,12 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             //buttonBox.setMinimumSize(buttonBox.getPreferredSize());
         }
         
+    }
+    
+    public void flushList() {
+        listModel.removeAllElements();
+        for (ListSelectionListener lsl : this.jlist.getListSelectionListeners()) jlist.removeListSelectionListener(lsl);
+        buttonPanel.removeAll();
     }
     
     protected void updateValidity() {

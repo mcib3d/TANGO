@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionListener;
 import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.Experiment;
 import tango.gui.parameterPanel.ConfigurationList;
@@ -88,7 +89,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         this.core = core;
         init = true;
         initComponents();
-        configurationListMaster = new ConfigurationListMaster(this, null);
+        
         editTab.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -289,6 +290,14 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         Prefs.set(MongoConnector.getPrefix() + "_" + Core.mongoConnector.getUserName() + "_folder.String", name);
     }
 
+    private void flushLists() {
+        if (measurements!=null) measurements.flushList();
+        if (channelImages!=null) channelImages.flushList();
+        if (structures!=null) structures.flushList();
+        if (virtualStructures!=null) virtualStructures.flushList();
+        if (samples!=null) samples.flushList();
+    }
+    
     private void setXP(String name) {
         if (name == null || name.length() == 0) {
             core.toggleEnableTabs(false);
@@ -301,13 +310,13 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
             for (Parameter p : xpParams) {
                 p.dbGet(Core.getExperiment().getData());
             }
-            
+            flushLists();
+            configurationListMaster = new ConfigurationListMaster(this, null);
             measurements = new ConfigurationList<MeasurementPanel>(core, Core.getExperiment().getMeasurementSettings(), this.configurationListMaster, this.mesurementList, this.mesurementButtonPanel, false, false, MeasurementPanel.class);
-            channelImages = new ConfigurationList<ChannelImagePanel>(core, Core.getExperiment().getChannelImages(), configurationListMaster, this.channelImageList, this.channelImageButtonPanel ,false, true, ChannelImagePanel.class);
             structures = new ConfigurationList<StructurePanel>(core, Core.getExperiment().getStructures(), configurationListMaster, this.structureList, this.structureButtonPanel, false, true, StructurePanel.class);
             virtualStructures = new ConfigurationList<VirtualStructurePanel>(core, Core.getExperiment().getVirtualStructures(), this.configurationListMaster, this.virtualStructureList, this.virtualStructureButtonPanel, false, false, VirtualStructurePanel.class);
             samples = new ConfigurationList<SamplerPanel>(core, Core.getExperiment().getSampleChannels(), configurationListMaster, this.samplerList, this.samplerButtonPanel, false, false, SamplerPanel.class);
-            
+            channelImages = new ConfigurationList<ChannelImagePanel>(core, Core.getExperiment().getChannelImages(), configurationListMaster, this.channelImageList, this.channelImageButtonPanel ,false, true, ChannelImagePanel.class);
             register();
             if (ml!=null && ml instanceof Helper) registerXPComponents(((Helper)ml).getHelpManager());
             core.toggleEnableTabs(true);
@@ -623,7 +632,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         connectPanelLayout.setVerticalGroup(
             connectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(connectPanelLayout.createSequentialGroup()
-                .addGap(0, 2, Short.MAX_VALUE)
+                .addGap(0, 4, Short.MAX_VALUE)
                 .addComponent(sfLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(folders, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -655,11 +664,6 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
 
         channelImageButtonPanel.setLayout(new javax.swing.BoxLayout(channelImageButtonPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        channelImageList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item1", "Item2" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         channelImageList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         channelImageJSP.setViewportView(channelImageList);
 
@@ -741,7 +745,6 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         mesurementJSP.setViewportView(mesurementList);
 
         mesurementButtonPanel.setAlignmentX(0.0F);
-        mesurementButtonPanel.setAlignmentY(0.5F);
         mesurementButtonPanel.setPreferredSize(new java.awt.Dimension(260, 26));
         mesurementButtonPanel.setLayout(new javax.swing.BoxLayout(mesurementButtonPanel, javax.swing.BoxLayout.LINE_AXIS));
 
