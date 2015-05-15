@@ -651,6 +651,7 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
         c.close();
         c.setVerbose(true);
         c.setNbCPUs(Core.getMaxCPUs());
+        sampler.setVerbose(true);
         try {
             c.testSampler(sampler);
             
