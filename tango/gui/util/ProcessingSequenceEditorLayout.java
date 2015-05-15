@@ -151,7 +151,7 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
             .addGroup(preFilterPanelLayout.createSequentialGroup()
                 .addGroup(preFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(preFilterJSP)
-                    .addComponent(preFilterButtonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))
+                    .addComponent(preFilterButtonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         preFilterPanelLayout.setVerticalGroup(
@@ -176,7 +176,7 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
             segPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(segPanelLayout.createSequentialGroup()
                 .addGroup(segPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(segButtonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                    .addComponent(segButtonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
                     .addComponent(segJSP))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -203,7 +203,7 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
             .addGroup(postFilterPanelLayout.createSequentialGroup()
                 .addGroup(postFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(postFilterJSP)
-                    .addComponent(postFilterButtonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))
+                    .addComponent(postFilterButtonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         postFilterPanelLayout.setVerticalGroup(
@@ -234,7 +234,7 @@ public class ProcessingSequenceEditorLayout extends javax.swing.JPanel implement
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(choicePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
-                    .addComponent(editScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)))
+                    .addComponent(editScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

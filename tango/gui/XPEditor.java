@@ -311,11 +311,11 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
             }
             flushLists();
             configurationListMaster = new ConfigurationListMaster(this, null);
-            measurements = new ConfigurationList<MeasurementPanel>(core, Core.getExperiment().getMeasurementSettings(), this.configurationListMaster, this.mesurementList, this.mesurementButtonPanel, false, false, MeasurementPanel.class);
-            structures = new ConfigurationList<StructurePanel>(core, Core.getExperiment().getStructures(), configurationListMaster, this.structureList, this.structureButtonPanel, false, true, StructurePanel.class);
-            virtualStructures = new ConfigurationList<VirtualStructurePanel>(core, Core.getExperiment().getVirtualStructures(), this.configurationListMaster, this.virtualStructureList, this.virtualStructureButtonPanel, false, false, VirtualStructurePanel.class);
-            samples = new ConfigurationList<SamplerPanel>(core, Core.getExperiment().getSampleChannels(), configurationListMaster, this.samplerList, this.samplerButtonPanel, false, false, SamplerPanel.class);
-            channelImages = new ConfigurationList<ChannelImagePanel>(core, Core.getExperiment().getChannelImages(), configurationListMaster, this.channelImageList, this.channelImageButtonPanel ,false, true, ChannelImagePanel.class);
+            measurements = new ConfigurationList<MeasurementPanel>(core, Core.getExperiment().getMeasurementSettings(), this.configurationListMaster, this.mesurementList, this.mesurementButtonPanel, false, false, true, MeasurementPanel.class);
+            structures = new ConfigurationList<StructurePanel>(core, Core.getExperiment().getStructures(), configurationListMaster, this.structureList, this.structureButtonPanel, false, true, false, StructurePanel.class);
+            virtualStructures = new ConfigurationList<VirtualStructurePanel>(core, Core.getExperiment().getVirtualStructures(), this.configurationListMaster, this.virtualStructureList, this.virtualStructureButtonPanel, false, false, false, VirtualStructurePanel.class);
+            samples = new ConfigurationList<SamplerPanel>(core, Core.getExperiment().getSampleChannels(), configurationListMaster, this.samplerList, this.samplerButtonPanel, false, false, true, SamplerPanel.class);
+            channelImages = new ConfigurationList<ChannelImagePanel>(core, Core.getExperiment().getChannelImages(), configurationListMaster, this.channelImageList, this.channelImageButtonPanel ,false, true, false, ChannelImagePanel.class);
             register();
             if (ml!=null && ml instanceof Helper) registerXPComponents(((Helper)ml).getHelpManager());
             core.toggleEnableTabs(true);
@@ -753,7 +753,7 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
             mesurementPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(mesurementJSP, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
             .addGroup(mesurementPanelLayout.createSequentialGroup()
-                .addComponent(mesurementButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(mesurementButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         mesurementPanelLayout.setVerticalGroup(
@@ -777,8 +777,8 @@ public class XPEditor extends javax.swing.JPanel implements PanelDisplayer {
         samplerPanelLayout.setHorizontalGroup(
             samplerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(samplerPanelLayout.createSequentialGroup()
-                .addComponent(samplerButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 372, Short.MAX_VALUE))
+                .addComponent(samplerButtonPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 320, Short.MAX_VALUE))
             .addComponent(samplerJSP)
         );
         samplerPanelLayout.setVerticalGroup(

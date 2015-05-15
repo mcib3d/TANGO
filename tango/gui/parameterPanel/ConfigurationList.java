@@ -49,15 +49,16 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     protected DBObject data;
     protected Class<T> clazz;
     protected Helper ml;
-    boolean minElement, mono;
+    boolean minElement, mono, enableTest;
     ConfigurationList<T> template, instance=this;
     ConfigurationListMaster master;
     JPanel buttonPanel;
     Core core;
     int lastSelectedIndex=-1;
-    public ConfigurationList(Core core, DBObject data, ConfigurationListMaster master_, JList jlist_, JPanel buttonPanel, boolean mono, boolean minElement, Class<T> clazz) {
+    public ConfigurationList(Core core, DBObject data, ConfigurationListMaster master_, JList jlist_, JPanel buttonPanel, boolean mono, boolean minElement, boolean enableTest, Class<T> clazz) {
         this.core=core;
         this.master=master_;
+        this.enableTest=enableTest;
         this.minElement=minElement;
         this.mono=mono;
         this.buttonPanel=buttonPanel;
@@ -165,21 +166,22 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
         buttonPanel.add(edit);
         buttonPanel.add(Box.createHorizontalStrut(2));
         
-        test = new JButton("");
-        test.setActionCommand("Test");
-        test.setSize(26, 26);
-        test.setIcon(ImageUtils.test);
-        test.setToolTipText("Test");
-        if (clazz.isAssignableFrom(ParameterPanelPlugin.class)) {
-            buttonPanel.add(test);
-            buttonPanel.add(Box.createHorizontalStrut(2));
+        if (enableTest) {
+            test = new JButton("");
+            test.setActionCommand("Test");
+            test.setSize(26, 26);
+            test.setIcon(ImageUtils.test);
+            test.setToolTipText("Test");
             test.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     test();
                 }
             });
+            buttonPanel.add(test);
+            buttonPanel.add(Box.createHorizontalStrut(2));
         }
+        
         if (!mono) {
             up=new JButton("");
             up.setActionCommand("Up");
@@ -349,6 +351,10 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     
     public void test() {
         int subStep = this.jlist.getSelectedIndex();
+        if (subStep<0) {
+            IJ.log("Select an element first!");
+            return;
+        }
         if (clazz.equals(PreFilterPanel.class)) {    
             core.getProcessingSequenceEditor().test(0, subStep);
         } else if (clazz.equals(PostFilterPanel.class)) {
@@ -358,7 +364,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
         } else if (clazz.equals(MeasurementPanel.class)) {
             core.getCellManager().testMeasure(subStep);
         } else if (clazz.equals(SamplerPanel.class)) {
-            core.getCellManager().testSampler(((SamplerPanel)listModel.get(subStep)).getSampler());
+            core.getCellManager().testSampler(((SamplerPanel)((ConfigurationElementPlugin)listModel.get(subStep)).getParameterPanel()).getSampler());
         }
     }
     

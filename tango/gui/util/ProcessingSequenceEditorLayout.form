@@ -42,7 +42,7 @@
                       <Component id="choicePanel" min="-2" pref="302" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
-                  <Component id="editScroll" pref="535" max="32767" attributes="0"/>
+                  <Component id="editScroll" pref="483" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -139,7 +139,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
                       <Component id="preFilterJSP" alignment="1" max="32767" attributes="0"/>
-                      <Component id="preFilterButtonPanel" alignment="1" pref="260" max="32767" attributes="0"/>
+                      <Component id="preFilterButtonPanel" alignment="1" pref="312" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
@@ -200,7 +200,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="segButtonPanel" alignment="0" pref="260" max="32767" attributes="0"/>
+                      <Component id="segButtonPanel" alignment="0" pref="312" max="32767" attributes="0"/>
                       <Component id="segJSP" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -263,7 +263,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
                       <Component id="postFilterJSP" alignment="1" max="32767" attributes="0"/>
-                      <Component id="postFilterButtonPanel" alignment="1" pref="260" max="32767" attributes="0"/>
+                      <Component id="postFilterButtonPanel" alignment="1" pref="312" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>

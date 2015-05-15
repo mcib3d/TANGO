@@ -226,10 +226,10 @@ public class ProcessingSequenceEditor  implements ActionListener {
         master.flush();
         //ij.IJ.log("prefilters dataPF:"+(dataPF.get("preFilters")));
         try {
-            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layout.preFilterList, layout.preFilterButtonPanel , false, false, PreFilterPanel.class);
-            if (this.currentStructure>0) this.structureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, ChannelSegmenterPanel.class);
-            else this.nucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, NucleiSegmenterPanel.class);
-            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layout.postFilterList, layout.postFilterButtonPanel , false, false, PostFilterPanel.class);
+            this.preFilterPanel=new ConfigurationList<PreFilterPanel> (core, getPreFilters(), master, layout.preFilterList, layout.preFilterButtonPanel , false, false, true, PreFilterPanel.class);
+            if (this.currentStructure>0) this.structureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, true, ChannelSegmenterPanel.class);
+            else this.nucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, getSegmentation(), master, layout.segList, layout.segButtonPanel, true, true, true, NucleiSegmenterPanel.class);
+            this.postFilterPanel=new ConfigurationList<PostFilterPanel> (core, getPostFilters(), master, layout.postFilterList, layout.postFilterButtonPanel , false, false, true, PostFilterPanel.class);
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }
@@ -325,10 +325,10 @@ public class ProcessingSequenceEditor  implements ActionListener {
         else currentTemplate=getTemplate(name);
         if (data!=null) data.append("name", name);
         if (currentTemplate!=null) {
-            this.templatePreFilterPanel=new ConfigurationList<PreFilterPanel> (core, (DBObject)currentTemplate.get("preFilters"), null, null, null, false, false, PreFilterPanel.class);
-            if (this.currentStructure>0) this.templateStructureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), null, null, null, true, true, ChannelSegmenterPanel.class);
-            else this.templateNucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), null, null, null, true, true, NucleiSegmenterPanel.class);
-            this.templatePostFilterPanel=new ConfigurationList<PostFilterPanel> (core, (DBObject)currentTemplate.get("postFilters"),null, null, null , false, false, PostFilterPanel.class);
+            this.templatePreFilterPanel=new ConfigurationList<PreFilterPanel> (core, (DBObject)currentTemplate.get("preFilters"), null, null, null, false, false, true, PreFilterPanel.class);
+            if (this.currentStructure>0) this.templateStructureSegmenterPanel=new ConfigurationList<ChannelSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), null, null, null, true, true, true, ChannelSegmenterPanel.class);
+            else this.templateNucleusSegmenterPanel=new ConfigurationList<NucleiSegmenterPanel> (core, (DBObject)currentTemplate.get("segmentation"), null, null, null, true, true, true, NucleiSegmenterPanel.class);
+            this.templatePostFilterPanel=new ConfigurationList<PostFilterPanel> (core, (DBObject)currentTemplate.get("postFilters"),null, null, null , false, false, true, PostFilterPanel.class);
         } else {
             templatePreFilterPanel=null;
             templateStructureSegmenterPanel=null;
