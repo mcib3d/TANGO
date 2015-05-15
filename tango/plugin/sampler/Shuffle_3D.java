@@ -134,7 +134,7 @@ public class Shuffle_3D implements Sampler {
     public void initSampler(InputCellImages raw, SegmentedCellImages seg) {
         ImageInt spotPlus = seg.getImage(channelObjects.getIndex());//channelObjects.getImagePlus(seg, false);
         ImageInt maskPlus = seg.getImage(channelMask.getIndex());//channelMask.getImagePlus(seg, false);
-        IJ.log("Shuffling objects");
+        if (debug) IJ.log("Shuffling objects");
         population = new Objects3DPopulation(spotPlus);
         Object3D mask = new Object3DVoxels(maskPlus, 1);
         population.setMask(mask);

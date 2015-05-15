@@ -16,7 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionListener;
 import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.Experiment;
 import tango.gui.parameterPanel.ConfigurationList;
