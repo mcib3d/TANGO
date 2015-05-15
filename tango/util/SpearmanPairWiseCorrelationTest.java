@@ -32,14 +32,24 @@ public class SpearmanPairWiseCorrelationTest {
             allRhos[idx++] = computeRho(r1, r2);
         }
         int n=0; 
+        int nEgual = 0; // gestion des valeures dupliquées
         if (tail==0) {
-            for (double r : allRhos) if (obsRho<Math.abs(r)) n++;
+            for (double r : allRhos) {
+                if (obsRho<Math.abs(r)) n++;
+                else if (obsRho==r) nEgual++;
+            }
         } else if (tail>0) {
-            for (double r : allRhos) if (obsRho<r) n++;
+            for (double r : allRhos) {
+                if (obsRho<r) n++;
+                else if (obsRho==r) nEgual++;
+            }
         } else {
-            for (double r : allRhos) if (obsRho>r) n++;
+            for (double r : allRhos) {
+                if (obsRho>r) n++;
+                else if (obsRho==r) nEgual++;
+            }
         }
-        return new double[] {obsRho, (double)n / (double)allRhos.length};
+        return new double[] {obsRho, ( (double)n + (double)nEgual/2.0d ) / (double)allRhos.length};
     }
     
     private static double computeRho(float[] r1, ArrayList<Float> r2) {

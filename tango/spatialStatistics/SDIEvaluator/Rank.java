@@ -61,32 +61,23 @@ public class Rank implements SDIEvaluator {
     @Override
     public void eval(double[] observedDescriptor, double[][] sampledDescriptor, StructureQuantifications quantifs) {
          if (!sdi_P.isSelected() || observedDescriptor==null || sampledDescriptor==null || observedDescriptor.length==0 || sampledDescriptor.length==0) return;
-        //sdi
-        
-        //Order[] values = new Order[descriptor.length];
-        double[] values = new double[sampledDescriptor.length+1];
-        //for (int i = 0; i<values.length; i++) values[i]=new Order(descriptor[i][0]);
-        //Order observed = values[0];
-        for (int i = 0; i<sampledDescriptor.length; i++) values[i]=sampledDescriptor[i][0];
-        values[sampledDescriptor.length]=observedDescriptor[0];
-        Arrays.sort(values);
-        int i = 0;
-        double observed = observedDescriptor[0];
-        while(i<values.length && values[i]<observed) i++;
-        int j=i+1;
-        while(j<values.length && values[j]==observed) j++;
-        j--;
-        //res.put(sdi_P.getKey(), (double)Arrays.binarySearch(values, observed)/(double)descriptor.length);
-        double sdi = 1.0 - ((double)(i+j)/2)/(double) values.length; // 1.0 - ??
+        int nbInf = 0;
+        int nbEgual = 0;
+        for (int idx = 0; idx<sampledDescriptor.length; idx++) {
+            if (sampledDescriptor[idx][0]<observedDescriptor[0]) ++nbInf;
+            else if (sampledDescriptor[idx][0]==observedDescriptor[0]) ++nbEgual;
+        }
+        double rank = ((double)nbInf+ (double)nbEgual/2.0d)/(double)sampledDescriptor.length;
+        double sdi = 1.0 - rank;
         if (verbose) {
-            ij.IJ.log("Spatial Statistics: rank of:"+observedDescriptor[0]+" within:"+sampledDescriptor.length+" values is between:"+i + " and "+j + " sdi:"+sdi);
+            ij.IJ.log("Spatial Statistics: rank of:"+observedDescriptor[0]+" within:"+sampledDescriptor.length+" values is between:"+nbInf + " and "+ (nbInf+nbEgual) + " sdi:"+sdi);
         }
         quantifs.setQuantificationStructureNumber(sdi_P, sdi);
     }
 
     @Override
     public String getHelp() {
-        return "";
+        return "SDI computed from the rank of observed descriptor among sampled descriptors according to the first value of each descriptor";
     }
     
     private class Order implements java.lang.Comparable<Order>{
