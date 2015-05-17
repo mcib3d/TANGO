@@ -50,9 +50,9 @@ public class Interface implements java.lang.Comparable<Interface> {
     }
 
     @Override
-    public int compareTo(Interface o) {
-        if (strength < o.strength) return -1;
-        else if(strength > o.strength) return 1;
+    public int compareTo(Interface o) { // descending orger
+        if (strength > o.strength) return -1;
+        else if(strength < o.strength) return 1;
         else return 0;
     }
     

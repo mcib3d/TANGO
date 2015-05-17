@@ -1,5 +1,6 @@
 package tango.plugin.filter.mergeRegions;
 
+import ij.IJ;
 import java.util.HashSet;
 
 /**
@@ -31,7 +32,7 @@ import java.util.HashSet;
 public class InterfaceVoxSet extends Interface {
     HashSet<Vox3D> r1Voxels;
     HashSet<Vox3D> r2Voxels;
-    
+    // value field of voxels = intensity;
     public InterfaceVoxSet(Region r1, Region r2, InterfaceCollection col) {
         super(r1, r2, col);
         r1Voxels = new HashSet<Vox3D>();
@@ -53,11 +54,15 @@ public class InterfaceVoxSet extends Interface {
     @Override
     public void computeStrength() {
         strength=0;
-        if (col.method ==0) {
+        if (col.sortMethod==1) {
+            strength= (double)(r1Voxels.size()+r2Voxels.size());
+        } else  if (col.sortMethod ==2) {
             strength=getSum();
             double size =(double)(r1Voxels.size()+r2Voxels.size()); 
             if (size>0) strength/=size;
-        } else if (col.method==1) {
+        } else if (col.sortMethod==0) {
+            strength=getSum();
+        }else if (col.sortMethod==3) {
             double sum=0;
             double sum2 = 0;
             double size2=0;
@@ -100,7 +105,19 @@ public class InterfaceVoxSet extends Interface {
     
     @Override
     public boolean checkFusionCriteria() {
-        return strength<col.strengthLimit;
+        if (col.fusionMethod==0) {
+            // compute rho of the fused regions....
+            HashSet<Vox3D>[] hsets = new HashSet[]{r1.voxels, r2.voxels};
+            double rho = Region.getRho(hsets, this.col.intensityMap, this.col.regions.nCPUs);
+            if (this.col.verbose) IJ.log("check fusion: "+r1.label+ " val="+r1.mergeCriterionValue+ " + "+r2.label+ " val="+r2.mergeCriterionValue+ " criterion:"+rho);
+            // compare it to rho of each region
+            return (rho>r1.mergeCriterionValue && rho>r2.mergeCriterionValue);
+        } else if (col.fusionMethod==1) {
+            HashSet<Vox3D>[] hsets = new HashSet[]{r1.voxels, r2.voxels};
+            double hess = Region.getHessianMeanValue(hsets, col.hessian, col.erode, col.regions.nCPUs);
+            if (this.col.verbose) IJ.log("check fusion: "+r1.label+ " val="+r1.mergeCriterionValue+ " + "+r2.label+ " val="+r2.mergeCriterionValue+ " criterion:"+hess);
+            return (hess<r1.mergeCriterionValue && hess<r2.mergeCriterionValue);
+        } else return false;
     }
     
     public void addPair(Vox3D v1, Vox3D v2) {

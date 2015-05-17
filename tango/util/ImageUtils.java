@@ -14,6 +14,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.ColorModel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.ImageIcon;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
@@ -170,10 +171,10 @@ public class ImageUtils {
         ImageFloat dm = objectMap.getDistanceMapInsideMask(nbCPUs);
         */
         Object3DVoxels[][] res = new Object3DVoxels[objects.length][layers.length];
-        for (int i = 0; i<objects.length; i++) res[i] = getLayers(objects[i], layers, correctionLimit);
+        for (int i = 0; i<objects.length; i++) res[i] = getLayers(objects[i], layers, correctionLimit, verbose);
         
         if (verbose) {
-            // get bounding box
+            // get bounding box to draw image
             int zMax=0, yMax=0, xMax=0;
             for (Object3DVoxels o : objects) {
                 if (o.getXmax()>xMax) xMax=o.getXmax();
@@ -195,33 +196,67 @@ public class ImageUtils {
         return res;
     }
     
-    public static Object3DVoxels[] getLayers(Object3DVoxels object, double[][] layers, boolean correctionLimit) {
+    public static Object3DVoxels[] getLayers(Object3DVoxels object, double[][] layers, boolean correctionLimit, boolean verbose) {
         Object3DVoxels[] objectLayers = new Object3DVoxels[layers.length];
         ArrayList<Voxel3D> vox = object.getVoxels();
-        Collections.sort(vox);
+        Collections.sort(vox, new Comparator<Voxel3D>() {
+            @Override
+            public int compare(Voxel3D v1, Voxel3D v2) {
+                if (v1.value < v2.value) {
+                    return -1;
+                } else if (v1.value > v2.value) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
         for (int i = 0; i<layers.length; i++) {
-            int idxStart = (int)(layers[i][0] * vox.size() + 0.5);
+            int idxStart = (int)(layers[i][0] * (vox.size()-1) + 0.5);
             int idxStop = (int)(layers[i][1] * (vox.size()-1) + 0.5);
-            IJ.log("idxStart: "+idxStart+ " idxStop: "+idxStop+" value0: "+vox.get(0).getValue() + " value end:"+vox.get(vox.size()-1));
+            if (verbose) IJ.log("object: "+ object.getValue()+" idxStart: "+idxStart+ " value: "+vox.get(idxStart).getValue() + "idxStop: "+idxStop+ " value:"+ vox.get(idxStop).getValue() + " value 0 : "+vox.get(0).getValue() + " value "+(vox.size()-1) +" : "+vox.get(vox.size()-1).getValue());
             // Correction valeurs limites
             if (correctionLimit) {
-                if (vox.get(0).getValue()==vox.get(idxStart).getValue() && vox.get(0).getValue()==vox.get(idxStop).getValue()) {
-                    IJ.log("correction limit ext: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(0).getValue());
+                //int idxStartL = getLeftIndex(vox, idxStart);
+                //int idxStartR = getRightIndex(vox, idxStart);
+                //int idxStopL = getLeftIndex(vox, idxStop);
+                //int idxStopR = getRightIndex(vox, idxStop);
+                
+                //if (idxStopL-idxStartR<=1)
+                
+                //if (idxStart>0 && vox.get(0).getValue()==vox.get(idxStart).getValue()) idxStart = 0;
+                /*if (vox.get(0).getValue()==vox.get(idxStop).getValue()) { // cas où idxStop est dans la couche exterieure
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit ext: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(0).getValue());
                     idxStop = getRightIndex(vox, idxStop);
-                    IJ.log("correction limit ext: new idxStop: "+idxStop);
-                }
-                if (vox.get(vox.size()-1).getValue()==vox.get(idxStop).getValue() && vox.get(0).getValue()==vox.get(idxStart).getValue() ) {
-                    IJ.log("correction limit int: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(vox.size()-1).getValue());
+                    idxStart=0;
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit ext: new idxStop: "+idxStop);
+                }*/
+                // cas où il y a une seule couche
+                /*if (vox.get(vox.size()-1).getValue()==vox.get(idxStop).getValue() && vox.get(0).getValue()==vox.get(idxStart).getValue() && vox.get(vox.size()-1).getValue()!=vox.get(0).getValue()) {
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit int: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(vox.size()-1).getValue());
                     idxStart = getRightIndex(vox, idxStart);
                     if (idxStart<vox.size()-2) idxStart++;
-                    IJ.log("correction limit int: new idxStart: "+idxStart+" value: "+vox.get(idxStart).getValue());
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit int: new idxStart: "+idxStart+" value: "+vox.get(idxStart).getValue());
+                } //else idxStart = getLeftIndex(vox, idxStart);
+                */
+                if (layers[i][1]==1 && layers[i][0]>0 && vox.get(idxStart).value==vox.get(0).value) {
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit start: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(vox.size()-1).getValue());
+                    idxStart = getRightIndex(vox, idxStart);
+                    if (idxStart<vox.size()-2) ++idxStart;
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit start: new idxStart: "+idxStart+" value: "+vox.get(idxStart).getValue());
+                } else if (layers[i][0]==0 && layers[i][1]<1 && vox.get(idxStop).value==vox.get(0).value) {
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit stop: idxStart: "+idxStart+ " idxStop: "+idxStop+" value: "+vox.get(0).getValue());
+                    idxStop = getRightIndex(vox, idxStop);
+                    if (verbose) IJ.log("object: "+object.getValue()+" correction limit stop: new idxStop: "+idxStop);
                 }
+                
+                
             }
             
             ArrayList<Voxel3D> voxObj = new ArrayList<Voxel3D>(idxStop-idxStart+1);
-            for (int j = idxStart; j<idxStop; j++) voxObj.add(vox.get(j));
+            for (int j = idxStart; j<=idxStop; j++) voxObj.add(vox.get(j));
             if (voxObj.isEmpty()) {
-                if (idxStop<vox.size()) voxObj.add(vox.get(idxStop));
+                if (idxStop<(vox.size()-1)) voxObj.add(vox.get(idxStop+1));
                 else if (idxStart>0) voxObj.add(vox.get(idxStart-1));
                 else voxObj = vox;
             }

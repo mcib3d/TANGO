@@ -1,10 +1,13 @@
 package tango.plugin.filter.mergeRegions;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.TreeMap;
+import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import tango.gui.Core;
+import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
 
 /**
  *
@@ -36,19 +39,19 @@ public class RegionCollection {
     HashMap<Integer, Region> regions;
     ImageInt labelMap;
     ImageCalibrations cal;
-    ImageHandler inputGray, derivativeMap;
+    ImageHandler inputGray;
     InterfaceCollection interfaces;
     boolean setInterfaces;
     boolean verbose;
-    public RegionCollection(ImageInt labelMap, ImageHandler intensityMap, ImageHandler derivativeMap, boolean verbose) {
+    int nCPUs;
+    public RegionCollection(ImageInt labelMap, ImageHandler intensityMap, boolean verbose, int nCPUs) {
         this.verbose=verbose;
+        this.nCPUs=nCPUs;
         this.labelMap=labelMap;
         this.inputGray=intensityMap;
-        this.derivativeMap = derivativeMap;
         cal = new ImageCalibrations(labelMap);
         if (inputGray==null) this.setInterfaces=false;
-        getRegions();
-        if (inputGray!=null) setIntensity();
+        createRegions();
     }
     
     public void shiftIndicies(boolean updateRegionMap) {
@@ -71,39 +74,61 @@ public class RegionCollection {
     
     public void initInterfaces() {
         interfaces = new InterfaceCollection(this, verbose);
+        interfaces.getInterfaces2();
+        interfaces.initializeRegionInterfaces();
+        if (verbose) interfaces.drawInterfaces();
     }
     
-    public void mergeAll() {
-        InterfaceCollection.mergeAll(this);
+    public void initInterfacesLight() {
+        interfaces = new InterfaceCollection(this, verbose);
+        interfaces.getInterfacesLight();
+        interfaces.initializeRegionInterfaces();
     }
     
-    public void mergeSort(int method, double derivativeLimit) {
+    public void mergeAllConnected() {
+        InterfaceCollection.mergeAllConnected(this);
+    }
+    
+    public void mergeSortHessianCond(double hessianRadius, boolean useScale, double erode) {
         if (interfaces==null) initInterfaces();
-        interfaces.mergeSort(method, derivativeLimit);
+        double scaleZ = inputGray.getScaleZ();
+        double scaleXY = inputGray.getScaleXY();
+        String unit = inputGray.getUnit();
+        if (!useScale) inputGray.setScale(scaleXY, scaleXY, unit);
+        ImageFloat hess=ImageFeaturesCore.getHessian(this.inputGray, hessianRadius, nCPUs)[0];
+        if (!useScale) {
+            hess.setScale(scaleXY, scaleZ, unit);
+            inputGray.setScale(scaleXY, scaleZ, unit);
+        }
+        for (Region r : regions.values()) if (!r.interfaces.isEmpty()) r.mergeCriterionValue=Region.getHessianMeanValue(new HashSet[]{r.voxels}, hess, erode, nCPUs);
+        interfaces.mergeSortHessian(hess, erode);
+    }
+    
+    public void mergeSortCorrelation() {
+        if (interfaces==null) initInterfaces();
+        for (Region r : regions.values()) if (!r.interfaces.isEmpty()) r.mergeCriterionValue = Region.getRho(new HashSet[]{r.voxels}, inputGray, nCPUs);
+        interfaces.mergeSortCorrelation();
     }
     
     public Region get(int label) {
         return regions.get(label);
     }
     
-    protected void getRegions() {
+    protected void createRegions() {
         regions=new HashMap<Integer, Region>();
-        regions.put(0, new Region(0, null, this));
+        regions.put(0, new Region(0, null, this)); // background
         for (int z = 0; z<labelMap.sizeZ; z++) {
             for (int xy = 0; xy<labelMap.sizeXY; xy++) {
                 int label = labelMap.getPixelInt(xy, z);
                 if (label!=0) {
+                    
                     Region r = regions.get(label);
-                    if (r==null) regions.put(label, new Region(label, new Vox3D(xy, z, Float.NaN), this));
-                    else r.voxels.add(new Vox3D(xy, z, Float.NaN));
+                    if (r==null) regions.put(label, new Region(label, new Vox3D(xy%cal.sizeX, xy/cal.sizeX, z, xy), this));
+                    else r.voxels.add(new Vox3D(xy%cal.sizeX, xy/cal.sizeX, z, xy));
                 }
             }
         }
         if (verbose) ij.IJ.log("Region collection: nb of spots:"+regions.size());
-    }
-    
-    protected void setIntensity() {
-        for (Region r : regions.values()) r.setVoxelIntensity(inputGray);
     }
     
     public void fusion(Region r1, Region r2) {

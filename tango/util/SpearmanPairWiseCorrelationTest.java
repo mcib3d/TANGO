@@ -68,6 +68,12 @@ public class SpearmanPairWiseCorrelationTest {
         return 1 - 6 * d2 / (float)(n *  (n * n - 1)); 
     }
     
+    public static double computeRho(float[] s1, float[] s2) {
+        float[] r1= getRanks(s1);
+        float[] r2= getRanks(s2);
+        return computeRho(computeD2(r1, r2), r1.length);
+    }
+    
     private static float[] getRanks(float[] s) {
         RankObject[] ro = new RankObject[s.length];
         for (int i = 0; i<s.length; i++) ro[i] = new RankObject(s[i], i);

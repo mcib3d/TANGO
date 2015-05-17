@@ -4,6 +4,7 @@ import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputCellImages;
+import tango.dataStructure.InputImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
 
@@ -47,7 +48,7 @@ public class FilteredStructureParameter extends GroupParameter {
         return structureSignal.getIndex();
     }
     
-    public ImageHandler getImage(InputCellImages raw, boolean verbose, int nCPUs) {
+    public ImageHandler getImage(InputImages raw, boolean verbose, int nCPUs) {
         ImageHandler intensityMap = (useFiltered.isSelected()) ? raw.getFilteredImage(structureSignal.getIndex()) : raw.getImage(structureSignal.getIndex());
         intensityMap=preFilters.runPreFilterSequence(structureSignal.getIndex(), intensityMap, raw, nCPUs, verbose);
         if (verbose) intensityMap.show("intensityMap");

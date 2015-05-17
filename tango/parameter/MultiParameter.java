@@ -3,6 +3,7 @@ package tango.parameter;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import ij.IJ;
 import ij.gui.GenericDialog;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -111,7 +112,8 @@ public class MultiParameter extends Parameter implements ChangeListener, NestedP
         Object o = subDBO.get("parameters");
         if (o!=null) {
             BasicDBList list = (BasicDBList)o;
-            for (int i = 0; i< parameters.size(); i++) {
+            int size = Math.min(parameters.size(), list.size()); // case of invalid parametrization 
+            for (int i = 0; i< size; i++) {
                 Parameter[] ps=parameters.get(i);
                 BasicDBObject subSubDBO=(BasicDBObject)list.get(i);
                 for (Parameter p : ps) p.dbGet(subSubDBO);
@@ -237,11 +239,9 @@ public class MultiParameter extends Parameter implements ChangeListener, NestedP
     public boolean sameContent(Parameter p) {
         if (p instanceof MultiParameter) {
             MultiParameter mp = (MultiParameter)p;
-            if (mp.getNbParameters()==getNbParameters()) {
-                ArrayList<Parameter[]> al1=getParametersArrayList();
-                ArrayList<Parameter[]> al2=mp.getParametersArrayList();
-                for (int i = 0; i<getNbParameters(); i++) {
-                    if (!sameValue(al1.get(i), al2.get(i))) return false;
+            if (mp.getParametersArrayList().size()==getParametersArrayList().size()) {
+                for (int i = 0; i<getParametersArrayList().size(); i++) {
+                    if (!sameValue(getParametersArrayList().get(i), mp.getParametersArrayList().get(i))) return false;
                 }
                 return true;
             } else return false;
@@ -252,10 +252,11 @@ public class MultiParameter extends Parameter implements ChangeListener, NestedP
     public void setContent(Parameter p) {
         if (p instanceof MultiParameter) {
             MultiParameter mp = (MultiParameter)p;
+            nb.setContent(mp.nb);
             majParameters(mp.getNbParameters());
             ArrayList<Parameter[]> al1=getParametersArrayList();
             ArrayList<Parameter[]> al2=mp.getParametersArrayList();
-            for (int i = 0; i<getNbParameters(); i++) {
+            for (int i = 0; i<mp.getNbParameters(); i++) {
                 setContent(al1.get(i), al2.get(i));
             }
         } 

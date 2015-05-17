@@ -31,18 +31,28 @@ import mcib3d.geom.Voxel3D;
 
 // light voxel class
 public class Vox3D implements java.lang.Comparable<Vox3D> {
-        public int xy, z;
+        public int x, y, z, xy;
         public float value;
 
-        public Vox3D(int xy, int z, float value) {
-            this.xy=xy;
+        public Vox3D(int x, int y, int z, int sizeX, float value) {
+            this.x = x;
+            this.y=y;
             this.z=z;
+            this.xy = this.x+this.y * sizeX;
             this.value=value;
+        }
+        
+        public Vox3D(int x, int y, int z, int xy) {
+            this.x = x;
+            this.y=y;
+            this.z=z;
+            this.xy = xy;
+            this.value=Float.NaN;
         }
    
         @Override
         public int compareTo(Vox3D v) { //ascending order
-            if (v.xy==xy && v.z==z) return 0;
+            if (v.x==x && v.y==y && v.z==z) return 0;
             else if(value < v.value) return -1;
             else if(value > v.value) return 1;
             else return 0;
@@ -51,24 +61,31 @@ public class Vox3D implements java.lang.Comparable<Vox3D> {
         @Override 
         public boolean equals(Object o) {
             if (o instanceof Vox3D) {
-                return xy==((Vox3D)o).xy && z==((Vox3D)o).z;
+                return x==((Vox3D)o).x && y==((Vox3D)o).y && z==((Vox3D)o).z;
             } return false;
         }
 
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = 47 * hash + this.xy;
-            hash = 47 * hash + this.z;
+            hash = 79 * hash + this.x;
+            hash = 79 * hash + this.y;
+            hash = 79 * hash + this.z;
             return hash;
         }
 
+
+
         @Override
         public String toString() {
-            return "xy:"+xy+ " z:"+z+ " value:"+value;
+            return "x:"+x + "y:"+ y+ " z:"+z+ " value:"+value;
         }
         
-        public Voxel3D toVoxel3D(double value, int sizeX) {
-            return new Voxel3D(xy%sizeX, xy/sizeX, z, value);
+        public Voxel3D toVoxel3D(double value) {
+            return new Voxel3D(x, y, z, value);
+        }
+        
+        public Vox3D copy() {
+            return new Vox3D(x, y, z, xy);
         }
     }

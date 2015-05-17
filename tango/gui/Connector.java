@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import mcib3d.image3d.ImageHandler;
 import mcib3d.utils.exceptionPrinter;
 import tango.helper.HelpManager;
 import tango.helper.Helper;
@@ -210,6 +211,7 @@ public class Connector extends javax.swing.JPanel {
                 user.append("options_" + this.getHost(), userHost);
             }
             options.dbGet((BasicDBObject) userHost);
+            ImageHandler.defZoomFactor=magnitude.getDoubleValue(1);
             SystemEnvironmentVariable mongoUser = new SystemEnvironmentVariable("mongoUser", usr, false, false, false);
             mongoUser.writeToPrefs();
             core.connect();

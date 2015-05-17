@@ -83,7 +83,7 @@ public class EraseSpots implements PostFilter {
             new DoubleParameter("Erase spot if I(L1)/I(L2) > threshold. Threhsold?", "thld", 1d, Parameter.nfDEC3)
         });
         ConditionalParameter corrCond = new ConditionalParameter(new ChoiceParameter("Compute (Spearman correlation test):", "compute", new String[]{"p-value", "rho"}, "p-value"));
-        corrCond.setCondition("p-value", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for p-value:", "thldpvalue", 0.05d, Parameter.nfDEC5)});
+        corrCond.setCondition("p-value", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for p-value:", "thldpvalue", 0.01d, Parameter.nfDEC5), new IntParameter("Test precision (number of permutations)", "testPrecision", 10000)});
         corrCond.setCondition("rho", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for roh:", "thldrho", 0.9d, Parameter.nfDEC3)});
         criterion.setCondition(methods[3], new Parameter[]{
             new DoubleParameter("Dilate spots? Radius:", "dilate", 1d, Parameter.nfDEC2),
@@ -182,9 +182,9 @@ public class EraseSpots implements PostFilter {
                 if (expecting == 0) corr=1;
                 else if (expecting ==1) corr=-1;
                 else corr=0;
-                
-               
-                objects = eraseObjectsCorrelation(objects, in, intensityMap, (float)dilate, thld, pValue, corr);
+                int permutationsNb=pValue? ((IntParameter)corrCond.getParameters()[2]).getIntValue(10000) : 0;
+
+                objects = eraseObjectsCorrelation(objects, in, intensityMap, (float)dilate, thld, pValue, corr, permutationsNb);
             }
         }
         return in;
@@ -215,7 +215,7 @@ public class EraseSpots implements PostFilter {
         int nbInit=objects.size();
         Object3DVoxels[][] eroded=null;
         if (erode>0 && erode<1) {
-            double[][] layers = periphery? new double[][]{{1-erode, 1}} : new double[][]{{0, 1-erode}};
+            double[][] layers = periphery? new double[][]{{0, erode}} : new double[][]{{erode, 1}};
             eroded = ImageUtils.getObjectLayers(objects.toArray(new Object3DVoxels[objects.size()]), layers, true, nbCPUs, debug);
         }
         Iterator<Object3DVoxels> it = objects.iterator();
@@ -246,7 +246,7 @@ public class EraseSpots implements PostFilter {
         if (objects.isEmpty()) return objects;
         Object3DVoxels[][] eroded=null;
         if (erode>0 && erode<1) {
-            double[][] layers = periphery? new double[][]{{1-erode, 1}} : new double[][]{{0, 1-erode}};
+            double[][] layers = periphery? new double[][]{{0, erode}} : new double[][]{{erode, 1}};
             eroded = ImageUtils.getObjectLayers(objects.toArray(new Object3DVoxels[objects.size()]), layers, true, nbCPUs, debug);
         }
         if (debug) ij.IJ.log("EraseSpots::nb objects:"+objects.size());
@@ -291,7 +291,7 @@ public class EraseSpots implements PostFilter {
             }
         }
         
-        double[][] layers = new double[][]{{l1Min, l1Max}, {l2Min, l2Max}};
+        double[][] layers = new double[][]{{1-l1Max, 1-l1Min}, {1-l2Max, 1-l2Min}};
         Object3DVoxels[][] objectLayers = ImageUtils.getObjectLayers(dilate>0?dilObjects:objects.toArray(new Object3DVoxels[objects.size()]), layers, true, nbCPUs, debug);
         
         if (debug) ij.IJ.log("EraseSpots::nb objects:"+objects.size());
@@ -316,7 +316,7 @@ public class EraseSpots implements PostFilter {
         return objects;
     }
 
-    public ArrayList<Object3DVoxels> eraseObjectsCorrelation(ArrayList<Object3DVoxels> objects, ImageInt in, ImageHandler intensity, float dilate, double thld, boolean pValue, int tail) {
+    public ArrayList<Object3DVoxels> eraseObjectsCorrelation(ArrayList<Object3DVoxels> objects, ImageInt in, ImageHandler intensity, float dilate, double thld, boolean pValue, int tail, int permutationNb) {
         if (objects.isEmpty()) return objects;
         Object3DVoxels[] dilObjects=null;
         if (dilate>0) {
@@ -343,7 +343,7 @@ public class EraseSpots implements PostFilter {
             int idx=0;
             for (Voxel3D v : dilO.getVoxels()) distances[idx++] = (float)v.getValue();
             if (pValue) {
-                double[] res = SpearmanPairWiseCorrelationTest.performTest(values, distances, tail, 5000);
+                double[] res = SpearmanPairWiseCorrelationTest.performTest(values, distances, tail, permutationNb);
                 if (res[1]>thld) {
                     o.draw(in, 0);
                     it.remove();

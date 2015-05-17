@@ -1,5 +1,6 @@
 package tango.plugin.filter.mergeRegions;
 
+import ij.IJ;
 import java.util.*;
 import mcib3d.image3d.*;
 import tango.gui.Core;
@@ -31,21 +32,20 @@ import tango.gui.Core;
  */
 
 public class InterfaceCollection {
-    public static final String[] methods = new String[]{"Absolute Gradient Value", "Relative Gradient Value"};
-    int method;
+    int fusionMethod, sortMethod;
     RegionCollection regions;
     Set<Interface> interfaces;
     ImageHandler intensityMap;
-    double strengthLimit;
+    double erode;
     boolean verbose;
+    ImageFloat hessian;
     
     public InterfaceCollection(RegionCollection regions, boolean verbose) {
         this.regions = regions;
         this.verbose=verbose;
-        intensityMap = regions.derivativeMap;
-        getInterfaces();
-        initializeRegionInterfaces();
-        //if (verbose) drawInterfaces();
+        intensityMap = regions.inputGray;
+        
+        
     }
     
     protected void getInterfaces() {
@@ -58,32 +58,36 @@ public class InterfaceCollection {
                 for (int x = 0; x<cal.sizeX; x++) {
                     int label = inputLabels.getPixelInt(x, y, z);
                     if (label==0) continue;
-                    Vox3D vox = new Vox3D(x+y*cal.sizeX, z, Float.NaN);
+                    Region r = this.regions.get(label);
+                    Vox3D vox = new Vox3D(x, y, z,cal.sizeX, Float.NaN);
                     // en avant uniquement pour les interactions avec d'autre spots
                     // eventuellement aussi en arriere juste pour interaction avec 0
-                    if (x<cal.limX) {
-                        otherLabel = inputLabels.getPixelInt(vox.xy+1, vox.z);
-                        if (otherLabel!=label) addPair(interfaceMap, label, vox, otherLabel, new Vox3D(vox.xy+1, vox.z, Float.NaN)); // && otherLabel!=0
-                    }
-                    if (x>0) { // with 0 only
+                    
+                    if (vox.x>0) { // with 0 only
                         otherLabel = inputLabels.getPixelInt(vox.xy-1, vox.z);
-                        if (otherLabel==0) addPair(interfaceMap, label, vox, otherLabel, new Vox3D(vox.xy-1, vox.z, Float.NaN));
+                        if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x-1, vox.y, vox.z,cal.sizeX, Float.NaN));
                     }
-                    if (y<cal.limY) {
+                    if (vox.y<cal.limY) {
                         otherLabel = inputLabels.getPixelInt(vox.xy+cal.sizeX, vox.z);
-                        if (otherLabel!=label) addPair(interfaceMap, label, vox, otherLabel, new Vox3D(vox.xy+cal.sizeX, vox.z, Float.NaN));
+                        if (otherLabel!=r.label) {
+                            if (otherLabel!=0)  addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y+1, vox.z, cal.sizeX, Float.NaN));
+                            else addPairBackground(r, vox, new Vox3D(vox.x, vox.y+1, vox.z, cal.sizeX, Float.NaN));
+                        }
                     }
-                    if (y>0) {// with 0 only
+                    if (vox.y>0) {// with 0 only
                         otherLabel = inputLabels.getPixelInt(vox.xy-cal.sizeX, vox.z);
-                        if (otherLabel==0) addPair(interfaceMap, label, vox, otherLabel, new Vox3D(vox.xy-cal.sizeX, vox.z, Float.NaN));
+                        if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x, vox.y-1, vox.z,cal.sizeX, Float.NaN));
                     }
                     if (vox.z<cal.limZ) {
                         otherLabel = inputLabels.getPixelInt(vox.xy, vox.z+1);
-                        if (otherLabel!=label) addPair(interfaceMap, label, vox, otherLabel, new Vox3D(vox.xy, vox.z+1, Float.NaN));
+                        if (otherLabel!=r.label) {
+                            if (otherLabel!=0)  addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y, vox.z+1,cal.sizeX, Float.NaN));
+                            else addPairBackground(r, vox, new Vox3D(vox.x, vox.y, vox.z+1,cal.sizeX, Float.NaN));
+                        }
                     }
                     if (vox.z>0) {// with 0 only
                         otherLabel = inputLabels.getPixelInt(vox.xy, vox.z-1);
-                        if (otherLabel==0) addPair(interfaceMap, label, vox, otherLabel, new Vox3D(vox.xy, vox.z-1, Float.NaN));
+                        if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x, vox.y, vox.z-1,cal.sizeX, Float.NaN));
                     }
                 }
             }
@@ -94,7 +98,85 @@ public class InterfaceCollection {
         if (verbose) ij.IJ.log("Interface collection: nb of interfaces:"+interfaces.size());
     }
     
-    public static void mergeAll(RegionCollection regions) {
+    protected void getInterfaces2() {
+        HashMap<RegionPair, Interface> interfaceMap = new HashMap<RegionPair, Interface>();
+        ImageCalibrations cal = regions.cal;
+        ImageInt inputLabels = regions.labelMap;
+        int otherLabel;
+        for (Region r : regions.regions.values()) {
+            for (Vox3D vox : r.voxels) {
+                    // en avant uniquement pour les interactions avec d'autre spots
+                    // eventuellement aussi en arriere juste pour interaction avec 0
+                    vox = vox.copy(); // to avoid having the same instance of voxel as in the region.
+                if (vox.x<cal.limX) {
+                    otherLabel = inputLabels.getPixelInt(vox.xy+1, vox.z);
+                    if (otherLabel!=r.label) {
+                        if (otherLabel!=0) addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x+1, vox.y, vox.z, cal.sizeX, Float.NaN));
+                        else addPairBackground(r, vox, new Vox3D(vox.x+1, vox.y, vox.z, cal.sizeX, Float.NaN));
+                    }
+                }
+                if (vox.x>0) { // with 0 only
+                    otherLabel = inputLabels.getPixelInt(vox.xy-1, vox.z);
+                    if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x-1, vox.y, vox.z,cal.sizeX, Float.NaN));
+                }
+                if (vox.y<cal.limY) {
+                    otherLabel = inputLabels.getPixelInt(vox.xy+cal.sizeX, vox.z);
+                    if (otherLabel!=r.label) {
+                        if (otherLabel!=0)  addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y+1, vox.z, cal.sizeX, Float.NaN));
+                        else addPairBackground(r, vox, new Vox3D(vox.x, vox.y+1, vox.z, cal.sizeX, Float.NaN));
+                    }
+                }
+                if (vox.y>0) {// with 0 only
+                    otherLabel = inputLabels.getPixelInt(vox.xy-cal.sizeX, vox.z);
+                    if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x, vox.y-1, vox.z,cal.sizeX, Float.NaN));
+                }
+                if (vox.z<cal.limZ) {
+                    otherLabel = inputLabels.getPixelInt(vox.xy, vox.z+1);
+                    if (otherLabel!=r.label) {
+                        if (otherLabel!=0)  addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y, vox.z+1,cal.sizeX, Float.NaN));
+                        else addPairBackground(r, vox, new Vox3D(vox.x, vox.y, vox.z+1,cal.sizeX, Float.NaN));
+                    }
+                }
+                if (vox.z>0) {// with 0 only
+                    otherLabel = inputLabels.getPixelInt(vox.xy, vox.z-1);
+                    if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x, vox.y, vox.z-1,cal.sizeX, Float.NaN));
+                }
+            }
+            
+            interfaces = new HashSet<Interface>(interfaceMap.values());
+            setVoxelIntensity();
+        }
+        if (verbose) ij.IJ.log("Interface collection: nb of interfaces:"+interfaces.size());
+    }
+    
+    protected void getInterfacesLight() {
+        HashMap<RegionPair, Interface> interfaceMap = new HashMap<RegionPair, Interface>();
+        ImageCalibrations cal = regions.cal;
+        ImageInt inputLabels = regions.labelMap;
+        int otherLabel;
+        for (Region r : regions.regions.values()) {
+            for (Vox3D vox : r.voxels) {
+                    vox=vox.copy();
+                    if (vox.x<cal.limX) {
+                        otherLabel = inputLabels.getPixelInt(vox.xy+1, vox.z);
+                        if (otherLabel>0 && otherLabel!=r.label && !interfaceMap.containsKey(new RegionPair(r.label, otherLabel))) addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x+1, vox.y, vox.z, cal.sizeX, Float.NaN)); // && otherLabel!=0
+                    }
+                    if (vox.y<cal.limY) {
+                        otherLabel = inputLabels.getPixelInt(vox.xy+cal.sizeX, vox.z);
+                        if (otherLabel>0 && otherLabel!=r.label && !interfaceMap.containsKey(new RegionPair(r.label, otherLabel))) addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y+1, vox.z, cal.sizeX, Float.NaN));
+                    }
+                    if (vox.z<cal.limZ) {
+                        otherLabel = inputLabels.getPixelInt(vox.xy, vox.z+1);
+                        if (otherLabel>0 && otherLabel!=r.label && !interfaceMap.containsKey(new RegionPair(r.label, otherLabel))) addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y, vox.z+1, cal.sizeX, Float.NaN));
+                    }
+            }
+            interfaces = new HashSet<Interface>(interfaceMap.values());
+            setVoxelIntensity();
+        }
+        if (verbose) ij.IJ.log("Interface collection: nb of interfaces:"+interfaces.size());
+    }
+    
+    public static void mergeAllConnected(RegionCollection regions) {
         ImageCalibrations cal = regions.cal;
         ImageInt inputLabels = regions.labelMap;
         int otherLabel;
@@ -104,7 +186,7 @@ public class InterfaceCollection {
                     int label = inputLabels.getPixelInt(x, y, z);
                     if (label==0) continue;
                     Region currentRegion = regions.get(label);
-                    Vox3D vox = new Vox3D(x+y*cal.sizeX, z, Float.NaN);
+                    Vox3D vox = new Vox3D(x, y, z, cal.sizeX, Float.NaN);
                     if (x<cal.limX) {
                         otherLabel = inputLabels.getPixelInt(vox.xy+1, vox.z);
                         if (otherLabel!=label && otherLabel!=0) {
@@ -190,10 +272,17 @@ public class InterfaceCollection {
         RegionPair pair = new RegionPair(label1, label2);
         Interface inter = interfaces.get(pair);
         if (inter==null) {
-            inter = new InterfaceVoxSet(regions.get(pair.r1), regions.get(pair.r2), this);
+            inter = new InterfaceVoxSet(regions.get(pair.r1), regions.get(pair.r2), this); // enfonction de la methode...
             interfaces.put(pair, inter);
         }
         ((InterfaceVoxSet)inter).addPair(vox1, vox2);
+    }
+    
+    protected void addPairBackground(Region r, Vox3D vox1, Vox3D vox2) {
+        if (r.interfaceBackground==null) {
+            r.interfaceBackground = new InterfaceVoxSet(regions.get(0), r, this); // enfonction de la methode...
+        }
+        ((InterfaceVoxSet)r.interfaceBackground).addPair(vox1, vox2);
     }
     
     protected void setVoxelIntensity() {
@@ -260,22 +349,84 @@ public class InterfaceCollection {
         return change;
     }
     
-    protected void mergeSort(int method, double strengthLimit) {
-        this.method=method;
-        this.strengthLimit=strengthLimit;
-        if (verbose) ij.IJ.log("Merge Regions: nb interactions:"+interfaces.size());
-        
+    protected void mergeSortHessian(ImageFloat hess, double erode) {
+        this.sortMethod=0;
+        this.fusionMethod=1;
+        this.erode = erode;
+        this.hessian=hess;
+        mergeSortCluster();
+    }
+    
+    protected void mergeSortCorrelation() {
+        this.sortMethod=0;
+        this.fusionMethod=0;
+        mergeSortCluster();
+    }
+    
+    protected void mergeSortCluster() {
+        ArrayList<HashSet<Interface>> clusters = new ArrayList<HashSet<Interface>>();
+        HashSet<Interface> currentCluster;
+        for (Interface i : interfaces) {
+            currentCluster = null;
+            if (clusters.isEmpty()) {
+                currentCluster = new HashSet<Interface>(i.r1.interfaces.size()+ i.r2.interfaces.size()-1);
+                currentCluster.addAll(i.r1.interfaces);
+                currentCluster.addAll(i.r2.interfaces);
+                clusters.add(currentCluster);
+            } else {
+                Iterator<HashSet<Interface>> it = clusters.iterator();
+                while(it.hasNext()) {
+                    HashSet<Interface> cluster = it.next();
+                    if (cluster.contains(i)) {
+                        cluster.addAll(i.r1.interfaces);
+                        cluster.addAll(i.r2.interfaces);
+                        if (currentCluster!=null) { // fusion des clusters
+                            currentCluster.addAll(cluster);
+                            it.remove();
+                        } else currentCluster=cluster;
+                    }
+                }
+                if (currentCluster==null) {
+                    currentCluster = new HashSet<Interface>(i.r1.interfaces.size()+ i.r2.interfaces.size()-1);
+                    currentCluster.addAll(i.r1.interfaces);
+                    currentCluster.addAll(i.r2.interfaces);
+                    clusters.add(currentCluster);
+                }
+            }
+        } 
+        if (verbose) { // draw clusters
+            ImageShort im = new ImageShort("Clusters", regions.cal.sizeX, regions.cal.sizeY, regions.cal.sizeZ);
+            int currentLabel = 1; 
+            for (HashSet<Interface> c : clusters) {
+                for (Interface i : c) {
+                    for (Vox3D v : i.r1.voxels) im.setPixel(v.xy, v.z, currentLabel);
+                    for (Vox3D v : i.r2.voxels) im.setPixel(v.xy, v.z, currentLabel);
+                }
+                ++currentLabel;
+            }
+            im.show();
+        }
+        int clusterLabel = 0;
+        int size = 0;
+        for (HashSet<Interface> c : clusters) {
+            if (verbose) IJ.log("mergeSort cluster: "+ ++clusterLabel);
+            interfaces = c;
+            mergeSort();
+            size+=interfaces.size();
+        }
+        interfaces = new HashSet<Interface>(size);
+        for (HashSet<Interface> c : clusters) interfaces.addAll(c);
+    }
+    
+    private void mergeSort() {
+        if (verbose) ij.IJ.log("Merge Regions: Method: "+MergeRegions.methodsMergeSort[fusionMethod]+ " sort method: " +MergeRegions.sortMethods[sortMethod] +" nb interactions:"+interfaces.size());
         for (Interface i : interfaces) i.computeStrength();
         if (verbose) drawInterfacesStrength();
         interfaces = new TreeSet<Interface>(interfaces);
         Iterator<Interface> it = interfaces.iterator(); // descending??
         while (it.hasNext()) {
             Interface i = it.next();
-            if (i.r1.label==0) {
-                it.remove();
-                continue;
-            }
-            //if (verbose) System.out.println("Interface:"+i);
+            if (verbose) System.out.println("Interface:"+i);
             if (i.checkFusionCriteria()) {
                 it.remove();
                 if (fusion(i, false)) it=interfaces.iterator();
