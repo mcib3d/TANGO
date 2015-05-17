@@ -1,31 +1,14 @@
 package tango.plugin.measurement;
 
 import ij.IJ;
-import ij.ImagePlus;
-import ij.WindowManager;
-import ij.gui.GenericDialog;
-import ij.measure.ResultsTable;
-import ij.plugin.filter.PlugInFilter;
-import ij.process.ImageProcessor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import mcib3d.geom.Object3D;
-import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
-import mcib3d.image3d.distanceMap3d.EDT;
-import mcib_plugins.analysis.simpleMeasure;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
-import tango.gui.Core;
 import tango.parameter.*;
-import tango.plugin.measurement.Measurement;
 import tango.plugin.measurement.MeasurementObject;
-import tango.plugin.measurement.radialAnalysis.NormalizeDistanceMap;
 
 /*
  * To change this template, choose Tools | Templates and open the template in

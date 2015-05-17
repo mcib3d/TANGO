@@ -1,12 +1,9 @@
 package tango.plugin.measurement;
 
 import ij.ImagePlus;
-import java.util.ArrayList;
-import java.util.HashMap;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DSurface;
 import mcib3d.image3d.ImageInt;
-import mcib_plugins.analysis.simpleMeasure;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;

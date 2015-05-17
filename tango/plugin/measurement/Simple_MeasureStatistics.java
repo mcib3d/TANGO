@@ -11,7 +11,6 @@ import java.util.Iterator;
 import mcib3d.geom.Object3D;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
-import mcib_plugins.analysis.simpleMeasure;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
@@ -98,7 +97,7 @@ public class Simple_MeasureStatistics implements PlugInFilter, MeasurementObject
     @Override
     public void run(ImageProcessor ip) {
         if (Dialogue()) {
-            simpleMeasure mes = new simpleMeasure(WindowManager.getImage(imaSpots));
+            SimpleMeasure mes = new SimpleMeasure(WindowManager.getImage(imaSpots));
             ResultsTable rt = ResultsTable.getResultsTable();
             if (rt == null) {
                 rt = new ResultsTable();

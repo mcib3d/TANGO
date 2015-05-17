@@ -2,9 +2,7 @@ package tango.plugin.filter;
 
 import imageware.Builder;
 import imageware.ImageWare;
-import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
 import tango.parameter.BooleanParameter;
 import tango.parameter.ConditionalParameter;
@@ -64,7 +62,7 @@ public class LaplacianOfGaussian3D implements PreFilter {
 
     public static ImageHandler LOG(ImageHandler imp, double radX, double radZ) {
         ImageWare in = Builder.create(imp.getImagePlus(), 3);
-            mcib_plugins.processing.LoG3D localLoG3D = new mcib_plugins.processing.LoG3D(false);
+            LoG3D localLoG3D = new LoG3D(false);
             ImageWare res;
             if (imp.sizeZ > 1) {
                 res = localLoG3D.doLoG(in, radX, radX, radZ);

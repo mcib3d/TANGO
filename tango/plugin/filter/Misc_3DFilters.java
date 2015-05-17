@@ -9,11 +9,8 @@ import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
-import imageware.Builder;
-import imageware.ImageWare;
 import java.util.HashMap;
 import mcib3d.image3d.ImageHandler;
-import mcib_plugins.processing.LoG3D;
 import tango.dataStructure.InputImages;
 import tango.parameter.*;
 

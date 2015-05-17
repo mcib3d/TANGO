@@ -2,12 +2,6 @@ package tango.plugin.measurement;
 
 
 import ij.ImagePlus;
-import ij.gui.GenericDialog;
-import ij.measure.ResultsTable;
-import ij.plugin.filter.PlugInFilter;
-import ij.process.ImageProcessor;
-import java.util.HashMap;
-import mcib_plugins.analysis.GLCMTexture;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.SegmentedCellImages;
 import tango.dataStructure.StructureQuantifications;

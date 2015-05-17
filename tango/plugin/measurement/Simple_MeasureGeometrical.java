@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import mcib3d.geom.Object3D;
 import mcib3d.image3d.ImageInt;
-import mcib_plugins.analysis.simpleMeasure;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
@@ -111,7 +110,7 @@ public class Simple_MeasureGeometrical implements PlugInFilter, MeasurementObjec
 
     @Override
     public void run(ImageProcessor ip) {
-        simpleMeasure mes = new simpleMeasure(myPlus);
+        SimpleMeasure mes = new SimpleMeasure(myPlus);
         ResultsTable rt = ResultsTable.getResultsTable();
         if (rt == null) {
             rt = new ResultsTable();
