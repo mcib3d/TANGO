@@ -1,6 +1,7 @@
 package tango.plugin.measurement;
 
 import mcib3d.geom.Object3D;
+import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.SegmentedCellImages;
 import tango.dataStructure.StructureQuantifications;
@@ -93,10 +94,18 @@ public class ObjectColocalization implements MeasurementObject2Object {
         }
         int offset = 0;
         for (Object3D o : objects1) {
-            o.setLabelImage(null); // need to reset label image, since offset is wrong, should be 0 and not offset from field image // FIXME
+            ImageInt label=o.getLabelImage();
+//            int ofX=label.offsetX;
+//            int ofY=label.offsetY;
+//            int ofZ=label.offsetZ;
+//            IJ.log("offset "+ofX+" "+ofY+" "+ofZ);
+            o.setLabelImage(null); // need to reset label image // FIXME
             for (int j = 0; j < size2; j++) {
+                ImageInt label2=o.getLabelImage();
+                // need to reset label image // FIXME
                 objects2[j].setLabelImage(null);
                 mes[j + offset] = o.getColoc(objects2[j]) * volumeUnit;
+                
                 //System.out.println("coloc:"+i+ "+"+j+ " "+mes[j+offset]);
                 if (mespc1 != null) {
                     mespc1[j + offset] = mes[j + offset] / (o.getVolumeUnit());
@@ -104,7 +113,9 @@ public class ObjectColocalization implements MeasurementObject2Object {
                 if (mespc2 != null) {
                     mespc2[j + offset] = mes[j + offset] / (objects2[j].getVolumeUnit());
                 }
+                 objects2[j].setLabelImage(label2);
             }
+            o.setLabelImage(label);
             offset += size2;
         }
         if (overlap.isSelected()) {
