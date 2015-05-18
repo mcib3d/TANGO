@@ -4,6 +4,7 @@
  */
 package tango.plugin.filter;
 
+import ij.IJ;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import mcib3d.geom.Object3D;
@@ -191,7 +192,7 @@ public abstract class SpotLocalThresholder {
     public void localThreshold(Object3DVoxels spot, float thld, boolean rescue) {
         
         TreeSet<Vox3D> heap = new TreeSet<Vox3D>();
-        Vox3D seed = getMax(spot);
+        Vox3D seed = getLocalExtremum(spot);
         if (debug) ij.IJ.log("Local Threshold: spot:"+spot.getValue()+ " thld:"+thld+ " max:"+seed.toString());
         heap.add(seed);
         //HashSet<Vox3D> newVox = new HashSet<Vox3D>(spot.getVoxels().size());
@@ -293,6 +294,43 @@ public abstract class SpotLocalThresholder {
             }
         }
         return maxVox;
+    }
+    
+    protected Vox3D getLocalExtremum(Object3D s) {
+        float max = 0;
+        Vox3D maxVox = null;
+        for (Voxel3D v : s.getVoxels()) {
+            float value = intensityMap.getPixel(v.getXYCoord(intensityMap.sizeX), v.getRoundZ());
+            if (value>max && isLocalExtremum(v.getRoundX(), v.getRoundY(), v.getRoundZ(), value)) {
+                max = value;
+                maxVox = new Vox3D(v.getRoundX(), v.getRoundY(), v.getRoundZ(), max);
+            }
+        }
+        if (maxVox==null) {
+            if (debug) IJ.log("Spot: "+s.getValue()+ " no local extrema found");
+            return getMax(s);
+        }
+        else {
+            if (debug) IJ.log("Spot: "+s.getValue()+ " local extrema found : " + maxVox);
+            return maxVox;
+        }
+    }
+    
+    protected boolean isLocalExtremum(int x, int y, int z, float intensity) {
+        for (int zz = z-1; zz<=z+1; zz++) {
+            if (zz>=0 && zz<intensityMap.sizeZ) {
+                for (int yy = y-1; yy<=y+1; yy++) {
+                    if (yy>=0 && yy<intensityMap.sizeY) {
+                        for (int xx = x-1; xx<=x+1; xx++) {
+                            if ((xx!=x || yy!=y || zz!=z) && xx>=0 && xx<sizeX) {
+                                if (intensityMap.getPixel(xx+yy*sizeX, zz)>intensity) return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
     
     protected class Vox3D implements java.lang.Comparable<Vox3D> {
