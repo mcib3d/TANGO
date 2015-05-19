@@ -48,16 +48,16 @@ public class WatershedEdgeDetection extends WatershedTransform3D {
     }
     
     @Override
-    protected boolean isLocalMin(int x, int y, int z, float ws) {
+    protected boolean isLocalExtremum(int x, int y, int z, float ws) {
         int xy = x+y*this.sizeX;
         if (this.mask.getPixel(xy, z)==label) return false;
-        return super.isLocalMin(x, y, z, ws);
+        return super.isLocalExtremum(x, y, z, ws);
     }
     
     @Override
-    protected void getRegionalMinima() {
+    protected void getRegionalExtrema() {
         // gets regional minima outside spot within mask
-        super.getRegionalMinima();
+        super.getRegionalExtrema();
         float max = -Float.MAX_VALUE;
         int zMin=0, xyMin=0;
         for (int z = 0; z<mask.sizeZ;z++) {

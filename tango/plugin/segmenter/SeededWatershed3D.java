@@ -64,7 +64,6 @@ public class SeededWatershed3D implements SpotSegmenter  {
     ConditionalParameter heightDynCond = new ConditionalParameter(useHeightDynamic);
     ConditionalParameter volumeConstraintCond = new ConditionalParameter(useVolumeConstraint);
     
-    Parameter[] parameters;
 
     boolean debug;
     int nCPUs=1;
@@ -95,8 +94,8 @@ public class SeededWatershed3D implements SpotSegmenter  {
         return"<ul><strong>Seeded Watershed 3D</strong>"
                 + "<li>Uses a user-defined propagation map (default is gradient magnitude). </li>"
                 + "<li>Seeds regional minima of the propagation map. </li>"
-                + "<li>Runs until the background threshold. </li>"
-                +"<li>Split the whole image (within nucleus space) into regions. Some regions will have to be erased during post-processing (use for instance erase spot filter, first with a low SNR criterion then with more refined criteria if necessary</li>"
+                + "<li>Runs until the background threshold. If the backgoud threshold is not defined precisely, spots may be adjusted localy using the post-filter \"Region Adjustment\"</li>"
+                +"<li>Split the whole image (within nucleus space until the background threshold) into regions. Some regions will have to be erased during post-processing (use for instance erase spot filter, first with a low SNR criterion then with more refined criteria if necessary</li>"
                 +"<li>May produce over-segmentation: to overcome this problem: use pre-filter to reduce noise, increase gradient scale, or use a merging algorithm as post-filter</li>";
     }
 

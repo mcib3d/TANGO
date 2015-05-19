@@ -65,6 +65,7 @@ public class WatershedTransform3D {
     boolean dyn, heightDyn, volDyn, volumeDynConst;
     
     TreeSet<Vox3D> heap;
+    //PriorityQueue<Vox3D> heap;
     double maxDynamics, maxDynamicsWS;
 
     public WatershedTransform3D(int nCPUs, boolean verbose) {
@@ -97,7 +98,7 @@ public class WatershedTransform3D {
         // INIT Dynamics
         if (this.heightDyn) computeDynamicLimits();
         // RUN
-        getRegionalMinima();
+        getRegionalExtrema();
         
         if (debug) {
             segmentedMap.showDuplicate("Regional Minima");
@@ -157,33 +158,6 @@ public class WatershedTransform3D {
         return (upMean - lowMean);
     }
     
-/*
-    protected void eraseSpots() {
-        ArrayList<Short> keys = new ArrayList<Short>(spots.keySet());
-        for (short key : keys) {
-            Spot3D s = spots.get(key);
-            if (s.seedIntensity<this.intensityThld || (useHessianThld && hessian.getPixel(s.seed.xy, s.seed.z)>this.hessianThld)) {
-                //if (debug) ij.IJ.log("erase spot:"+key);
-                s.setLabel((short)0);
-                spots.remove(key);
-            }
-        }
-    }
-    
-    protected void eraseSpotsQuantile() {
-        ArrayList<Short> keys = new ArrayList<Short>(spots.keySet());
-        for (short key : keys) {
-            Spot3D s = spots.get(key);
-            if (s.getQuantile(input, 0.5d) <this.intensityThld || (useHessianThld && s.getQuantile(hessian, 0.5d)>this.hessianThld)) {
-                //if (debug) ij.IJ.log("erase spot:"+key);
-                s.setLabel((short)0);
-                spots.remove(key);
-            }
-        }
-    }
-    * 
-    */
-    
     protected void shiftSegmentedMap() {
         short currentLabel=1;
         for (short i : spots.keySet()) {
@@ -192,19 +166,25 @@ public class WatershedTransform3D {
         }
     }
     
-    protected void getRegionalMinima() {
-        segmentedMap = new ImageShort("segMap", sizeX, input.sizeY, input.sizeZ);
+    protected ImageShort getLocalExtrema() {
+        ImageShort sm = new ImageShort("segMap", sizeX, input.sizeY, input.sizeZ);
         //search for local extrema
         for (int z = 0; z<input.sizeZ; z++) {
             for (int y=0; y<input.sizeY; y++) {
                 for (int x = 0; x<sizeX; x++) {
                     int xy=x+y*sizeX;
                     if (mask.getPixel(xy, z)!=0) {
-                        if (isLocalMin(x, y, z, watershedMap.getPixel(xy, z))) segmentedMap.pixels[z][xy]=Short.MIN_VALUE;
+                        if (isLocalExtremum(x, y, z, watershedMap.getPixel(xy, z))) sm.pixels[z][xy]=Short.MIN_VALUE;
                     }
                 }
             }
         }
+        return sm;
+    }
+    
+    protected void getRegionalExtrema() {
+        segmentedMap  = getLocalExtrema();
+        
         //segmentedMap.showDuplicate("local minima");
         //watershedMap.showDuplicate("watershed Map");
         //this.input.showDuplicate("watershed Map");
@@ -284,7 +264,7 @@ public class WatershedTransform3D {
         }
     }
     
-    protected boolean isLocalMin(int x, int y, int z, float ws) {
+    protected boolean isLocalExtremum(int x, int y, int z, float ws) {
         for (int zz = z-1; zz<=z+1; zz++) {
             if (zz>=0 && zz<input.sizeZ) {
                 for (int yy = y-1; yy<=y+1; yy++) {
@@ -292,7 +272,7 @@ public class WatershedTransform3D {
                         for (int xx = x-1; xx<=x+1; xx++) {
                             if ((xx!=x || yy!=y || zz!=z) && xx>=0 && xx<sizeX) {
                                 int xxyy=xx+yy*sizeX;
-                                if (mask==null || mask.getPixel(xxyy, zz)!=0) {
+                                if (mask.getPixel(xxyy, zz)!=0) {
                                     if (watershedMap.getPixel(xxyy, zz)<ws) return false;
                                 }  
                             }
@@ -303,36 +283,55 @@ public class WatershedTransform3D {
         }
         return true;
     }
-
+    
+    protected TreeSet<Vox3D> getHeap() {
+        return new TreeSet<Vox3D>();
+    }
     
     protected void seededWatershed() {
-        heap = new TreeSet<Vox3D>();
+        heap = getHeap();
         for (Spot3D s : spots.values()) {
             for (Vox3D v : s.voxels) heap.add(v);
         }
         while (!heap.isEmpty()) {
             Vox3D v = heap.pollFirst();
+            //Vox3D v = heap.poll();
             int x = v.xy%sizeX;
             int y = v.xy/sizeX;
             Spot3D currentSpot = spots.get(segmentedMap.pixels[v.z][v.xy]);
-            if (x<limX && (mask==null || mask.getPixel(v.xy+1, v.z)!=0)) {
+            /*if (x<limX && mask.getPixel(v.xy+1, v.z)!=0) {
                 currentSpot=propagate(currentSpot, v,  new Vox3D(v.xy+1, v.z, 0));
             }
-            if (x>0 && (mask==null || mask.getPixel(v.xy-1, v.z)!=0)){
+            if (x>0 && mask.getPixel(v.xy-1, v.z)!=0){
                 currentSpot=propagate(currentSpot,v,  new Vox3D(v.xy-1, v.z, 0));
             }
-            if (y<limY && (mask==null || mask.getPixel(v.xy+sizeX, v.z)!=0)){
+            if (y<limY && mask.getPixel(v.xy+sizeX, v.z)!=0){
                 currentSpot=propagate(currentSpot,v,  new Vox3D(v.xy+sizeX, v.z, 0));
             }
-            if (y>0 && (mask==null || mask.getPixel(v.xy-sizeX, v.z)!=0)){
+            if (y>0 && mask.getPixel(v.xy-sizeX, v.z)!=0){
                 currentSpot=propagate(currentSpot,v,  new Vox3D(v.xy-sizeX, v.z, 0));
             }
-            if (v.z<limZ && (mask==null || mask.getPixel(v.xy, v.z+1)!=0)){
+            if (v.z<limZ && mask.getPixel(v.xy, v.z+1)!=0){
                 currentSpot=propagate(currentSpot,v,  new Vox3D(v.xy, v.z+1, 0));
             }
-            if (v.z>0  && (mask==null || mask.getPixel(v.xy, v.z-1)!=0)){
+            if (v.z>0  && mask.getPixel(v.xy, v.z-1)!=0){
                 propagate(currentSpot,v, new Vox3D(v.xy, v.z-1, 0));
             }
+            */
+            for (int zz = v.z-1; zz<=v.z+1; zz++) {
+                if (zz>=0 && zz<limZ) {
+                    for (int yy = y-1; yy<=y+1; yy++) {
+                        if (yy>=0 && yy<limY) {
+                            for (int xx = x-1; xx<=x+1; xx++) {
+                                if ((xx!=x || yy!=y || zz!=v.z) && xx>=0 && xx<sizeX && mask.getPixel(xx+yy*sizeX, zz)!=0) {
+                                    propagate(currentSpot,v, new Vox3D(xx+yy*sizeX, zz, 0));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
         }
     }
     

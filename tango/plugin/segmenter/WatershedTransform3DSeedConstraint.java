@@ -35,10 +35,10 @@ public class WatershedTransform3DSeedConstraint extends WatershedTransform3D {
     float seedHessianThld;
     boolean useSeedHessianThld;
     float backgroundLimit;
-    ImageHandler wsMap;
-    public WatershedTransform3DSeedConstraint(ImageHandler wsMap, int nCPUs, boolean verbose) {
+    ImageHandler hessian;
+    public WatershedTransform3DSeedConstraint(ImageHandler hessian, int nCPUs, boolean verbose) {
         super(nCPUs, verbose);
-        this.wsMap = wsMap;
+        this.hessian = hessian;
     }
     
     
@@ -50,19 +50,15 @@ public class WatershedTransform3DSeedConstraint extends WatershedTransform3D {
     }
     
     @Override
-    protected boolean isLocalMin(int x, int y, int z, float ws) {
+    protected boolean isLocalExtremum(int x, int y, int z, float ws) {
         int xy = x+y*this.sizeX;
-        if (this.input.getPixel(xy, z)<seedIntensityThld || (useSeedHessianThld && wsMap.getPixel(xy, z)>seedHessianThld)) return false;
-        return super.isLocalMin(x, y, z, ws);
+        if (this.input.getPixel(xy, z)<seedIntensityThld || (useSeedHessianThld && hessian.getPixel(xy, z)>seedHessianThld)) return false;
+        return super.isLocalExtremum(x, y, z, ws);
     }
     
     @Override
     protected boolean continuePropagation(Vox3D currentVox, Vox3D nextVox) {
         return (input.getPixel(nextVox.xy, nextVox.z)>=backgroundLimit);
-    }
-    
-    public ImageInt runWatershed(ImageHandler input, ImageInt mask_) {
-        return runWatershed(input, wsMap, mask_);
     }
 
 }

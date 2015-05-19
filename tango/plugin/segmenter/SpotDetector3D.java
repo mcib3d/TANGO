@@ -50,13 +50,19 @@ public class SpotDetector3D extends SeededWatershed3D implements SpotSegmenter  
     DoubleParameter hessianScale_P = new DoubleParameter("Hessian Scale:", "hessianScale", 1d, Parameter.nfDEC2);
     ThresholdParameter hessianThld_P = new ThresholdParameter("Hessian Upper limit:", "hessianThld", "Percentage Of Bright Pixels", new Parameter[]{new SliderDoubleParameter("pixPercent", "pixPercent", 0, 100, 95d, 2)});
     ThresholdParameter seedThld = new ThresholdParameter("Seed Threshold:", "seedThld", "AutoThreshold", new Parameter[]{new ChoiceParameter("", "", new String[]{"OTSU"}, "OTSU")});
+    BooleanParameter decreasingIntensity = new BooleanParameter("Additional propagation constraint: decreasing intensities", "decreasingIntensities", true);
+    BooleanParameter increasingHessian = new BooleanParameter("Additional propagation constraint: increasing hessian", "increasingHessian", false);
+    ChoiceParameter propagationMap = new ChoiceParameter("Propagation Map:", "propagationMap", new String[]{"Hessian Transform", "Input Image"}, "Hessian Transform");
+    ConditionalParameter propagationMapCond = new ConditionalParameter(propagationMap);
     //BooleanParameter useHessianAsW
     //PreFilterParameter watershedMap_P2 = new PreFilterParameter("Watershed Map:", "watershedMap", "Image Features", new Parameter[]{new ChoiceParameter("", "", new String[]{"Hessian"}, "Hessian")}); 
     
     GroupParameter seeds_P = new GroupParameter("Seeds", "seeds", new Parameter[]{hessianScale_P, hessianThld_P, seedThld});
-    
+    Parameter[] parameters = new Parameter[]{thldLow_P, seeds_P, propagationMapCond}; //dynCon
     public SpotDetector3D() {
         super();
+        propagationMapCond.setCondition("Hessian Transform", new Parameter[]{decreasingIntensity});
+        propagationMapCond.setCondition("Input Image", new Parameter[]{increasingHessian});
         //thldLow_P.setCompulsary(false);
     }
     
@@ -77,15 +83,18 @@ public class SpotDetector3D extends SeededWatershed3D implements SpotSegmenter  
     public ImageInt runSpot(int currentStructureIdx, ImageHandler input, InputImages images) {
         //ImageHandler wsmap = watershedMap_P2.preFilter(0, input, images, nCPUs, debug);
         double hessianScale=Math.max(1, hessianScale_P.getDoubleValue(1));
-        ImageFloat wsmap = ImageFeaturesCore.getHessian(input, hessianScale, nCPUs)[0];
-        WatershedTransform3DSeedConstraint wsT = new WatershedTransform3DSeedConstraint(wsmap, nCPUs, debug);
+        ImageFloat hessian = ImageFeaturesCore.getHessian(input, hessianScale, nCPUs)[0];
+        WatershedTransform3DSeedConstraint wsT; 
+        if (propagationMap.getSelectedIndex()==0) wsT = decreasingIntensity.isSelected() ? new WatershedTransform3DSeedConstraintDescreasingIntensities(hessian, nCPUs, debug) : new WatershedTransform3DSeedConstraint(hessian, nCPUs, debug);
+        else wsT = increasingHessian.isSelected() ? new WatershedTransform3DSeedConstraintIntensityIncreasingHessian(hessian, nCPUs, debug) : new WatershedTransform3DSeedConstraintIntensity(hessian, nCPUs, debug);
+        
         double thldLow;
         Double tl = thldLow_P.getThreshold(input, images, nCPUs, debug);
         if (tl==null) thldLow = input.getMin(images.getMask());
         else thldLow = tl;
         double thldHigh = seedThld.getThreshold(input, images, nCPUs, debug);
         if (thldHigh<thldLow) thldHigh=thldLow;
-        double hessianThld=this.hessianThld_P.getThreshold(wsmap, images, nCPUs, debug);
+        double hessianThld=this.hessianThld_P.getThreshold(hessian, images, nCPUs, debug);
         if (debug) {
             IJ.log("SpotDetector3D: background limit: "+thldLow);
             IJ.log("SpotDetector3D:  seed intensity thld: "+thldHigh);
@@ -94,15 +103,15 @@ public class SpotDetector3D extends SeededWatershed3D implements SpotSegmenter  
         wsT.setThresholds((float)thldHigh, (float)thldLow, true, (float)hessianThld);
         wsTransform=wsT;
         setDynamicsParameters();
-        if (debug) wsmap.showDuplicate("Watershed Map");
-        ImageInt seg =  wsTransform.runWatershed(input, wsmap, images.getMask());
+        if (debug) hessian.showDuplicate("Hessian");
+        ImageInt seg =  wsTransform.runWatershed(input, hessian, images.getMask());
         return seg;
     }
     
 
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[]{thldLow_P, seeds_P}; //dynCond
+        return parameters;
     }
 
 }

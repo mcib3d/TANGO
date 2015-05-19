@@ -57,6 +57,12 @@ public class FillHoles2D implements PostFilter {
 
     @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt input, InputImages images) {
+        ImageInt fill = fillHoles2D(input);
+        if (useInterior.isSelected()) fill = fill.substractImage(input); //  interior = filled - original
+        return fill;
+    }
+    
+    public static ImageInt fillHoles2D(ImageInt input) {
         try {
             ImageInt fill = input;
             TreeMap<Integer, int[]> bounds = input.getBounds(true);
@@ -71,15 +77,11 @@ public class FillHoles2D implements PostFilter {
                 tango.util.FillHoles2D.fill(ib, 255, 0);
                 fill = ib;
             }
-            //  interior = filled - original
-            if (useInterior.isSelected()) {
-                fill = fill.substractImage(input);
-            }
             return fill;
         } catch (Exception e) {
             exceptionPrinter.print(e, "", true);
+            return null;
         }
-        return input;
     }
 
     @Override

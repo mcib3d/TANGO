@@ -150,9 +150,9 @@ public abstract class SpotLocalThresholder {
         if (count!=0) globalMean/=count;
         if (debug) ij.IJ.log("Local Fit: global mean thld: "+globalMean);
         //local threshold
-        if (debug) segMap.showDuplicate("before local threshold");
+        //if (debug) segMap.showDuplicate("before local threshold");
         for (int i = 0; i<thlds.length; i++) localThreshold((Object3DVoxels)spots[i], (float)adjustThld(thlds[i]), rescueSpots);
-        if (debug) segMap.showDuplicate("after local threshold");
+        //if (debug) segMap.showDuplicate("after local threshold");
         if (rescueSpots) {
             if (debug) segMap.showDuplicate("before rescue");
             for (int i = 0; i<rescuedSpots.size(); i++) if (rescuedSpots.get(i).getVoxels().size()<=2) {
