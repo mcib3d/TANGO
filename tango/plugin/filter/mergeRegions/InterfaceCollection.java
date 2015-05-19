@@ -53,56 +53,6 @@ public class InterfaceCollection {
         ImageCalibrations cal = regions.cal;
         ImageInt inputLabels = regions.labelMap;
         int otherLabel;
-        for (int z = 0; z<cal.sizeZ; z++) {
-            for (int y = 0; y<cal.sizeY; y++) {
-                for (int x = 0; x<cal.sizeX; x++) {
-                    int label = inputLabels.getPixelInt(x, y, z);
-                    if (label==0) continue;
-                    Region r = this.regions.get(label);
-                    Vox3D vox = new Vox3D(x, y, z,cal.sizeX, Float.NaN);
-                    // en avant uniquement pour les interactions avec d'autre spots
-                    // eventuellement aussi en arriere juste pour interaction avec 0
-                    
-                    if (vox.x>0) { // with 0 only
-                        otherLabel = inputLabels.getPixelInt(vox.xy-1, vox.z);
-                        if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x-1, vox.y, vox.z,cal.sizeX, Float.NaN));
-                    }
-                    if (vox.y<cal.limY) {
-                        otherLabel = inputLabels.getPixelInt(vox.xy+cal.sizeX, vox.z);
-                        if (otherLabel!=r.label) {
-                            if (otherLabel!=0)  addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y+1, vox.z, cal.sizeX, Float.NaN));
-                            else addPairBackground(r, vox, new Vox3D(vox.x, vox.y+1, vox.z, cal.sizeX, Float.NaN));
-                        }
-                    }
-                    if (vox.y>0) {// with 0 only
-                        otherLabel = inputLabels.getPixelInt(vox.xy-cal.sizeX, vox.z);
-                        if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x, vox.y-1, vox.z,cal.sizeX, Float.NaN));
-                    }
-                    if (vox.z<cal.limZ) {
-                        otherLabel = inputLabels.getPixelInt(vox.xy, vox.z+1);
-                        if (otherLabel!=r.label) {
-                            if (otherLabel!=0)  addPair(interfaceMap, r.label, vox, otherLabel, new Vox3D(vox.x, vox.y, vox.z+1,cal.sizeX, Float.NaN));
-                            else addPairBackground(r, vox, new Vox3D(vox.x, vox.y, vox.z+1,cal.sizeX, Float.NaN));
-                        }
-                    }
-                    if (vox.z>0) {// with 0 only
-                        otherLabel = inputLabels.getPixelInt(vox.xy, vox.z-1);
-                        if (otherLabel==0) addPairBackground(r, vox, new Vox3D(vox.x, vox.y, vox.z-1,cal.sizeX, Float.NaN));
-                    }
-                }
-            }
-            
-            interfaces = new HashSet<Interface>(interfaceMap.values());
-            setVoxelIntensity();
-        }
-        if (verbose) ij.IJ.log("Interface collection: nb of interfaces:"+interfaces.size());
-    }
-    
-    protected void getInterfaces2() {
-        HashMap<RegionPair, Interface> interfaceMap = new HashMap<RegionPair, Interface>();
-        ImageCalibrations cal = regions.cal;
-        ImageInt inputLabels = regions.labelMap;
-        int otherLabel;
         for (Region r : regions.regions.values()) {
             for (Vox3D vox : r.voxels) {
                     // en avant uniquement pour les interactions avec d'autre spots
@@ -191,7 +141,7 @@ public class InterfaceCollection {
                         otherLabel = inputLabels.getPixelInt(vox.xy+1, vox.z);
                         if (otherLabel!=label && otherLabel!=0) {
                             Region otherRegion = regions.get(otherLabel);
-                            regions.fusion(currentRegion, otherRegion);
+                            regions.fusion(currentRegion, otherRegion, 0);
                             if (label>otherLabel) {
                                 currentRegion=otherRegion;
                                 label=otherLabel;
@@ -203,7 +153,7 @@ public class InterfaceCollection {
                         if (otherLabel!=label && otherLabel!=0) {
                             if (otherLabel!=label && otherLabel!=0) {
                                Region otherRegion = regions.get(otherLabel);
-                               regions.fusion(currentRegion, otherRegion);
+                               regions.fusion(currentRegion, otherRegion, 0);
                                if (label>otherLabel) {
                                     currentRegion=otherRegion;
                                     label=otherLabel;
@@ -216,7 +166,7 @@ public class InterfaceCollection {
                         if (otherLabel!=label && otherLabel!=0) {
                             if (otherLabel!=label && otherLabel!=0) {
                                 Region otherRegion = regions.get(otherLabel);
-                                regions.fusion(currentRegion, otherRegion);
+                                regions.fusion(currentRegion, otherRegion, 0);
                             }
                         }
                     }
@@ -321,7 +271,7 @@ public class InterfaceCollection {
         im.show();
     }
     
-    public boolean fusion(Interface i, boolean remove) {
+    public boolean fusion(Interface i, boolean remove, double newCriterion) {
         if (remove) interfaces.remove(i);
         if (i.r1.interfaces!=null) i.r1.interfaces.remove(i);
         boolean change = false;
@@ -345,7 +295,7 @@ public class InterfaceCollection {
                 }
             }
         }
-        regions.fusion(i.r1, i.r2);
+        regions.fusion(i.r1, i.r2, newCriterion);
         return change;
     }
     
@@ -424,12 +374,14 @@ public class InterfaceCollection {
         if (verbose) drawInterfacesStrength();
         interfaces = new TreeSet<Interface>(interfaces);
         Iterator<Interface> it = interfaces.iterator(); // descending??
+        Double mergedCriteria;
         while (it.hasNext()) {
             Interface i = it.next();
             if (verbose) System.out.println("Interface:"+i);
-            if (i.checkFusionCriteria()) {
+            mergedCriteria = i.checkFusionCriteria();
+            if (mergedCriteria!=null) {
                 it.remove();
-                if (fusion(i, false)) it=interfaces.iterator();
+                if (fusion(i, false, mergedCriteria)) it=interfaces.iterator();
             } else if (i.hasNoInteractants()) it.remove();
         }
     }

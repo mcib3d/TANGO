@@ -104,21 +104,23 @@ public class InterfaceVoxSet extends Interface {
     }
     
     @Override
-    public boolean checkFusionCriteria() {
+    public Double checkFusionCriteria() {
+        HashSet<Vox3D>[] hsets = new HashSet[]{r1.voxels, r2.voxels};
         if (col.fusionMethod==0) {
             // compute rho of the fused regions....
-            HashSet<Vox3D>[] hsets = new HashSet[]{r1.voxels, r2.voxels};
             double rho = Region.getRho(hsets, this.col.intensityMap, this.col.regions.nCPUs);
             if (this.col.verbose) IJ.log("check fusion: "+r1.label+ " val="+r1.mergeCriterionValue+ " + "+r2.label+ " val="+r2.mergeCriterionValue+ " criterion:"+rho);
             // compare it to rho of each region
-            return (rho>r1.mergeCriterionValue && rho>r2.mergeCriterionValue);
+            if (rho>r1.mergeCriterionValue && rho>r2.mergeCriterionValue) return rho;
+            else return null;
         } else if (col.fusionMethod==1) {
-            HashSet<Vox3D>[] hsets = new HashSet[]{r1.voxels, r2.voxels};
             double hess = Region.getHessianMeanValue(hsets, col.hessian, col.erode, col.regions.nCPUs);
             if (this.col.verbose) IJ.log("check fusion: "+r1.label+ " val="+r1.mergeCriterionValue+ " + "+r2.label+ " val="+r2.mergeCriterionValue+ " criterion:"+hess);
-            return (hess<r1.mergeCriterionValue && hess<r2.mergeCriterionValue);
-        } else return false;
+            if (hess<r1.mergeCriterionValue && hess<r2.mergeCriterionValue) return hess;
+            else return null;
+        } else return null;
     }
+
     
     public void addPair(Vox3D v1, Vox3D v2) {
         r1Voxels.add(v1);

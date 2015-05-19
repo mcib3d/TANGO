@@ -45,7 +45,6 @@ import tango.parameter.StructureParameter;
 public class Shuffle_3D implements Sampler {
 
     ImagePlus plus;
-    private boolean debug;
     double ang = 0;
     String[] axes = {"X-axis", "Y-axis", "Z-axis"};
     int axe = 0;
@@ -137,7 +136,7 @@ public class Shuffle_3D implements Sampler {
             spotPlus.show("Shuffle_Objects");
             maskPlus.show("Shuffle_Mask");
         }
-        IJ.log("Shuffling objects");
+        if (verbose) IJ.log("Shuffling objects");
         population = new Objects3DPopulation(spotPlus);
         Object3D mask = new Object3DVoxels(maskPlus, 255);
         population.setMask(mask);

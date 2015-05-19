@@ -74,7 +74,7 @@ public class RegionCollection {
     
     public void initInterfaces() {
         interfaces = new InterfaceCollection(this, verbose);
-        interfaces.getInterfaces2();
+        interfaces.getInterfaces();
         interfaces.initializeRegionInterfaces();
         if (verbose) interfaces.drawInterfaces();
     }
@@ -131,7 +131,7 @@ public class RegionCollection {
         if (verbose) ij.IJ.log("Region collection: nb of spots:"+regions.size());
     }
     
-    public void fusion(Region r1, Region r2) {
-        regions.remove(r1.fusion(r2).label);
+    public void fusion(Region r1, Region r2, double newCriterion) {
+        regions.remove(r1.fusion(r2, newCriterion).label);
     }
 }

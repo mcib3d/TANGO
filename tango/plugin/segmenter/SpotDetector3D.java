@@ -50,7 +50,7 @@ public class SpotDetector3D extends SeededWatershed3D implements SpotSegmenter  
     DoubleParameter hessianScale_P = new DoubleParameter("Hessian Scale:", "hessianScale", 1d, Parameter.nfDEC2);
     ThresholdParameter hessianThld_P = new ThresholdParameter("Hessian Upper limit:", "hessianThld", "Percentage Of Bright Pixels", new Parameter[]{new SliderDoubleParameter("pixPercent", "pixPercent", 0, 100, 95d, 2)});
     ThresholdParameter seedThld = new ThresholdParameter("Seed Threshold:", "seedThld", "AutoThreshold", new Parameter[]{new ChoiceParameter("", "", new String[]{"OTSU"}, "OTSU")});
-    BooleanParameter decreasingIntensity = new BooleanParameter("Additional propagation constraint: decreasing intensities", "decreasingIntensities", true);
+    BooleanParameter decreasingIntensity = new BooleanParameter("Additional propagation constraint: decreasing intensities", "decreasingIntensities", false);
     BooleanParameter increasingHessian = new BooleanParameter("Additional propagation constraint: increasing hessian", "increasingHessian", false);
     ChoiceParameter propagationMap = new ChoiceParameter("Propagation Map:", "propagationMap", new String[]{"Hessian Transform", "Input Image"}, "Hessian Transform");
     ConditionalParameter propagationMapCond = new ConditionalParameter(propagationMap);

@@ -68,11 +68,12 @@ public class Region {
             for (Vox3D v : voxels) col.labelMap.setPixel(v.xy, v.z, l);
         }
 
-        public Region fusion(Region region) {
-            if (region.label<label) return region.fusion(this);
+        public Region fusion(Region region, double newCriterion) {
+            if (region.label<label) return region.fusion(this, newCriterion);
             if (col.verbose) ij.IJ.log("fusion:"+label+ "+"+region.label);
             region.setVoxelLabel(label);
             this.voxels.addAll(region.voxels);
+            this.mergeCriterionValue=newCriterion;
             //if (this.interactants!=null) interactants.addAll(region.interactants);
             //spots.remove(region.label);
             return region;
