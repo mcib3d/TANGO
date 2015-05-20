@@ -101,9 +101,9 @@ public class ObjectColocalization implements MeasurementObject2Object {
 //            IJ.log("offset "+ofX+" "+ofY+" "+ofZ);
             o.setLabelImage(null); // need to reset label image // FIXME
             for (int j = 0; j < size2; j++) {
-                ImageInt label2=o.getLabelImage();
+                //ImageInt label2=o.getLabelImage();
                 // need to reset label image // FIXME
-                objects2[j].setLabelImage(null);
+                //objects2[j].setLabelImage(null);
                 mes[j + offset] = o.getColoc(objects2[j]) * volumeUnit;
                 
                 //System.out.println("coloc:"+i+ "+"+j+ " "+mes[j+offset]);
@@ -113,7 +113,7 @@ public class ObjectColocalization implements MeasurementObject2Object {
                 if (mespc2 != null) {
                     mespc2[j + offset] = mes[j + offset] / (objects2[j].getVolumeUnit());
                 }
-                 objects2[j].setLabelImage(label2);
+                 //objects2[j].setLabelImage(label2);
             }
             o.setLabelImage(label);
             offset += size2;

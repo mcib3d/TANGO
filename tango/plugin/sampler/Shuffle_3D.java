@@ -45,7 +45,6 @@ import tango.parameter.StructureParameter;
 public class Shuffle_3D implements Sampler {
 
     ImagePlus plus;
-    private boolean debug;
     double ang = 0;
     String[] axes = {"X-axis", "Y-axis", "Z-axis"};
     int axe = 0;
@@ -60,8 +59,8 @@ public class Shuffle_3D implements Sampler {
     //SpinnerParameter slid = new SpinnerParameter("test slider:", "shuffle_test2", 0, 10, 5);
     Parameter[] parameters = {channelMask, channelObjects};
     Objects3DPopulation population;
-    ArrayList<Object3D> shu;
-    ImageHandler draw = null;
+
+    ImageInt spotPlus;
 
     boolean verbose;
     int nbCPUs = 1;
@@ -73,6 +72,7 @@ public class Shuffle_3D implements Sampler {
 
     @Override
     public void setVerbose(boolean verbose) {
+        IJ.log("set verbose:" + verbose);
         this.verbose = verbose;
     }
 
@@ -96,7 +96,6 @@ public class Shuffle_3D implements Sampler {
 //            shuffle(plus, shu.getImagePlus()).show();
 //        }
 //    }
-
 //    private ImagePlus shuffle(ImagePlus spotsplus, ImagePlus maskplus) {
 //        Objects3DPopulation pop = new Objects3DPopulation();
 //        pop.addImage(spotsplus);
@@ -123,7 +122,6 @@ public class Shuffle_3D implements Sampler {
 //            return null;
 //        }
 //    }
-
     @Override
     public Parameter[] getParameters() {
         return parameters;
@@ -131,35 +129,38 @@ public class Shuffle_3D implements Sampler {
 
     @Override
     public void initSampler(InputCellImages raw, SegmentedCellImages seg) {
-        ImageInt spotPlus = seg.getImage(channelObjects.getIndex());//channelObjects.getImagePlus(seg, false);
+        //IJ.log("Init sampler");
+        spotPlus = seg.getImage(channelObjects.getIndex());//channelObjects.getImagePlus(seg, false);
         ImageInt maskPlus = seg.getImage(channelMask.getIndex());//channelMask.getImagePlus(seg, false);
-        if(verbose){
-            spotPlus.show("Shuffle_Objects");
-            maskPlus.show("Shuffle_Mask");
+        if (verbose) {
+            IJ.log("Shuffling objects");
+            maskPlus.showDuplicate("suffle mask");
+            spotPlus.showDuplicate("suffle spots");
         }
-        IJ.log("Shuffling objects");
         population = new Objects3DPopulation(spotPlus);
-        Object3D mask = new Object3DVoxels(maskPlus, 255);
+        Object3DVoxels mask = maskPlus.getObjectMask();
         population.setMask(mask);
-        shu=population.shuffle();
-        draw = spotPlus.createSameDimensions();
-        for(Object3D O:shu){
-            O.draw(draw);
-        }
     }
 
     @Override
     public Object3D[] getSample() {
-        return (Object3D[]) (shu.toArray());
+        //IJ.log("get  sample");
+        ArrayList<Object3D> shu = population.shuffle();
+        return shu.toArray(new Object3D[shu.size()]);
     }
 
     @Override
     public String getHelp() {
-        return "Shuffle the objects positions. ";
+        return "Shuffle the objects positions.";
     }
 
     @Override
     public void displaySample() {
+        //IJ.log("display sample");
+        ImageHandler draw = spotPlus.createSameDimensions();
+        for (Object3D O : getSample()) {
+            O.draw(draw);
+        }
         draw.show("Shuffle");
     }
 
