@@ -37,16 +37,16 @@ public class Tag {
         {
             put(-1, Color.RED);
             put(0, Color.BLACK);
-            put(1, new Color(0, 26, 229));
-            put(2, new Color(0, 51, 204));
-            put(3, new Color(0, 77, 178));
-            put(4, new Color(0, 102, 153));
-            put(5, new Color(0, 128, 127));
-            put(6, new Color(0, 153, 102));
-            put(7, new Color(0, 178, 76));
-            put(8, new Color(0, 204, 51));
-            put(9, new Color(0, 220, 26));
-            put(10, Color.GREEN);
+            put(1, new Color(166,206,227));
+            put(2, new Color(31,120,180));
+            put(3, new Color(178,223,138));
+            put(4, new Color(51,160,44));
+            put(5, new Color(251,154,153));
+            put(6, new Color(227,26,28));
+            put(7, new Color(253,191,111));
+            put(8, new Color(255,127,0));
+            put(9, new Color(202,178,214));
+            put(10, new Color(106,61,154));
         }
     });
     public static Map<Integer, Color> oppositeColors = Collections.unmodifiableMap(new HashMap<Integer, Color>() {
