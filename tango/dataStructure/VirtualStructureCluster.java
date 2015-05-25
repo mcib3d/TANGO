@@ -79,8 +79,8 @@ public class VirtualStructureCluster extends VirtualStructure {
             else centroAlone.add(i);
             //TODO: ajouter les centro dans le cluster...
         }
-        System.out.println("VS:cluster: nb PHC:"+PHCCluster.size());
-        System.out.println("VS:cluster: nb centro:"+centroAlone.size());
+        if (Core.debug) System.out.println("VS:cluster: nb PHC:"+PHCCluster.size());
+        if (Core.debug) System.out.println("VS:cluster: nb centro:"+centroAlone.size());
         //create new objects (clones with new  ones at the end with new values)
         Object3DVoxels[] res = new Object3DVoxels[centroAlone.size()+PHCCluster.size()];
         int count = 0;

@@ -118,4 +118,9 @@ public class MinDistance implements SpatialDescriptor {
     public void getCurves(StructureQuantifications quantifs) {
     }
     
+    @Override
+    public boolean performCurves() {
+        return false;
+    }
+    
 }

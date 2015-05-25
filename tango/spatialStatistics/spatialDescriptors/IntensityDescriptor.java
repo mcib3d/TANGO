@@ -119,5 +119,10 @@ public class IntensityDescriptor implements SpatialDescriptor {
     public void getCurves(StructureQuantifications quantifs) {
         curves.getCurves(observedDescriptor, sampleDescriptor, quantifs, verbose);
     }
+    
+    @Override
+    public boolean performCurves() {
+        return curves.performCurves();
+    }
 
 }

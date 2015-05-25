@@ -131,16 +131,16 @@ public class Structure extends AbstractStructure {
     public void process() {
         try {
             if (cell.verbose) cell.inputImages.getFilteredImage(idx).showDuplicate("pre Filtered Image");
-            System.out.println(name+ " prefilter ok.");
+            if (cell.verbose) System.out.println(name+ " prefilter ok.");
             segment();
-            System.out.println(name+ " segmentation ok.");
+            if (cell.verbose) System.out.println(name+ " segmentation ok.");
             if (cell.verbose && cell.segImages.getImage(idx)!=null) {
                 cell.segImages.getImage(idx).set332RGBLut();
                 cell.segImages.getImage(idx).showDuplicate("Segmented Image");
             }
             ImageInt pp = postFilter(cell.segImages.getImage(idx));
             cell.segImages.setSegmentedImage(pp, idx);
-            System.out.println(name+ " postfilter ok.");
+            if (cell.verbose) System.out.println(name+ " postfilter ok.");
             if (cell.verbose && cell.segImages.getImage(idx)!=null) {
                 cell.segImages.getImage(idx).set332RGBLut();
                 cell.segImages.getImage(idx).showDuplicate(null);

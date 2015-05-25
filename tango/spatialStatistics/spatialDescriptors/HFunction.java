@@ -119,4 +119,9 @@ public class HFunction implements SpatialDescriptor {
         curves.getCurves(observedDescriptor, sampleDescriptor, quantifs, verbose);
     }
     
+    @Override
+    public boolean performCurves() {
+        return curves.performCurves();
+    }
+    
 }

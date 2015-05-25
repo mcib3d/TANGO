@@ -10,13 +10,18 @@ import java.util.TreeSet;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
+import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
 import tango.parameter.BooleanParameter;
+import tango.parameter.ChoiceParameter;
+import tango.parameter.ConditionalParameter;
+import tango.parameter.DoubleParameter;
 import tango.parameter.Parameter;
 import tango.parameter.SliderDoubleParameter;
 import tango.parameter.StructureParameter;
+import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
 /**
  *
  **
@@ -56,12 +61,15 @@ public abstract class SpotLocalThresholder {
     ArrayList<Object3DVoxels> rescuedSpots;
     BooleanParameter filtered = new BooleanParameter("Use Filtered Image for intensity", "filtered", true);
     SliderDoubleParameter localCoeff = new SliderDoubleParameter("Local Coefficient", "local", 0, 1, 0.5d, 2);
-    
-    Parameter[] coreParameters = new Parameter[] {filtered,localCoeff};
+    ChoiceParameter seedMethod = new ChoiceParameter("Seed computation method", "seedMethod", new String[]{"MaxGlobal(Intensity)", "MaxLocal(Intensity)", "MinGlobal(Hessian)"}, "MaxGlobal(Intensity)");
+    ConditionalParameter seedCond = new ConditionalParameter(seedMethod);
+    DoubleParameter scale = new DoubleParameter("Integration Scale (Pix)", "scale", 1d, Parameter.nfDEC3);
+    Parameter[] coreParameters = new Parameter[] {filtered,localCoeff, seedCond};
     
     public SpotLocalThresholder() {
         localCoeff.setHelp("1 -> local threshold for each spot, computed from the gaussian fit \n0 -> same threshold used for each spot (mean of the local thresholds) \n]0-1[ - > a local threshold between the global mean and the local threshold", true);
         localCoeff.setHelp("a local threshold (thld) is computed for each spot. \nthe global mean (mean) is then computed. \nfor each spot the threshold is: (1-coefficient) * mean + coefficient * thld", false);
+        seedCond.setCondition("MinGlobal(Hessian)", new Parameter[]{scale});
     }
     
     public abstract ImageInt runPostFilter(int currentStructureIdx, ImageInt image, InputImages images);
@@ -187,12 +195,36 @@ public abstract class SpotLocalThresholder {
         }
     }
     
+    protected Vox3D getSeed(Object3DVoxels spot) {
+        int method = seedMethod.getSelectedIndex();
+        if (method == 1) return this.getLocalExtremum(spot);
+        else if (method == 2) {
+            ImageFloat hess = ImageFeaturesCore.getHessian(this.intensityMap, scale.getFloatValue(1), nbCPUs)[0];
+            float min = Float.MAX_VALUE;
+            Vox3D maxVox = null;
+            for (Voxel3D v : spot.getVoxels()) {
+                float value = hess.getPixel(v.getXYCoord(intensityMap.sizeX), v.getRoundZ()); 
+                if (value<min) {
+                    min = value;
+                    maxVox = new Vox3D(v.getRoundX(), v.getRoundY(), v.getRoundZ(), 0);
+                }
+            }
+            if (maxVox!=null) {
+                maxVox.value=intensityMap.getPixel(maxVox.xy, maxVox.z);
+                return maxVox;
+            }
+        }
+        return getMax(spot);
+    }
+    
     //watershed from seed within spot with a given threshold. make it to floodfill3D?
     // TODO threshol normal puis relabel
+    
     public void localThreshold(Object3DVoxels spot, float thld, boolean rescue) {
         
         TreeSet<Vox3D> heap = new TreeSet<Vox3D>();
-        Vox3D seed = getLocalExtremum(spot);
+        Vox3D seed = getSeed(spot);
+        //Vox3D seed = getLocalExtremum(spot); // dans le cas de 2 spots très proches, avec 2 extremas hessien mais un seul en intensite -> fonctionne mal si la seg depend du hessien
         if (debug) ij.IJ.log("Local Threshold: spot:"+spot.getValue()+ " thld:"+thld+ " max:"+seed.toString());
         heap.add(seed);
         //HashSet<Vox3D> newVox = new HashSet<Vox3D>(spot.getVoxels().size());

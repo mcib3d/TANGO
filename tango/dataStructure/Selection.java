@@ -3,6 +3,7 @@ package tango.dataStructure;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import ij.IJ;
 import java.util.*;
 import org.bson.types.ObjectId;
 import tango.gui.Core;
@@ -55,8 +56,37 @@ public class Selection extends BasicDBObject {
             nuclei = new BasicDBObject();
             this.append("nuclei", nuclei);
         } else {
-            nuclei = (BasicDBObject)this.get("nuclei");
+            Object o = this.get("nuclei");
+            if (o instanceof BasicDBList) {
+                IJ.log("Warning: Selection: "+this.getName()+" bad structure: level 1");
+                nuclei = new BasicDBObject();
+                this.append("nuclei", nuclei);
+                BasicDBList l = (BasicDBList)o;
+                boolean warn2=false;
+                for (String s : l.keySet()) {
+                    Object n = l.get(s);
+                    if (n instanceof BasicDBObject) nuclei.append(s, (BasicDBObject)n);
+                    else if (n instanceof BasicDBList) {
+                        nuclei.append(s, toBDO((BasicDBList)n));
+                        if (!warn2) {
+                            IJ.log("Warning: Selection: "+this.getName()+ "nucleus: "+s+" bad structure: level 2");
+                            warn2=true;
+                        }
+                    }
+                }
+            } else if (o instanceof BasicDBObject) {
+                nuclei = (BasicDBObject)o;
+            } else {
+                nuclei = new BasicDBObject();
+                this.append("nuclei", nuclei);
+            }
         }
+    }
+    
+    static BasicDBObject toBDO(BasicDBList list) {
+        BasicDBObject res = new BasicDBObject();
+        for (String s : list.keySet()) res.append(s, list.get(s));
+        return res;
     }
     
     public String getName() {

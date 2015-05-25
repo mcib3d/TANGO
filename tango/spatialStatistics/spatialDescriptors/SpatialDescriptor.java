@@ -42,4 +42,5 @@ public interface SpatialDescriptor extends TangoPlugin {
     public void getCurves(StructureQuantifications quantifs);
     public int[] getStructures();
     public Parameter[] getKeyParameters();
+    public boolean performCurves();
 }

@@ -78,7 +78,7 @@ public class SpatialAnalysis implements MeasurementStructure {
             double[][] sampledDesc = sd.getSampleDescriptor();
             double[] observedDesc = sd.getObservedDescriptor();
             if (sampledDesc!=null && observedDesc!=null) {
-                sd.getCurves(quantifs);
+                if (sd.performCurves()) sd.getCurves(quantifs);
                 for (Parameter p : evals) {
                     SDIEvaluator evaluator = ((SDIEvaluatorParameter)p).getPlugin(nCPUs, verbose);
                     if (evaluator!=null) {
@@ -120,10 +120,9 @@ public class SpatialAnalysis implements MeasurementStructure {
         return false;
     }
 
-
     @Override
     public String getHelp() {
-        return "spatial analysis help";
+        return "Spatial analysis help";
     }
     
 }

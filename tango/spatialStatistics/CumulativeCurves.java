@@ -109,4 +109,8 @@ public class CumulativeCurves {
     public String[] getCurveKeys() {
         return new String[]{x_P.getKey(), lower.getKey(), upper.getKey(), acdf.getKey(), observed.getKey()};
     }
+    
+    public boolean performCurves() {
+        return keys.isSelected();
+    }
 }

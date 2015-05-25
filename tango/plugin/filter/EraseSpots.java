@@ -83,7 +83,7 @@ public class EraseSpots implements PostFilter {
             new DoubleParameter("Erase spot if I(L1)/I(L2) > threshold. Threhsold?", "thld", 1d, Parameter.nfDEC3)
         });
         ConditionalParameter corrCond = new ConditionalParameter(new ChoiceParameter("Compute (Spearman correlation test):", "compute", new String[]{"p-value", "rho"}, "p-value"));
-        corrCond.setCondition("p-value", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for p-value:", "thldpvalue", 0.01d, Parameter.nfDEC5), new IntParameter("Test precision (number of permutations)", "testPrecision", 10000)});
+        corrCond.setCondition("p-value", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for p-value:", "thldpvalue", 0.001d, Parameter.nfDEC5), new IntParameter("Test precision (number of permutations)", "testPrecision", 10000)});
         corrCond.setCondition("rho", new Parameter[]{new ChoiceParameter("Expecting:", "expecting", new String[]{"Correlation", "Anti-Correlation", "Both"}, "Correlation"), new DoubleParameter("Threshold value for roh:", "thldrho", 0.9d, Parameter.nfDEC3)});
         criterion.setCondition(methods[3], new Parameter[]{
             new DoubleParameter("Dilate spots? Radius:", "dilate", 1d, Parameter.nfDEC2),
@@ -229,7 +229,6 @@ public class EraseSpots implements PostFilter {
             else {
                 if (eroded!=null) I= eroded[count][periphery?1:0].getQuantilePixValue(intensity, quantile);
                 else I=o.getQuantilePixValue(intensity, quantile);
-                
             }
             double snrValue = (I-mean) / sigma;
             if (debug) ij.IJ.log("EraseSpots::SNR::spot:"+o.getValue()+ " snr:"+snrValue+ " thld:"+thld+ (snrValue<thld?" erased":""));

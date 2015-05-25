@@ -2,6 +2,7 @@ package tango.gui;
 
 import ij.IJ;
 import ij.plugin.PlugIn;
+import mcib3d.utils.AboutMCIB;
 import tango.plugin.PluginFactory;
 
 /**
@@ -48,7 +49,8 @@ public class Main_ implements PlugIn {
         }
         if (Core.TESTING) IJ.log("TANGO::TESTING == TRUE");
         IJ.showStatus("TANGO.. checking installation...");
-        IJ.log("TANGO VERSION:"+Core.VERSION);
+        IJ.log("TANGO VERSION: "+Core.VERSION);
+        
         IJ.log("TANGO.. checking installation...");
         boolean osarch = checkSystem();
         if (!osarch) {
@@ -63,6 +65,7 @@ public class Main_ implements PlugIn {
         double maxMem = IJ.maxMemory()/(1024*1024);
         String errorMem = "Maximum memory is:" +maxMem+ " Mb. This value should be increased in order to be able to import and process large images. It should larger than twice the size of images. Please see imageJ documentation in order to increase memory";
         if (maxMem<1499) IJ.log(errorMem);
+        IJ.log("MCIB VERSION: "+AboutMCIB.VERSION);
         IJ.showStatus("TANGO.. initializing...");
         IJ.log("TANGO.. initializing...");
         

@@ -212,7 +212,7 @@ public class MeasurementSequence {
                     //ij.IJ.log("Structure: "+s+ " object number"+seg.getObjects(s).length);
                 }
             }
-            // virtual structure object number
+            // virtual structure
             if (structure>=cell.getNbStructures(false)) {
                 AbstractStructure ass = cell.getStructure(structure);
                 if (ass instanceof VirtualStructureObjectNumber) {
@@ -232,6 +232,8 @@ public class MeasurementSequence {
                     Arrays.fill(structureIdx, (double)vs.getInputStructure());
                     quantifs.setQuantificationObjectNumber(new KeyParameterObjectNumber("", "", "inputStructureIdx", true), structureIdx);
                 }
+                
+                
             }
             
             ObjectQuantifications quantifs = mes.get(structure);

@@ -148,7 +148,7 @@ public class Simple_MeasureStatistics implements PlugInFilter, MeasurementObject
         }
         ImageHandler intensityMap = preFilter.isSelected() ? raw.getFilteredImage(channel2.getIndex()) : raw.getImage(channel2.getIndex());
         intensityMap = preFilters.runPreFilterSequence(channel2.getIndex(), intensityMap, raw, nCPUs, verbose);
-
+        if (verbose) intensityMap.showDuplicate("intensity");
         if (k_avg.isSelected()) {
             double[] values = new double[os.length];
             for (int i = 0; i < os.length; i++) {
