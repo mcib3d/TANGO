@@ -17,7 +17,8 @@ public class ConfigurationElementPlugin extends ConfigurationElementAbstract {
     protected JComboBox method;
     protected ConfigurationElementPlugin template;
     protected boolean templateSet;
-
+    protected boolean activated=true;
+    
     public ConfigurationElementPlugin(ParameterPanelPlugin parameterPanel) {
         super(parameterPanel);
         method = new JComboBox();
@@ -33,6 +34,7 @@ public class ConfigurationElementPlugin extends ConfigurationElementAbstract {
         if (parameterPanel.getMethod() != null) {
             method.setSelectedItem(parameterPanel.getMethod());
         }
+        this.activated=parameterPanel.activated;
         Utils.addHorizontalScrollBar(method);
         method.addActionListener(new ActionListener() {
             @Override
@@ -41,6 +43,14 @@ public class ConfigurationElementPlugin extends ConfigurationElementAbstract {
             }
         });
         updateValidity();
+    }
+    
+    public boolean isActivated() {return activated;}
+    
+    public void setActivated(boolean activated) {
+        //boolean change = activated!=this.activated;
+        this.activated=activated;
+        if (this.parameterPanel!=null) ((ParameterPanelPlugin)parameterPanel).setActivated(activated);
     }
 
     public void setTemplate(ConfigurationElementPlugin template) {

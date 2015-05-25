@@ -54,6 +54,10 @@ public class PostFilterSequence {
             Object o = prefilters.get(i);
             if (o!=null) {
                 BasicDBObject data = (BasicDBObject) o;
+                if (!data.getBoolean("isActivated", true)) {
+                    filters.add(new DummyPostFilter());
+                    continue;
+                }
                 PostFilter f = PluginFactory.getPostFilter(data.getString("method"));
                 if (f!=null) {
                     Parameter[] parameters=f.getParameters();

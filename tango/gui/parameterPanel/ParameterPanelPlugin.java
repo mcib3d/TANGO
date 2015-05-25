@@ -55,6 +55,7 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
     protected String help;
     protected Parameter[] currentParameters;
     ArrayList<JComboBox> structureParameters;
+    protected boolean activated=true;
     
     public ParameterPanelPlugin() {
        
@@ -147,6 +148,7 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
         String method=null;
         if (data!=null) {
             if (data.containsField("method")) method = data.getString("method");
+            this.activated=data.getBoolean("isActivated", true);
         }
         this.subPanel=new JPanel();
         subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
@@ -237,15 +239,10 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
         }
     }
     
-
-    
-    
     @Override
     public BasicDBObject save() {
-        if (plugin==null) {
-            return data;
-        }
-        this.data = new BasicDBObject("method", curMethod);
+        if (plugin==null) return data;
+        this.data = new BasicDBObject("method", curMethod).append("isActivated", activated);
         for (Parameter p : getParameters()) p.dbPut(data);
         return data;
     }
@@ -285,5 +282,9 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
             if (currentParameters!=null) for (Parameter p : currentParameters) if (!p.isValidOrNotCompulsary()) return false;
             return true;
         }
+    }
+    
+    public void setActivated(boolean activated) {
+        this.activated=activated;
     }
 }

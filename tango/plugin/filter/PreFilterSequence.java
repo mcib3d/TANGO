@@ -51,6 +51,10 @@ public class PreFilterSequence {
             if (o!=null) {
                 BasicDBObject data = (BasicDBObject) o;
                 //IJ.log("preFilter:"+data);
+                if (!data.getBoolean("isActivated", true)) {
+                    filters.add(new DummyPreFilter());
+                    continue;
+                }
                 PreFilter f = PluginFactory.getPreFilter(data.getString("method"));
                 if (f!=null) {
                     //IJ.log("preFilter loaded:"+f.getId());

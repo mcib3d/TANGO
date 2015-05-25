@@ -69,6 +69,7 @@ public class MeasurementSequence {
     protected void addMeasurement(Object o) {
         if (o != null) {
             BasicDBObject data = (BasicDBObject) o;
+            if (!data.getBoolean("isActivated", true)) return;
             Measurement m = PluginFactory.getMeasurement(data.getString("method"));
             if (m != null) {
                 for (Parameter p : m.getParameters()) {

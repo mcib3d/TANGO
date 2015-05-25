@@ -12,6 +12,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import tango.gui.Core;
 import tango.gui.util.ConfigurationListCellRenderer;
+import tango.gui.util.ContextMenuMouseListenerConfigutationList;
 import tango.helper.Helper;
 import tango.util.ImageUtils;
 import tango.util.Utils;
@@ -42,7 +43,7 @@ import tango.util.Utils;
  * @param <T>
  */
 public class ConfigurationList<T extends ParameterPanelAbstract> {
-    protected JList jlist;
+    protected JList jList;
     protected DefaultListModel listModel;
     protected JButton add, remove, test, up, down;
     protected JToggleButton edit;
@@ -64,20 +65,20 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
         this.buttonPanel=buttonPanel;
         this.clazz=clazz;
         this.data=data;
-        this.jlist=jlist_;
+        this.jList=jlist_;
         // create list
         this.listModel = new DefaultListModel();
-        if (jlist!=null) {
-            this.jlist.setModel(listModel);
-            this.jlist.setCellRenderer(new ConfigurationListCellRenderer());
-            this.jlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            this.jlist.setLayoutOrientation(JList.VERTICAL);
+        if (jList!=null) {
+            this.jList.setModel(listModel);
+            this.jList.setCellRenderer(new ConfigurationListCellRenderer());
+            this.jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            this.jList.setLayoutOrientation(JList.VERTICAL);
             //listSelectionModel = this.jlist.getSelectionModel();
-            jlist.addListSelectionListener(new ListSelectionListener(){
+            jList.addListSelectionListener(new ListSelectionListener(){
                 @Override
                 public void valueChanged(ListSelectionEvent lse) {
                     if (lse.getValueIsAdjusting()) return;
-                    int selIdx = jlist.getSelectedIndex();
+                    int selIdx = jList.getSelectedIndex();
                     if (lastSelectedIndex>=0 && lastSelectedIndex!=selIdx && lastSelectedIndex<listModel.size()) {
                         if (edit.isSelected()) master.hideConfigurationPanel(false);
                         ((ConfigurationElementAbstract)listModel.get(lastSelectedIndex)).updateValidity();
@@ -91,6 +92,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
                     lastSelectedIndex=selIdx;
                 }
             });
+            if (enableTest && !mono) jList.addMouseListener(new ContextMenuMouseListenerConfigutationList(jList));
         }
         if (buttonPanel!=null) createButtons();
         populateData();
@@ -133,11 +135,11 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
                     if (edit.isSelected()) {
                         master.hideConfigurationPanel(false);
                     }
-                    int idx = jlist.getSelectedIndex();
+                    int idx = jList.getSelectedIndex();
                     if (idx>=0) {
                         if (ml!=null) ((ConfigurationElementAbstract)listModel.get(idx)).unRegister(ml);
                         listModel.remove(idx);
-                        if (idx<listModel.size()) jlist.setSelectedIndex(idx);
+                        if (idx<listModel.size()) jList.setSelectedIndex(idx);
                         else lastSelectedIndex=-1;
                         updateValidity();
                     }
@@ -154,11 +156,11 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
         edit.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent ae) {
-                if (jlist.getSelectedIndex()<0) return;
-                if (edit.isSelected()) master.showConfigurationPanel((ConfigurationElementAbstract)jlist.getSelectedValue(), instance);
+                if (jList.getSelectedIndex()<0) return;
+                if (edit.isSelected()) master.showConfigurationPanel((ConfigurationElementAbstract)jList.getSelectedValue(), instance);
                 else {
-                    ((ConfigurationElementAbstract)jlist.getSelectedValue()).updateValidity();
-                    jlist.updateUI();
+                    ((ConfigurationElementAbstract)jList.getSelectedValue()).updateValidity();
+                    jList.updateUI();
                     master.hideConfigurationPanel(false);
                 }
             }
@@ -191,11 +193,11 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             up.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                    int i = jlist.getSelectedIndex();
+                    int i = jList.getSelectedIndex();
                     if (i>0) {
                         Object o = listModel.remove(i);
                         listModel.add(i-1, o);
-                        jlist.setSelectedIndex(i-1);
+                        jList.setSelectedIndex(i-1);
                     }
                 }
             });
@@ -211,16 +213,16 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             down.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                    int i = jlist.getSelectedIndex();
+                    int i = jList.getSelectedIndex();
                     if (i<0) return;
                     if (i<listModel.size()-2) {
                         Object o = listModel.remove(i);
                         listModel.add(i+1, o);
-                        jlist.setSelectedIndex(i+1);
+                        jList.setSelectedIndex(i+1);
                     } else if (i==listModel.size()-2) {
                         Object o = listModel.remove(i);
                         listModel.addElement(o);
-                        jlist.setSelectedIndex(i+1);
+                        jList.setSelectedIndex(i+1);
                     }
                 }
             });
@@ -234,7 +236,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     
     public void flushList() {
         listModel.removeAllElements();
-        for (ListSelectionListener lsl : this.jlist.getListSelectionListeners()) jlist.removeListSelectionListener(lsl);
+        for (ListSelectionListener lsl : this.jList.getListSelectionListeners()) jList.removeListSelectionListener(lsl);
         buttonPanel.removeAll();
     }
     
@@ -250,7 +252,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
         }
         if ((template!=null && this.listModel.size()!=template.listModel.size()) || c.equals(Color.BLUE)) edit.setIcon(ImageUtils.editDiff);
         else edit.setIcon(ImageUtils.edit);
-        this.jlist.updateUI();
+        this.jList.updateUI();
     }
     
     public DBObject save() {
@@ -279,7 +281,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     protected void addElement(BasicDBObject DBO) {
         try{
             int idx;
-            if (jlist!=null) idx = jlist.getSelectedIndex();
+            if (jList!=null) idx = jList.getSelectedIndex();
             else idx = -1;
             if (idx==-1) idx = listModel.size();
             ConfigurationElementAbstract b = createConfigurationElement(DBO, idx);
@@ -290,7 +292,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             else {
                 listModel.add(idx+1, b);
             } // TODO décaler les autres indices?
-            if (jlist!=null) jlist.setSelectedIndex(idx+1);
+            if (jList!=null) jList.setSelectedIndex(idx+1);
             if (template!=null) {
                 if (template.listModel.size()>idx) {
                     if (b instanceof ConfigurationElementPlugin) ((ConfigurationElementPlugin)b).setTemplate((ConfigurationElementPlugin)template.listModel.get(idx));
@@ -301,7 +303,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         //instance.updateValidity();
-                        jlist.updateUI();
+                        jList.updateUI();
                     }
                 });
             }
@@ -340,7 +342,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     
     public void editOff() {
         edit.setSelected(false);
-        jlist.clearSelection();
+        jList.clearSelection();
         lastSelectedIndex=-1;
     }
     
@@ -350,7 +352,7 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
     }
     
     public void test() {
-        int subStep = this.jlist.getSelectedIndex();
+        int subStep = this.jList.getSelectedIndex();
         if (subStep<0) {
             IJ.log("Select an element first!");
             return;

@@ -10,6 +10,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.*;
 import tango.dataStructure.*;
+import tango.gui.parameterPanel.ConfigurationElementPlugin;
 import tango.gui.parameterPanel.ParameterPanelAbstract;
 /**
  *
@@ -53,7 +54,10 @@ public class ConfigurationListCellRenderer extends DefaultListCellRenderer {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         if (value instanceof ConfigurationElementAbstract) {
             ConfigurationElementAbstract ppa = (ConfigurationElementAbstract) value;
-            if (ppa.getLabel()!=null && ppa.getLabel().length()>0) label.setText(ppa.getLabel());
+            if (ppa.getLabel()!=null && ppa.getLabel().length()>0) {
+                if (ppa instanceof ConfigurationElementPlugin && !((ConfigurationElementPlugin)ppa).isActivated()) label.setText("<HTML><S>"+ppa.getLabel()+"</HTML></S>");
+                else label.setText(ppa.getLabel());
+            }
             else label.setText("new element...");
             label.setBackground(isSelected ? ppa.getColor() : Color.WHITE);
             label.setForeground(isSelected ? oppositeColors.get(ppa.getColor()) : ppa.getColor());

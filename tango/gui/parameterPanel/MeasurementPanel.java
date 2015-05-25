@@ -117,7 +117,7 @@ public class MeasurementPanel extends ParameterPanelPlugin  {
     @Override
     public BasicDBObject save() {
         if (plugin==null) return null;
-        this.data = new BasicDBObject("method", curMethod);
+        this.data = new BasicDBObject("method", curMethod).append("isActivated", activated);
         for (Parameter p : getParameters()) p.dbPut(data);
         if (plugin instanceof MeasurementStructure) data.append("structures", ((MeasurementStructure)plugin).getStructures());
         else if (plugin instanceof MeasurementObject) data.append("structures", ((MeasurementObject)plugin).getStructure());
