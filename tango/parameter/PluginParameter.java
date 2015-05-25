@@ -99,6 +99,7 @@ public abstract class PluginParameter extends Parameter  implements ItemListener
             return;
         }
         BasicDBObject subDBO= new BasicDBObject("method", choice.getSelectedItem());
+        subDBO.append("isCollapsed", ((CollapsiblePanel)box).isCollapsed());
         for (Parameter p : getParameters()) p.dbPut(subDBO);
         DBO.put(id, subDBO);
         lastConfig=subDBO;
@@ -110,6 +111,7 @@ public abstract class PluginParameter extends Parameter  implements ItemListener
             Object o = DBO.get(id);
             if (!(o instanceof BasicDBObject)) return;
             BasicDBObject subDBO=(BasicDBObject)o;
+            toggleVisibility(!subDBO.getBoolean("isCollapsed", false));
             lastConfig = subDBO;
             String m = subDBO.getString("method");
             if (m!=null && m.length()>0) {

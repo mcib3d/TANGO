@@ -89,7 +89,7 @@ public class MultiParameter extends Parameter implements ChangeListener, NestedP
     public void dbPut(DBObject dbo) {
         BasicDBObject subDBO= new BasicDBObject();
         nb.dbPut(subDBO);
-        
+        subDBO.append("isCollapsed", ((CollapsiblePanel)box).isCollapsed());
         if (parameters!=null) {
             BasicDBList list = new BasicDBList();
             for (int i = 0; i< parameters.size(); i++) {
@@ -119,6 +119,7 @@ public class MultiParameter extends Parameter implements ChangeListener, NestedP
                 for (Parameter p : ps) p.dbGet(subSubDBO);
             }
         }
+        toggleVisibility(!subDBO.getBoolean("isCollapsed", false));
         majPanel();
     }
     

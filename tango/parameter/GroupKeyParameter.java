@@ -130,6 +130,7 @@ public class GroupKeyParameter extends Parameter implements NestedParameter {
     public void dbPut(DBObject dbo) {
         BasicDBObject subDBO = new BasicDBObject();
         prefix.dbPut(subDBO);
+        subDBO.append("isCollapsed", ((CollapsiblePanel)box).isCollapsed());
         checkDuplicateIds();
         for (Parameter p : parameters) p.dbPut(subDBO);
         dbo.put(id, subDBO);
@@ -140,6 +141,7 @@ public class GroupKeyParameter extends Parameter implements NestedParameter {
         BasicDBObject subDBO=(BasicDBObject)dbo.get(id);
         if (subDBO==null) return;
         prefix.dbGet(subDBO);
+        toggleVisibility(!subDBO.getBoolean("isCollapsed", false));
         checkDuplicateIds();
         String pr = prefix.getKey();
         if (subDBO!=null) {

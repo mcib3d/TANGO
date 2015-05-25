@@ -154,7 +154,7 @@ public class CollapsiblePanel extends JPanel {
     }  
 
     protected void toggleVisibility() {  
-        toggleVisibility(hasInvisibleComponent());  
+        toggleVisibility(isCollapsed());  
     }  
 
     public void toggleVisibility(boolean visible) {  
@@ -167,7 +167,7 @@ public class CollapsiblePanel extends JPanel {
     protected void updateBorderTitle() {  
         String arrow = "";  
         if (getComponentCount() > 0) {  
-            boolean b=hasInvisibleComponent();
+            boolean b=isCollapsed();
             arrow = (b?"+":"~");  
             //arrow = (hasInvisibleComponent()?"▽":"△");  
             if (b) setPreferredSize(new Dimension(this.getSize().width, 20));
@@ -180,7 +180,7 @@ public class CollapsiblePanel extends JPanel {
         repaint();  
     }  
 
-    protected final boolean hasInvisibleComponent() {  
+    public final boolean isCollapsed() {  
         for (Component c : getComponents()) {  
             if (!c.isVisible()) {  
                 return true;  

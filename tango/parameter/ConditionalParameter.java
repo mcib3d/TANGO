@@ -126,6 +126,7 @@ public class ConditionalParameter extends Parameter implements Refreshable, Nest
     public void dbPut(DBObject dbo) {
         BasicDBObject subDBO = new BasicDBObject();
         actionnableParameter.getParameter().dbPut(subDBO);
+        subDBO.append("isCollapsed", ((CollapsiblePanel)box).isCollapsed());
         if (currentParameters!=null) for (Parameter p : currentParameters) p.dbPut(subDBO);
         dbo.put(id, subDBO);
     }
@@ -135,7 +136,10 @@ public class ConditionalParameter extends Parameter implements Refreshable, Nest
         Object o = dbo.get(id);
         if (!(o instanceof BasicDBObject)) return;
         BasicDBObject subDBO=(BasicDBObject)dbo.get(id);
-        if (subDBO!=null) actionnableParameter.getParameter().dbGet(subDBO);
+        if (subDBO!=null) {
+            actionnableParameter.getParameter().dbGet(subDBO);
+            toggleVisibility(!subDBO.getBoolean("isCollapsed", false));
+        }
         if (currentParameters!=null) for (Parameter p : currentParameters) p.removeFromContainer(mainBox);
         currentParameters=getCurrentParameters();
         if (currentParameters!=null) for (Parameter p : currentParameters) {

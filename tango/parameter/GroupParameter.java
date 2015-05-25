@@ -87,6 +87,7 @@ public class GroupParameter extends Parameter implements NestedParameter{
     @Override
     public void dbPut(DBObject dbo) {
         BasicDBObject subDBO = new BasicDBObject();
+        subDBO.append("isCollapsed", ((CollapsiblePanel)box).isCollapsed());
         for (Parameter p : parameters) p.dbPut(subDBO);
         dbo.put(id, subDBO);
     }
@@ -99,7 +100,10 @@ public class GroupParameter extends Parameter implements NestedParameter{
     @Override
     public void dbGet(BasicDBObject dbo) {
         BasicDBObject subDBO=(BasicDBObject)dbo.get(id);
-        if (subDBO!=null) for (Parameter p : parameters) p.dbGet(subDBO);
+        if (subDBO!=null) {
+            for (Parameter p : parameters) p.dbGet(subDBO);
+            toggleVisibility(!subDBO.getBoolean("isCollapsed", false));
+        }
         setColor();
     }
 
