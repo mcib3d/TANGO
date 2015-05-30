@@ -154,6 +154,7 @@ public class DistanceMapParameter extends GroupParameter {
         }
         ImageFloat distanceMap;
         boolean newDM = false;
+        Arrays.sort(structures);
         if (structures[0]==0) { // par rapport à la periphery du noyau
             if (structures.length==1) {
                 mask=raw.getMask();

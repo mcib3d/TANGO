@@ -2,6 +2,7 @@ package tango.plugin.segmenter;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import ij.IJ;
 import mcib3d.utils.exceptionPrinter;
 import ij.ImagePlus;
 import mcib3d.image3d.ImageFloat;
@@ -56,6 +57,10 @@ public class SpotSegmenterRunner {
     
     
     public ImageInt run(int currentStructureIdx, ImageHandler in, InputCellImages images) {
+        if (segmenter==null) {
+            //if (Core.GUIMode) ij.IJ.log("no segmentation found for structure:");
+            return null;
+        }
         try {
             ImageInt res = segmenter.runSpot(currentStructureIdx, in, images);
             if (res!=null) {

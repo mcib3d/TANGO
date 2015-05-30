@@ -58,7 +58,7 @@ public class ConfigurationListCellRenderer extends DefaultListCellRenderer {
                 if (ppa instanceof ConfigurationElementPlugin && !((ConfigurationElementPlugin)ppa).isActivated()) label.setText("<HTML><S>"+ppa.getLabel()+"</HTML></S>");
                 else label.setText(ppa.getLabel());
             }
-            else label.setText("new element...");
+            else label.setText("void element...");
             label.setBackground(isSelected ? ppa.getColor() : Color.WHITE);
             label.setForeground(isSelected ? oppositeColors.get(ppa.getColor()) : ppa.getColor());
         }

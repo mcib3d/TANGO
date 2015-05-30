@@ -163,12 +163,20 @@ public class Structure extends AbstractStructure {
                 cell.inputImages.getFilteredImage(idx).showDuplicate("pre Filtered Image");
                 cell.setVerbose(true);
                 segment();
+                if (cell.segImages.getImage(idx)==null) {
+                    IJ.log("no segmented image found: check processing chain");
+                    return;
+                }
                 cell.segImages.getImage(idx).showDuplicate("Segmented Image");
                 cell.segImages.setSegmentedImage(null, idx);
             } else if (step == 2) { // stops within post-process
                 cell.setVerbose(false);
                 segment();
                 ImageInt in = cell.segImages.getImage(idx);
+                if (in==null) {
+                    IJ.log("no segmented image found: check processing chain");
+                    return;
+                }
                 PostFilterSequence pofs= xp.getPostFilterSequence(idx, cell.nbCPUs, false);
                 pofs.test(idx, in, cell.inputImages, subStep, false);
                 cell.segImages.setSegmentedImage(null, idx);
