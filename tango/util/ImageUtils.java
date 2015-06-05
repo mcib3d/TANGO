@@ -18,7 +18,6 @@ import java.util.Comparator;
 import javax.swing.ImageIcon;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
-import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
@@ -138,7 +137,8 @@ public class ImageUtils {
     }
     
     public static void setObjectDistancesToPeriphery(Object3DVoxels object, int nbCPUs) {
-        ImageInt map = object.createSegImageMini(object.getValue(), 0);
+        //ImageInt map = object.createSegImageMini(object.getValue(), 0);
+        ImageInt map=object.getLabelImage();
         ImageFloat dm = map.getDistanceMapInsideMask(nbCPUs);
         /*ij.IJ.log("set dm values object:"+object.getValue());
         if (object.getValue()==7) {
