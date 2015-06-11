@@ -8,19 +8,13 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.GenericDialog;
-import ij.measure.Calibration;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
-import java.util.ArrayList;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Objects3DPopulation;
-import mcib3d.geom.Objects3DPopulationAnalysis;
-import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
-import mcib3d.image3d.ImageShort;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
@@ -220,16 +214,16 @@ public class Layer_Statistics implements PlugInFilter, MeasurementObject {
             Object3DVoxels obMax;
             // compute max (dilated) object 
             if (radMax > 0) {
-                obMax = ob.getDilatedObject(radMax, radMax, radMaxZ, true);
+                obMax = ob.getDilatedObject(radMax, radMax, radMaxZ);
             } else {
-                obMax = ob.getErodedObject(-radMax, -radMax, -radMaxZ, true);
+                obMax = ob.getErodedObject(-radMax, -radMax, -radMaxZ);
             }
             // compute min (dilated) object 
             Object3DVoxels obMin;
             if (radMin > 0) {
-                obMin = ob.getDilatedObject(radMin, radMin, radMinZ, true);
+                obMin = ob.getDilatedObject(radMin, radMin, radMinZ);
             } else {
-                obMin = ob.getErodedObject(-radMin, -radMin, -radMinZ, true);
+                obMin = ob.getErodedObject(-radMin, -radMin, -radMinZ);
             }
             // compute difference of objects to get layer
             obMax.substractObject(obMin);
