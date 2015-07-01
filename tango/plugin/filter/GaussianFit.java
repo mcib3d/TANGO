@@ -38,81 +38,92 @@ import tango.parameter.SliderDoubleParameter;
  * @author Jean Ollion
  */
 public class GaussianFit extends SpotLocalThresholder {
-    
+
     int GAUSS_MAXR;
     double GAUSS_PC;
     IntParameter maxRadius = new IntParameter("Max Radius for Gaussian Fit", "maxRadius", 10);
     SliderDoubleParameter sigma = new SliderDoubleParameter("Gaussian Fit Sigma:", "sigma", 1, 3, 1.7, 3);
     BooleanParameter useScale = new BooleanParameter("Use Image Scale", "useImageScale", false);
-    
-    Parameter[] parameters = new Parameter[] {sigma, maxRadius, useScale}; //
-    
-    
+
+    Parameter[] parameters = new Parameter[]{sigma, maxRadius, useScale}; //
+
     public GaussianFit() {
         super();
     }
-    
+
     @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt input, InputImages images) {
-        ImageHandler intensity = filtered.isSelected()?images.getFilteredImage(currentStructureIdx):images.getImage(currentStructureIdx);
+        ImageHandler intensity = filtered.isSelected() ? images.getFilteredImage(currentStructureIdx) : images.getImage(currentStructureIdx);
         double scaleZ = input.getScaleZ();
         double scaleXY = input.getScaleXY();
         String unit = input.getUnit();
-        if (!useScale.isSelected()) intensity.setScale(scaleXY, scaleXY, unit);
+        if (!useScale.isSelected()) {
+            intensity.setScale(scaleXY, scaleXY, unit);
+        }
         initialize(input, intensity, images.getMask());
         run(false);
-        if (!useScale.isSelected()) intensity.setScale(scaleXY, scaleZ, unit);
+        if (!useScale.isSelected()) {
+            intensity.setScale(scaleXY, scaleZ, unit);
+        }
         return segMap;
     }
-    
+
     @Override
     public void postInitialize() {
-        this.GAUSS_MAXR=maxRadius.getIntValue(10);
-        this.GAUSS_PC=sigma.getValue();
+        this.GAUSS_MAXR = maxRadius.getIntValue(10);
+        this.GAUSS_PC = sigma.getValue();
     }
-     
+
     @Override
     public double getLocalThreshold(Object3D s) {
-        if (debug) System.out.println("getting local thld : spot:"+s.getValue()+ " sigma:"+GAUSS_PC);
-        if (s.getVoxels().isEmpty()) return 0;
+        if (debug) {
+            System.out.println("getting local thld : spot:" + s.getValue() + " sigma:" + GAUSS_PC);
+        }
+        if (s.getVoxels().isEmpty()) {
+            return 0;
+        }
         double[] gaussFit;
         double[] params;
         Vox3D seed = getMax(s);
-        gaussFit = intensityMap.radialDistribution(seed.xy%segMap.sizeX, seed.xy/segMap.sizeX, seed.z, GAUSS_MAXR, segMap);
+        gaussFit = intensityMap.radialDistribution(seed.xy % segMap.sizeX, seed.xy / segMap.sizeX, seed.z, GAUSS_MAXR, Object3D.MEASURE_INTENSITY_AVG, segMap);
         //correction
-        boolean nan=false;
-        for (int i = 0; i<GAUSS_MAXR; i++) {
-            if (!nan && Double.isNaN(gaussFit[GAUSS_MAXR-i])) nan=true;
+        boolean nan = false;
+        for (int i = 0; i < GAUSS_MAXR; i++) {
+            if (!nan && Double.isNaN(gaussFit[GAUSS_MAXR - i])) {
+                nan = true;
+            }
             if (nan) {
-                gaussFit[GAUSS_MAXR-i]=Double.NaN;
-                gaussFit[GAUSS_MAXR+i]=Double.NaN;
-            } else if (gaussFit[GAUSS_MAXR-i]<gaussFit[GAUSS_MAXR-i-1]) {
-                nan=true;
-                gaussFit[GAUSS_MAXR-i-1]=Double.NaN;
-                gaussFit[GAUSS_MAXR+i+1]=Double.NaN;
+                gaussFit[GAUSS_MAXR - i] = Double.NaN;
+                gaussFit[GAUSS_MAXR + i] = Double.NaN;
+            } else if (gaussFit[GAUSS_MAXR - i] < gaussFit[GAUSS_MAXR - i - 1]) {
+                nan = true;
+                gaussFit[GAUSS_MAXR - i - 1] = Double.NaN;
+                gaussFit[GAUSS_MAXR + i + 1] = Double.NaN;
             }
         }
         if (nan) {
-            gaussFit[gaussFit.length-1]=Double.NaN;
-            gaussFit[0]=Double.NaN;
+            gaussFit[gaussFit.length - 1] = Double.NaN;
+            gaussFit[0] = Double.NaN;
         }
-        
+
         params = ArrayUtil.fitGaussian(gaussFit, 3, GAUSS_MAXR);
         // plot
-        if (false &&  debug) {
+        if (false && debug) {
             double[] xx = new double[gaussFit.length];
             for (int i = 0; i < xx.length; i++) {
                 xx[i] = i;
             }
-            Plot plot = new Plot("Rad:"+s.getValue(), "X", "Y", xx, gaussFit);
+            Plot plot = new Plot("Rad:" + s.getValue(), "X", "Y", xx, gaussFit);
             plot.show();
         }
         double thld = CurveFitter.f(CurveFitter.GAUSSIAN, params, GAUSS_PC * params[3]);
-        if (debug) ij.IJ.log("local thld : spot:"+s.getValue()+ " thld:"+thld);
+        if (debug) {
+            ij.IJ.log("local thld : spot:" + s.getValue() + " thld:" + thld);
+        }
         return thld;
     }
-    
-    @Override 
+
+    @Override
     protected Parameter[] getOtherParameters() {
         return parameters;
     }
@@ -121,7 +132,5 @@ public class GaussianFit extends SpotLocalThresholder {
     public String getHelp() {
         return "";
     }
-    
-   
-    
+
 }
