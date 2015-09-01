@@ -50,6 +50,7 @@ import tango.parameter.StructureParameter;
 import tango.plugin.measurement.MeasurementKey;
 import tango.plugin.measurement.MeasurementObject;
 import tango.util.ImageUtils;
+
 /**
  *
  **
@@ -98,52 +99,55 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
     protected DoubleParameter splitDist;
     protected DoubleParameter splitRad;
     protected JToggleButton showSelection;
-   
-    // ImagePlus roiMask;
 
+    // ImagePlus roiMask;
     public ObjectManager(Core core, JPanel container) {
         try {
-            this.container=container;
-            
+            this.container = container;
+
             this.core = core;
-            this.autoSave=true;
-            
+            this.autoSave = true;
+
             initPanels();
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }
     }
-    
+
     public void setShowSelection(JToggleButton showSelection) {
-        this.showSelection=showSelection;
+        this.showSelection = showSelection;
     }
-    
+
     public void show(boolean refresh) {
         container.add(layout);
-        if (refresh) core.refreshDisplay();
+        if (refresh) {
+            core.refreshDisplay();
+        }
     }
-    
+
     public void hide(boolean refresh) {
         container.remove(layout);
         if (showMeasurements.isSelected()) {
             container.remove(measurements);
             showMeasurements.setSelected(false);
         }
-        if (refresh) core.refreshDisplay();
+        if (refresh) {
+            core.refreshDisplay();
+        }
     }
-    
+
     protected void initPanels() {
         BasicDBObject usr = Core.mongoConnector.getUser();
         splitDist = new DoubleParameter("Dist", "splitMinDistObj", 5d, DoubleParameter.nfDEC1);
         splitDist.dbGet(usr);
         splitRad = new DoubleParameter("Rad", "splitRadObj", 2d, DoubleParameter.nfDEC1);
         splitRad.dbGet(usr);
-        ObjectManagerLayout lay =new ObjectManagerLayout(this);
+        ObjectManagerLayout lay = new ObjectManagerLayout(this);
         showObjects = lay.showROIs;
         showObjects.setSelected(true);
         splitDist.addToContainer(lay.splitDistPanel);
         showMeasurements = lay.viewMeasurements;
-        measurements=new MeasurementDisplayer();
+        measurements = new MeasurementDisplayer();
         this.listModel = new DefaultListModel();
         this.list = lay.list;
         this.list.setModel(listModel);
@@ -152,34 +156,36 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         this.list.setLayoutOrientation(JList.VERTICAL);
         listSelectionModel = list.getSelectionModel();
         listSelectionModel.addListSelectionListener(this);
-        this.layout=lay;
-        
+        this.layout = lay;
+
     }
-    
+
     public void toggleIsRunning(boolean isRunning) {
-        ((ObjectManagerLayout)this.layout).toggleIsRunning(isRunning);
+        ((ObjectManagerLayout) this.layout).toggleIsRunning(isRunning);
         setSortKeys();
     }
-    
+
     public void saveOptions() {
         BasicDBObject user = Core.mongoConnector.getUser();
         splitDist.dbPut(user);
         splitRad.dbPut(user);
         Core.mongoConnector.saveUser(user);
     }
-    
+
     public void registerComponents(HelpManager hm) {
-        if (this instanceof ObjectManager) ((ObjectManagerLayout)layout).registerComponents(hm);
+        if (this instanceof ObjectManager) {
+            ((ObjectManagerLayout) layout).registerComponents(hm);
+        }
     }
 
     public void setStructures(ObjectId id, Object[] selectedChannels) {
         //System.out.println("Set Structures: cell"+id+ " sel channels length"+selectedChannels.length);
-        this.currentNucId=id;
+        this.currentNucId = id;
         this.currentChannels = new ObjectStructure[selectedChannels.length];
-        currentStructureIdx=new int[selectedChannels.length];
+        currentStructureIdx = new int[selectedChannels.length];
         for (int i = 0; i < selectedChannels.length; i++) {
             currentChannels[i] = (ObjectStructure) selectedChannels[i];
-            currentStructureIdx[i]=currentChannels[i].getIdx();
+            currentStructureIdx[i] = currentChannels[i].getIdx();
         }
         setSortKeys();
         populateObjects();
@@ -188,46 +194,56 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
             measurements.setObjects(list.getSelectedValues());
         }
     }
-    
+
     private void setSortKeys() {
-        if (currentChannels!=null && currentChannels.length==1) {
+        if (currentChannels != null && currentChannels.length == 1) {
             MeasurementKey mkey = new MeasurementKey(new int[]{currentChannels[0].getIdx()}, MeasurementObject.Number);
-            System.out.println("Query:"+mkey.toString());
-            ((ObjectManagerLayout)layout).setKeys(Core.getExperiment().getKeys().get(mkey));
+            System.out.println("Query:" + mkey.toString());
+            ((ObjectManagerLayout) layout).setKeys(Core.getExperiment().getKeys().get(mkey));
         } else {
-            ((ObjectManagerLayout)layout).unableSortKeys();
+            ((ObjectManagerLayout) layout).unableSortKeys();
         }
     }
 
     public void populateObjects() {
         try {
             this.listModel.removeAllElements();
-            if (currentChannels==null) {
+            if (currentChannels == null) {
                 return;
             }
             this.populatingObjects = true;
             ArrayList<Integer> selection = null;
-            if (showSelection!=null && showSelection.isSelected()) selection = new ArrayList<Integer>();
+            if (showSelection != null && showSelection.isSelected()) {
+                selection = new ArrayList<Integer>();
+            }
             int currentIdx = 0;
             for (ObjectStructure ass : currentChannels) {
-                Object3D[] os = ass.getObjects(); 
-                if (os!=null) {
+                Object3D[] os = ass.getObjects();
+                if (os != null) {
                     Object3DGui[] osg = new Object3DGui[os.length];
-                    for (int i = 0;i<os.length;i++) osg[i]= new Object3DGui(os[i], ass);
-                    if (layout instanceof ObjectManagerLayout && currentChannels.length==1 && !((ObjectManagerLayout)layout).getSortKey().equals("idx")) this.sort(((ObjectManagerLayout)layout).getSortKey(), osg, ass.getIdx());
+                    for (int i = 0; i < os.length; i++) {
+                        osg[i] = new Object3DGui(os[i], ass);
+                    }
+                    if (layout instanceof ObjectManagerLayout && currentChannels.length == 1 && !((ObjectManagerLayout) layout).getSortKey().equals("idx")) {
+                        this.sort(((ObjectManagerLayout) layout).getSortKey(), osg, ass.getIdx());
+                    }
                     //System.out.println("populating objects.. nb objects:"+os.length);
                     for (Object3DGui o3D : osg) {
                         this.listModel.addElement(o3D);
-                        if (selection!=null && o3D.isInSelection()) selection.add(currentIdx);
+                        if (selection != null && o3D.isInSelection()) {
+                            selection.add(currentIdx);
+                        }
                         currentIdx++;
                     }
                     //if (selection!=null) System.out.println("populating objects.. selection size:"+selection.size());
                 } //else System.out.println("no objects int channel:"+ass.getChannelName());
             }
-            if (selection!=null && !selection.isEmpty()) {
+            if (selection != null && !selection.isEmpty()) {
                 int[] sel = new int[selection.size()];
                 int i = 0;
-                for (int idx : selection) sel[i++]=idx;
+                for (int idx : selection) {
+                    sel[i++] = idx;
+                }
                 list.setSelectedIndices(sel);
             }
         } catch (Exception e) {
@@ -235,17 +251,21 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         }
         this.populatingObjects = false;
     }
-    
+
     public void invertSelection() {
         int[] sel = this.list.getSelectedIndices();
-        int[] newSel = new int[listModel.getSize()-sel.length];
+        int[] newSel = new int[listModel.getSize() - sel.length];
         int idx = 0;
         int lastIdx = -1;
         for (int i : sel) {
-            for (int i2 = lastIdx+1; i2<i; i2++) newSel[idx++]=i2;
-            lastIdx=i;
+            for (int i2 = lastIdx + 1; i2 < i; i2++) {
+                newSel[idx++] = i2;
+            }
+            lastIdx = i;
         }
-        for (int i2 = lastIdx+1; i2<listModel.getSize(); i2++) newSel[idx++]=i2;
+        for (int i2 = lastIdx + 1; i2 < listModel.getSize(); i2++) {
+            newSel[idx++] = i2;
+        }
         list.setSelectedIndices(newSel);
     }
 
@@ -272,12 +292,14 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         if (msChannel != null) {
             ImageInt seg = msChannel.getSegmented();
             ImageHandler raw = msChannel.getFiltered();
-            if (raw==null) {
-                if (Core.GUIMode) ij.IJ.log("ERROR: no raw images!");
+            if (raw == null) {
+                if (Core.GUIMode) {
+                    ij.IJ.log("ERROR: no raw images!");
+                }
                 return;
             }
-            if (seg==null) {
-                seg=new ImageShort(msChannel.getChannelName()+"::Segmented", raw.sizeX, raw.sizeY, raw.sizeZ);
+            if (seg == null) {
+                seg = new ImageShort(msChannel.getChannelName() + "::Segmented", raw.sizeX, raw.sizeY, raw.sizeZ);
                 msChannel.setSegmented(seg);
             }
             seg.show();
@@ -298,23 +320,25 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
             });
         }
     }
-    
-    
+
     private void sort(String key, Object3DGui[] objectsGui, int structureIdx) {
-        Object3DGui.setAscendingOrger(((ObjectManagerLayout)layout).getAscendingOrder());
+        Object3DGui.setAscendingOrger(((ObjectManagerLayout) layout).getAscendingOrder());
         HashMap<Integer, BasicDBObject> objects = Core.getExperiment().getConnector().getObjects(currentNucId, structureIdx);
-        boolean notFound=false;
+        boolean notFound = false;
         for (Object3DGui o : objectsGui) {
             BasicDBObject dbo = objects.get(o.getLabel());
-            if (dbo!=null) {
-                if (dbo.containsField(key)) o.setValue(dbo.getDouble(key));
-                else {
+            if (dbo != null) {
+                if (dbo.containsField(key)) {
+                    o.setValue(dbo.getDouble(key));
+                } else {
                     o.setValue(-1);
-                    notFound=true;
+                    notFound = true;
                 }
             }
         }
-        if (notFound) ij.IJ.log("Warning measurement: "+key+ " not found for one or several objects");
+        if (notFound) {
+            ij.IJ.log("Warning measurement: " + key + " not found for one or several objects");
+        }
         Arrays.sort(objectsGui);
     }
 
@@ -334,8 +358,10 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
                         img.updateAndDraw();
                     }
                     currentChannels[i].createObjects();
-                    if (autoSave) currentChannels[i].saveOutput();
-                    
+                    if (autoSave) {
+                        currentChannels[i].saveOutput();
+                    }
+
                 }
             }
         } catch (Exception e) {
@@ -343,28 +369,31 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         }
         populatingObjects = false;
     }
-    
+
     public void setSelectedObjectsFromDB() {
-        this.selectingObject=true;
+        this.selectingObject = true;
         this.list.clearSelection();
-        int offsetIdx=0;
+        int offsetIdx = 0;
         ArrayList<Integer> selectedIndices = new ArrayList<Integer>();
         for (ObjectStructure s : this.currentChannels) {
             BasicDBList selectedObjects = Core.mongoConnector.getSelectedObjects(currentNucId, s.getIdx());
-            if (selectedObjects!=null && !selectedObjects.isEmpty()) {
-                for (Object o : selectedObjects) selectedIndices.add((Integer)o+offsetIdx);
+            if (selectedObjects != null && !selectedObjects.isEmpty()) {
+                for (Object o : selectedObjects) {
+                    selectedIndices.add((Integer) o + offsetIdx);
+                }
             }
-            offsetIdx+=s.getObjects().length;
+            offsetIdx += s.getObjects().length;
         }
         if (!selectedIndices.isEmpty()) {
             int[] selectedIdx = new int[selectedIndices.size()];
-            for (int i = 0; i<selectedIdx.length; i++) selectedIdx[i]=selectedIndices.get(i);
+            for (int i = 0; i < selectedIdx.length; i++) {
+                selectedIdx[i] = selectedIndices.get(i);
+            }
             this.list.setSelectedIndices(selectedIdx);
         }
-        this.selectingObject=false;
+        this.selectingObject = false;
     }
 
-    
     protected void registerActiveImage() {
         ImagePlus activeImage = WindowManager.getCurrentImage();
         if (activeImage != null && activeImage.getProcessor() != null) { // && activeImage.getImageStackSize() > 1
@@ -385,7 +414,9 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
 
     public void showRois3D() {
         registerActiveImage();
-        if (currentImage==null) return;
+        if (currentImage == null) {
+            return;
+        }
         //verifier que l'image active a les memes dimentions
         Object[] os = this.list.getSelectedValues();
 
@@ -394,7 +425,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
             currentImage.setSlice((o.getZmax() + o.getZmin()) / 2 + 1);
         }
         int nSlices = currentImage.getNSlices();
-        
+
         currentROIs = new HashMap<Integer, Roi>(nSlices);
         //stores the roi mask to save memory..
         if (roiMask == null || !roiMask.sameDimentions(currentImage)) {
@@ -402,31 +433,47 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         } else {
             roiMask.erase();
         }
+
+        int zmin = currentImage.getNSlices() + 1;
+        int zmax = -1;
         ImageStack maskStack = roiMask.getImageStack();
         Object3DGui obj;
         for (Object o : os) {
             obj = (Object3DGui) o;
-            obj.getObject3D().draw(maskStack, 255);
+            if (obj.getObject3D().getZmin() < zmin) {
+                zmin = obj.getObject3D().getZmin();
+            }
+            if (obj.getObject3D().getZmax() > zmax) {
+                zmax = obj.getObject3D().getZmax();
+            }
         }
-        //roiMask.show();
 
-        for (int i = 1; i <= nSlices; i++) {
-            ImagePlus im = new ImagePlus("mask", maskStack.getProcessor(i));
-            im.getProcessor().setThreshold(1, 255, ImageProcessor.NO_LUT_UPDATE);
+        for (int i = zmin; i <= zmax; i++) {
+            ByteProcessor mask = new ByteProcessor(maskStack.getWidth(), maskStack.getHeight());
+            for (Object o : os) {
+                obj = (Object3DGui) o;
+                obj.getObject3D().draw(mask, i, 255);
+            }
+
+            mask.setThreshold(1, 255, ImageProcessor.NO_LUT_UPDATE);
+            ImagePlus maskPlus = new ImagePlus("mask " + i, mask);
+
             ThresholdToSelection tts = new ThresholdToSelection();
-            tts.setup("", im);
-            tts.run(im.getProcessor());
-            Roi r = im.getRoi();
-            if (r!=null) {
+            tts.setup("", maskPlus);
+            tts.run(mask);
+            Roi r = maskPlus.getRoi();
+            if (r != null) {
                 r.setStrokeColor(Connector.getRoiColor());
-                currentROIs.put(i,r);
+                currentROIs.put(i, r);
             }
         }
         updateRoi();
     }
-    
+
     protected void hideRois() {
-        if (currentImage==null) return;
+        if (currentImage == null) {
+            return;
+        }
         currentImage.killRoi();
         if (currentImage.isVisible()) {
             currentImage.updateAndDraw();
@@ -436,10 +483,14 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
     }
 
     protected HashMap<Integer, ArrayList<Object3DGui>> getSplitSelection() {
-        System.out.println("get split selection: currenChannels==null?"+(this.currentChannels==null));
-        if (this.currentChannels==null) return new HashMap<Integer, ArrayList<Object3DGui>>(0);
+        System.out.println("get split selection: currenChannels==null?" + (this.currentChannels == null));
+        if (this.currentChannels == null) {
+            return new HashMap<Integer, ArrayList<Object3DGui>>(0);
+        }
         HashMap<Integer, ArrayList<Object3DGui>> res = new HashMap<Integer, ArrayList<Object3DGui>>(this.currentChannels.length);
-        for (ObjectStructure ass : currentChannels) res.put(ass.getIdx(), new ArrayList<Object3DGui>());
+        for (ObjectStructure ass : currentChannels) {
+            res.put(ass.getIdx(), new ArrayList<Object3DGui>());
+        }
         for (Object o : list.getSelectedValues()) {
             Object3DGui o3D = (Object3DGui) (o);
             int idx = o3D.getChannel().getIdx();
@@ -447,13 +498,15 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         }
         return res;
     }
-    
-    protected HashMap<Integer, ArrayList<Integer> > getSplitSelectionIndexes() {
-        HashMap<Integer, ArrayList<Object3DGui> > splitSelection = getSplitSelection();
-        HashMap<Integer, ArrayList<Integer> > res = new HashMap<Integer, ArrayList<Integer>>(splitSelection.size());
+
+    protected HashMap<Integer, ArrayList<Integer>> getSplitSelectionIndexes() {
+        HashMap<Integer, ArrayList<Object3DGui>> splitSelection = getSplitSelection();
+        HashMap<Integer, ArrayList<Integer>> res = new HashMap<Integer, ArrayList<Integer>>(splitSelection.size());
         for (Map.Entry<Integer, ArrayList<Object3DGui>> e : splitSelection.entrySet()) {
-            ArrayList<Integer> idxs=new ArrayList<Integer> (e.getValue().size());
-            for (Object3DGui o : e.getValue()) idxs.add(o.getLabel());
+            ArrayList<Integer> idxs = new ArrayList<Integer>(e.getValue().size());
+            for (Object3DGui o : e.getValue()) {
+                idxs.add(o.getLabel());
+            }
             res.put(e.getKey(), idxs);
         }
         return res;
@@ -474,7 +527,9 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
                     //IJ.log("merge:"+o1.getName()+ "::"+objects.get(i).getName()+ " channel:"+channelIdx);
                 }
                 o1.getChannel().createObjects();
-                if (autoSave) o1.getChannel().saveOutput();
+                if (autoSave) {
+                    o1.getChannel().saveOutput();
+                }
                 ImagePlus img = o1.getChannel().getSegmented().getImagePlus();
                 if (img.isVisible()) {
                     img.updateAndDraw();
@@ -488,21 +543,22 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         if (show) {
             this.core.getCellManager().toggleShowROIs(false);
             this.showRois3D();
-        }
-        else {
+        } else {
             hideRois();
-            if (this.showObjects.isSelected()) this.showObjects.setSelected(false);
+            if (this.showObjects.isSelected()) {
+                this.showObjects.setSelected(false);
+            }
         }
     }
-    
+
     public void selectAll() {
         list.setSelectionInterval(0, list.getModel().getSize() - 1);
     }
-    
+
     public void selectNone() {
         this.list.clearSelection();
     }
-    
+
     public void shift() {
         boolean change = false;
         for (ObjectStructure as : currentChannels) {
@@ -513,9 +569,11 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
                     Core.mongoConnector.removeStructureMeasurements(as.getId(), as.getIdx());
                 }
             } else if (as instanceof Field) {
-                if (((Field)as).shiftObjectIndexes()) {
-                    if (autoSave) as.saveOutput();
-                    change=true;
+                if (((Field) as).shiftObjectIndexes()) {
+                    if (autoSave) {
+                        as.saveOutput();
+                    }
+                    change = true;
                 }
             }
         }
@@ -523,15 +581,15 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
             this.populateObjects();
         }
     }
-    
-    
+
     public void toggleShowMeasurements() {
         if (showMeasurements.isSelected()) {
             measurements.setStructures(currentNucId, currentStructureIdx);
             measurements.setObjects(list.getSelectedValues());
             this.container.add(measurements);
+        } else {
+            this.container.remove(measurements);
         }
-        else this.container.remove(measurements);
         core.refreshDisplay();
     }
 
@@ -544,7 +602,9 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
             return;
         }
         selectingObject = true;
-        if (measurements!=null && showMeasurements.isSelected()) measurements.setObjects(list.getSelectedValues());
+        if (measurements != null && showMeasurements.isSelected()) {
+            measurements.setObjects(list.getSelectedValues());
+        }
         try {
             showRois3D();
         } catch (Exception e) {
@@ -552,7 +612,6 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         }
         selectingObject = false;
     }
-    
 
     @Override
     public void adjustmentValueChanged(AdjustmentEvent ae) {
@@ -567,7 +626,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
     protected void updateRoi() {
         //System.out.println("image:"+currentImage.getTitle()+ " slice:"+currentImage.getSlice());
         Roi r = currentROIs.get(currentImage.getSlice());
-        if (r!=null) {
+        if (r != null) {
             currentImage.setRoi(r);
         } else {
             currentImage.killRoi();
@@ -577,27 +636,37 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
 
     public void splitObjects() {
         Object[] os = this.list.getSelectedValues();
-        if (os.length==0) return;
-        Set<ObjectStructure> channels=new HashSet<ObjectStructure>();
-        for (Object o : os) {
-            if (split((Object3DGui)o)) channels.add(((Object3DGui)o).getChannel());
+        if (os.length == 0) {
+            return;
         }
-        for (ObjectStructure o : channels) o.saveOutput();
+        Set<ObjectStructure> channels = new HashSet<ObjectStructure>();
+        for (Object o : os) {
+            if (split((Object3DGui) o)) {
+                channels.add(((Object3DGui) o).getChannel());
+            }
+        }
+        for (ObjectStructure o : channels) {
+            o.saveOutput();
+        }
         saveOptions();
     }
-    
+
     protected boolean split(Object3DGui og) {
         if (!(this instanceof NucleusManager) && og.getChannel() instanceof Nucleus) {
-            if (Core.GUIMode) ij.IJ.log("Cannont split nucleus!");
+            if (Core.GUIMode) {
+                ij.IJ.log("Cannont split nucleus!");
+            }
             return false;
         }
         Object3DGui[] newObjects = og.split(splitRad.getFloatValue(2), splitDist.getFloatValue(5));
-        if (newObjects.length==0) {
-            if (Core.GUIMode) ij.IJ.log("Object couldn't be split");
+        if (newObjects.length == 0) {
+            if (Core.GUIMode) {
+                ij.IJ.log("Object couldn't be split");
+            }
             return false;
         }
         Object3D[] objs = og.getChannel().getObjects();
-        int nextLabel = objs[objs.length-1].getValue()+1;
+        int nextLabel = objs[objs.length - 1].getValue() + 1;
         for (Object3DGui o : newObjects) {
             o.changeLabel(nextLabel);
             this.listModel.addElement(o); //TODO le mettre a la fin des objets du channel.. 
