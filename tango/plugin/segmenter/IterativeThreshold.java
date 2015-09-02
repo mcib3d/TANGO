@@ -67,20 +67,20 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
         }
         TrackThreshold TT = new TrackThreshold((int) volMin, (int) volMax, st, 0, 0);
         TT.setMethodThreshold(TrackThreshold.THRESHOLD_METHOD_STEP); // others methods for histogram are available
-        TT.setCriteriaMethod(TrackThreshold.CRITERIA_METHOD_MIN_ELONGATIO);// find roundest object (or max volume if false)
+        TT.setCriteriaMethod(TrackThreshold.CRITERIA_METHOD_MIN_ELONGATIO);// find roundest object 
         TT.verbose = verb;
-        ImagePlus res = TT.segment(img.getImagePlus(), verb);
-        // select first channel of res
-        Duplicator dup = new Duplicator();
-        ImagePlus res1 = dup.run(res, 1, 1, 1, res.getNSlices(), 1, 1);        
+        ImageHandler res = TT.segment(img, verb);
+        // float images can be returned if nb objects > 65535
 
         if (deleteOutsideNuclei.isSelected() && !nucMode) {
-            ImageInt segHandler = ImageInt.wrap(res);
-            segHandler.intersectMask(rawImages.getMask());
-            res = segHandler.getImagePlus();
+            res.intersectMask(rawImages.getMask());
         }
-
-        return ImageInt.wrap(res1);
+        
+        if (res instanceof ImageInt) {
+            return (ImageInt) res;
+        } else {
+            return null;
+        }
     }
 
     @Override
