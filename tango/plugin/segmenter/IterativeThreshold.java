@@ -69,7 +69,8 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
         TT.setMethodThreshold(TrackThreshold.THRESHOLD_METHOD_STEP); // others methods for histogram are available
         TT.setCriteriaMethod(TrackThreshold.CRITERIA_METHOD_MIN_ELONGATIO);// find roundest object 
         TT.verbose = verb;
-        ImageHandler res = TT.segment(img, verb);
+        
+        ImageHandler res = ImageHandler.wrap(TT.segment(img.getImagePlus(), verb));
         // float images can be returned if nb objects > 65535
 
         if (deleteOutsideNuclei.isSelected() && !nucMode) {

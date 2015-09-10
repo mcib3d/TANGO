@@ -85,6 +85,7 @@ public class GaussianFit extends SpotLocalThresholder {
         double[] gaussFit;
         double[] params;
         Vox3D seed = getMax(s);
+        
         gaussFit = intensityMap.radialDistribution(seed.xy % segMap.sizeX, seed.xy / segMap.sizeX, seed.z, GAUSS_MAXR, Object3D.MEASURE_INTENSITY_AVG, segMap);
         //correction
         boolean nan = false;

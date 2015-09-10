@@ -149,7 +149,7 @@ public class Region {
             ImageFloat dm2 = map2.getDistanceMapInsideMask(nbCPUs);
             dm2.show("dm2");
         }*/
-        dm.show();
+        //dm.show();
         int size = 0; for (HashSet<Vox3D> h : voxIt) size+=h.size();
         float[] distances = new float[size];
         float[] values = new float[distances.length];

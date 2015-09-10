@@ -5,7 +5,6 @@ import imagescience.image.ByteImage;
 import imagescience.image.Coordinates;
 import imagescience.image.Dimensions;
 import imagescience.image.Image;
-import imagescience.ImageScience;
 import imagescience.utility.Messenger;
 import imagescience.utility.Progressor;
 import imagescience.utility.Timer;
@@ -27,20 +26,13 @@ public class Thresholder {
 	*/
 	public void hard(final Image image, final double threshold) {
 		
-		messenger.log(ImageScience.prelude()+"Thresholder");
+		//messenger.log(ImageScience.prelude()+"Thresholder");
 		
-		final Timer timer = new Timer();
-		timer.messenger.log(messenger.log());
-		timer.start();
 		
 		// Initialize:
-		messenger.log("Hard thresholding "+image.type()+" at value "+threshold);
 		final Dimensions dims = image.dimensions();
-		messenger.status("Applying hard thresholding...");
 		final double[] array = new double[dims.x];
 		final Coordinates coords = new Coordinates();
-		progressor.steps(dims.c*dims.t*dims.z);
-		progressor.start();
 		image.axes(Axes.X);
 		
 		// Threshold:
@@ -54,16 +46,12 @@ public class Thresholder {
 							else array[x] = BELOW;
 						image.set(coords,array);
 					}
-					progressor.step();
 				}
 			}
 		}
 		
 		// Finish up:
 		image.name(image.name() + " hard thresholded");
-		messenger.status("");
-		progressor.stop();
-		timer.stop();
 	}
 	
 	/** Applies hysteresis thresholding to an image.
@@ -76,16 +64,11 @@ public class Thresholder {
 	*/
 	public void hysteresis(final Image image, final double low, final double high) {
 		
-		messenger.log(ImageScience.prelude()+"Thresholder");
+		//messenger.log(ImageScience.prelude()+"Thresholder");
 		
-		final Timer timer = new Timer();
-		timer.messenger.log(messenger.log());
-		timer.start();
 		
 		// Initialize:
-		messenger.log("Hysteresis thresholding "+image.type()+" in range ["+low+","+high+"]");
 		final Dimensions dims = image.dimensions();
-		messenger.status("Applying hysteresis thresholding...");
 		final double[] array = new double[dims.x];
 		final double[] marray = new double[dims.x+2];
 		final Coordinates coords = new Coordinates();
@@ -94,8 +77,6 @@ public class Thresholder {
 		final Candidates cands = new Candidates();
 		image.axes(Axes.X);
 		
-		progressor.steps(3*dims.c*dims.t*dims.z*dims.y);
-		progressor.start();
 		
 		// Classify and expand:
 		if (dims.z == 1) { // 2D case
@@ -112,7 +93,6 @@ public class Thresholder {
 							else if (array[coords.x] >= low) marray[mcoords.x] = CAND;
 							else marray[mcoords.x] = OFF;
 						mcoords.x=0; map.set(mcoords,marray);
-						progressor.step();
 					}
 				}
 			}
@@ -139,7 +119,6 @@ public class Thresholder {
 								}
 							}
 						}
-						progressor.step();
 					}
 				}
 			}
@@ -153,7 +132,6 @@ public class Thresholder {
 							if (marray[mcoords.x] == ON) array[coords.x] = ABOVE;
 							else array[coords.x] = BELOW;
 						coords.x=0; image.set(coords,array);
-						progressor.step();
 					}
 				}
 			}
@@ -173,7 +151,6 @@ public class Thresholder {
 								else if (array[coords.x] >= low) marray[mcoords.x] = CAND;
 								else marray[mcoords.x] = OFF;
 							mcoords.x=0; map.set(mcoords,marray);
-							progressor.step();
 						}
 					}
 				}
@@ -222,7 +199,6 @@ public class Thresholder {
 										++cand.x; ++cand.y; if (map.get(cand)==CAND) { cands.push(cand); map.set(cand,QUEUED); }
 									}
 								}
-							progressor.step();
 						}
 					}
 				}
@@ -238,7 +214,6 @@ public class Thresholder {
 								if (marray[mcoords.x] == ON) array[coords.x] = ABOVE;
 								else array[coords.x] = BELOW;
 							coords.x=0; image.set(coords,array);
-							progressor.step();
 						}
 					}
 				}
@@ -247,23 +222,17 @@ public class Thresholder {
 		
 		// Finish up:
 		image.name(image.name() + " hysteresis thresholded");
-		messenger.status("");
-		progressor.stop();
-		timer.stop();
 	}
         
         public void hysteresisLowConnectivity(final Image image, final double low, final double high) {
 		
-		messenger.log(ImageScience.prelude()+"Thresholder");
+		//messenger.log(ImageScience.prelude()+"Thresholder");
 		
 		final Timer timer = new Timer();
-		timer.messenger.log(messenger.log());
 		timer.start();
 		
 		// Initialize:
-		messenger.log("Hysteresis thresholding "+image.type()+" in range ["+low+","+high+"]");
 		final Dimensions dims = image.dimensions();
-		messenger.status("Applying hysteresis thresholding...");
 		final double[] array = new double[dims.x];
 		final double[] marray = new double[dims.x+2];
 		final Coordinates coords = new Coordinates();
@@ -272,8 +241,6 @@ public class Thresholder {
 		final Candidates cands = new Candidates();
 		image.axes(Axes.X);
 		
-		progressor.steps(3*dims.c*dims.t*dims.z*dims.y);
-		progressor.start();
 		
 		// Classify and expand:
 		if (dims.z == 1) { // 2D case
@@ -290,7 +257,6 @@ public class Thresholder {
 							else if (array[coords.x] >= low) marray[mcoords.x] = CAND;
 							else marray[mcoords.x] = OFF;
 						mcoords.x=0; map.set(mcoords,marray);
-						progressor.step();
 					}
 				}
 			}
@@ -316,7 +282,6 @@ public class Thresholder {
 								}
 							}
 						}
-						progressor.step();
 					}
 				}
 			}
@@ -330,7 +295,6 @@ public class Thresholder {
 							if (marray[mcoords.x] == ON) array[coords.x] = ABOVE;
 							else array[coords.x] = BELOW;
 						coords.x=0; image.set(coords,array);
-						progressor.step();
 					}
 				}
 			}
@@ -350,7 +314,6 @@ public class Thresholder {
 								else if (array[coords.x] >= low) marray[mcoords.x] = CAND;
 								else marray[mcoords.x] = OFF;
 							mcoords.x=0; map.set(mcoords,marray);
-							progressor.step();
 						}
 					}
 				}
@@ -382,7 +345,6 @@ public class Thresholder {
                                                                                 ++cand.x;
 									}
 								}
-							progressor.step();
 						}
 					}
 				}
@@ -398,7 +360,6 @@ public class Thresholder {
 								if (marray[mcoords.x] == ON) array[coords.x] = ABOVE;
 								else array[coords.x] = BELOW;
 							coords.x=0; image.set(coords,array);
-							progressor.step();
 						}
 					}
 				}
@@ -407,16 +368,14 @@ public class Thresholder {
 		
 		// Finish up:
 		image.name(image.name() + " hysteresis thresholded");
-		messenger.status("");
-		progressor.stop();
 		timer.stop();
 	}
 	
 	/** The object used for message displaying. */
-	public final Messenger messenger = new Messenger();
+	//public final Messenger messenger = new Messenger();
 	
 	/** The object used for progress displaying. */
-	public final Progressor progressor = new Progressor();
+	//public final Progressor progressor = new Progressor();
 	
 	private final static double ON = 10;
 	private final static double OFF = 0;

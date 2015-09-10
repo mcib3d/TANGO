@@ -46,7 +46,11 @@ public class SystemMethods {
         if(IJ.isWindows()) platform = "Win";
         if(IJ.isLinux()) platform = "Linux";
         if(IJ.isMacOSX()) platform = "Mac";
-        return IJ.getDirectory("startup")+File.separator+"lib"+File.separator+platform+arch;
+        String path =  IJ.getDirectory("startup")+File.separator+"lib"+File.separator+platform+arch;
+        IJ.log("batch path: "+path);
+        File f = new File(path);
+        IJ.log("file exsits? "+(f.exists()));
+        return path;
     }
     
     public static String getImageJPath(){
@@ -116,6 +120,7 @@ public class SystemMethods {
     
     public static boolean executeInteractiveCommandInDirectory(File directory, String command){
         ArrayList<String> commandArgs = new ArrayList<String>();
+        if (directory==null) IJ.log("warning: execute command: null file");
         commandArgs.add(directory.getAbsolutePath());
         if(IJ.isWindows()) commandArgs.add("\""+command+"\"");
         else commandArgs.add(command);
