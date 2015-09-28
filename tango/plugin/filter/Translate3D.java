@@ -52,7 +52,12 @@ public class Translate3D implements PreFilter {
     int nCPUs=1;
     @Override
     public ImageHandler runPreFilter(int currentStructureIdx, ImageHandler input, InputImages images) {
+        double sXY = input.getScaleXY();
+        double sZ = input.getScaleZ();
+        String unit = input.getUnit();
+        input.setScale(1, 1, "pix");
         final Image img = Image.wrap(input.getImagePlus());
+        
         final Translate translator = new Translate();
         double xs=x.getDoubleValue(0);
         double ys=y.getDoubleValue(0);
@@ -70,7 +75,10 @@ public class Translate3D implements PreFilter {
                 case 5: ischeme = Translate.BSPLINE5; break;
         }
         final Image newimg = translator.run(img,xs,ys,zs,ischeme);
-        return ImageHandler.wrap(newimg.imageplus());
+        ImageHandler res =  ImageHandler.wrap(newimg.imageplus());
+        input.setScale(sXY, sZ, unit);
+        res.setScale(sXY, sZ, unit);
+        return res;
     }
 
     @Override
