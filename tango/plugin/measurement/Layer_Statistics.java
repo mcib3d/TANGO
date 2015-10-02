@@ -59,7 +59,9 @@ public class Layer_Statistics implements PlugInFilter, MeasurementObject {
     IntParameter TradMin = new IntParameter("Radius Minimum", "radmin", 0);
     IntParameter TradMax = new IntParameter("Radius Maximum", "radmax", 2);
     BooleanParameter TuseZcalibration = new BooleanParameter("Use Z calibration", "zcalibration", true);
-    Parameter[] parameters = new Parameter[]{channel1, channel2, TradMin, TradMax, TuseZcalibration};
+    BooleanParameter preFilter = new BooleanParameter("Use filtered image", "filtered", false);
+    PreFilterSequenceParameter preFilters = new PreFilterSequenceParameter("Pre-Filters", "preFilters");
+    Parameter[] parameters = new Parameter[]{channel1, channel2, TradMin, TradMax, TuseZcalibration, preFilter, preFilters};
     // keys for measure
     KeyParameterObjectNumber k_avg = new KeyParameterObjectNumber("Average", "Layer_average", "Layer_average", true);
     KeyParameterObjectNumber k_sd = new KeyParameterObjectNumber("Standard Deviation", "Layer_standardDeviation", "Layer_standardDeviation", true);
@@ -101,6 +103,7 @@ public class Layer_Statistics implements PlugInFilter, MeasurementObject {
     private void process() {
         ImageHandler mask = ImageHandler.wrap(WindowManager.getImage(mask_idx + 1));
         ImageHandler signal = ImageHandler.wrap(WindowManager.getImage(dapi_idx + 1));
+
         Objects3DPopulation pop = new Objects3DPopulation(mask.getImagePlus());
         ResultsTable rt = ResultsTable.getResultsTable();
         if (rt == null) {
@@ -176,7 +179,8 @@ public class Layer_Statistics implements PlugInFilter, MeasurementObject {
     public void getMeasure(InputCellImages rawImages, SegmentedCellImages segmentedImages, ObjectQuantifications quantifications) {
         Object3D[] os = segmentedImages.getObjects(channel1.getIndex());
         int nb = os.length;
-        ImageHandler intensityMap = rawImages.getImage(channel2.getIndex());
+        ImageHandler intensityMap = preFilter.isSelected() ? rawImages.getFilteredImage(channel2.getIndex()) : rawImages.getImage(channel2.getIndex());
+        intensityMap = preFilters.runPreFilterSequence(channel2.getIndex(), intensityMap, rawImages, nCPUs, verbose);
         radMax = TradMax.getIntValue(1);
         radMin = TradMin.getIntValue(0);
         float radMaxZ = radMax;
