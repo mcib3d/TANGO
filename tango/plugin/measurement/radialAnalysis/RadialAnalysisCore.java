@@ -120,6 +120,8 @@ public class RadialAnalysisCore {
         if (distance==0 || sortedDistances.length==0) return 0;
         int idx = Arrays.binarySearch(sortedDistances, distance);
         if (idx<0) return ((double)(-idx+1)/(double)sortedDistances.length);
+        // case no structure --> constant image
+        if(sortedDistances[0]==sortedDistances[sortedDistances.length-1]) return -1;
         else {
            //recherche des bornes a gauche et à droite
            // on prend le milieu

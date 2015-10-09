@@ -1,5 +1,6 @@
 package tango.plugin.measurement.radialAnalysis;
 
+import ij.IJ;
 import ij.gui.Plot;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.image3d.ImageHandler;
@@ -50,16 +51,18 @@ public class ShellAnalysis implements MeasurementObject {
     PreFilterSequenceParameter preFilters = new PreFilterSequenceParameter("Pre-Filters", "preFilters");
     BooleanParameter segmented = new BooleanParameter("Measure proportion of segmented signal", "segmented", false);
     StructureParameter structureMask = new StructureParameter("Distance from structure:", "structureMask", 0, true);
-    BooleanParameter object = new BooleanParameter("Perform around each obect separately", "objects", false);
+    BooleanParameter inside = new BooleanParameter("Inside structure", "inside", true);
+    BooleanParameter object = new BooleanParameter("Perform around each object separately", "objects", false);
     ConditionalParameter referenceObjectCond = new ConditionalParameter("Reference for distance calculation:", structureMask);
     //IntParameter nbShells = new IntParameter("Number of Shells", "nbShells", 5);
     SpinnerParameter nbShells = new SpinnerParameter("Number of Shells", "nbShells", 2, 100, 5);
     BooleanParameter normalize = new BooleanParameter("Normalize with nucleus Signal", "normalize", false);
 
     Parameter[] parameters = new Parameter[]{structure, preFilter, preFilters, segmented, referenceObjectCond, nbShells, normalize};
-    GroupKeyParameter group = new GroupKeyParameter("Shells", "shell", "shell_", true, new KeyParameterObjectNumber[0], true);
     //KeyParameterObjectNumber key = new KeyParameterObjectNumber("Shell", "shell", "shell", true);
     KeyParameterObjectNumber[] keys = new KeyParameterObjectNumber[0];
+    //GroupKeyParameter group = new GroupKeyParameter("Shells", "shell", "shell_", true, new KeyParameterObjectNumber[0], true);
+    GroupKeyParameter group = new GroupKeyParameter("", "shells", "", true, keys, false);
     Parameter[] allKeys = new Parameter[]{group};
     int nCPUs = 1;
     boolean verbose;
@@ -99,7 +102,7 @@ public class ShellAnalysis implements MeasurementObject {
             return;
         }
         ImageHandler intensityMap = (preFilter.isSelected() && !segmented.isSelected()) ? rawImages.getFilteredImage(structure.getIndex()) : rawImages.getImage(structure.getIndex());
-        intensityMap = preFilters.runPreFilterSequence(structure.getIndex(), intensityMap, rawImages, nCPUs, verbose);
+        intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensityMap, rawImages, nCPUs, verbose);
 
         if (object.isSelected()) {
             Object3DVoxels[] obs = segmentedImages.getObjects(this.structureMask.getIndex());
@@ -121,15 +124,20 @@ public class ShellAnalysis implements MeasurementObject {
             double[] shells = getShells(rawImages.getMask(), segmentedImages.getImage(structureMask.getIndex()), intensity, rawImages.getImage(0));
             for (int i = 0; i < shells.length; i++) {
                 quantifications.setQuantificationObjectNumber(keys[i], new double[]{shells[i]});
-                if (verbose) {
-                    ij.IJ.log(keys[i].getKey() + ":" + shells[i]);
-                }
+                //if (verbose) {
+                //ij.IJ.log(keys[i].getKey() + ":" + shells[i]);
+                //}
             }
         }
     }
 
     protected double[] getShells(ImageInt nuc, ImageInt ref, ImageHandler intensity, ImageHandler intensityRef) {
-        ShellAnalysisCore shell = new ShellAnalysisCore(nuc, ref, ref == nuc, nCPUs, false);
+        boolean in = inside.getValue();
+        if (ref == nuc) {
+            //IJ.log("Shell analysis inside nucleus only");
+            in = true;
+        }
+        ShellAnalysisCore shell = new ShellAnalysisCore(nuc, ref, in, nCPUs, false);
         int nbShell = nbShells.getValue();
         int[] indexes = (normalize.isSelected()) ? shell.getShellIndexesNormalized(nbShell, intensityRef) : shell.getShellIndexes(nbShell);
         double[] shells;
@@ -178,6 +186,28 @@ public class ShellAnalysis implements MeasurementObject {
             this.group.setKeys(keys);
         }
         return allKeys;
+
+//          if (nbRads.getValue() != keys.length) {
+//            KeyParameterObjectNumber[] newKeys = new KeyParameterObjectNumber[nbRads.getValue()];
+//            if (newKeys.length > 0) {
+//                if (nbRads.getValue() < keys.length) {
+//                    if (keys.length > 0) {
+//                        System.arraycopy(keys, 0, newKeys, 0, newKeys.length);
+//                    }
+//                } else {
+//                    if (keys.length > 0) {
+//                        System.arraycopy(keys, 0, newKeys, 0, keys.length);
+//                    }
+//                    for (int i = keys.length; i < newKeys.length; i++) {
+//
+//                        newKeys[i] = new KeyParameterObjectNumber("Rad_" + (i + 1) + ":", "rad" + (i + 1), "rad" + (i + 1), true);
+//                    }
+//                }
+//            }
+//            keys = newKeys;
+//            this.group.setKeys(keys);
+//        }
+//        return returnKeys;
     }
 
     @Override
