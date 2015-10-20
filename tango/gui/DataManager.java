@@ -24,6 +24,7 @@ import tango.mongo.MultiKey4D;
 import tango.mongo.MongoConnector;
 import tango.plugin.measurement.MeasurementSequence;
 import tango.util.MultiKey;
+
 /**
  *
  **
@@ -139,7 +140,9 @@ public class DataManager {
         }
         while (cur.hasNext()) {
             BasicDBObject nuc = (BasicDBObject) cur.next();
-            if (nuc.getInt("tag", 0)<0) continue; // exclude negative tags
+            if (nuc.getInt("tag", 0) < 0) {
+                continue; // exclude negative tags
+            }
             ObjectId nucId = (ObjectId) nuc.get("_id");
             int nucIdx = nuc.getInt("idx");
             String fieldName = mc.getField((ObjectId) nuc.get("field_id")).getString("name");
@@ -171,7 +174,7 @@ public class DataManager {
             for (int i : nbPart) {
                 s += i + ";";
             }
-            IJ.log("nb objects:" + s);
+            //IJ.log("nb objects:" + s);
             MultiKey2D k2D = new MultiKey2D(fieldName, nucIdx, "nbParts");
             nbObjects.put(k2D, nbPart);
             nucTags.put(k2D, nuc.getInt("tag", 0));
@@ -184,7 +187,7 @@ public class DataManager {
                 }
                 int size = (dk.getKey(0) != dk.getKey(1)) ? nbPart[dk.getKey(0)] * nbPart[dk.getKey(1)] : nbPart[dk.getKey(0)] * (nbPart[dk.getKey(0)] - 1) / 2;
                 BasicDBObject mes = mc.getMeasurementStructure(nucId, dk.getKeys(), true);
-                IJ.log("get mes:" + dk + " mes");
+                //IJ.log("get mes:" + dk + " mes");
                 TreeMap<MultiKey4D, String> o2oMesDk = o2oMes.get(dk);
                 TreeSet<String> keys = c2cKeys.get(dk);
                 TreeSet<String> newKeys = newC2CKeys.get(dk);
@@ -253,10 +256,10 @@ public class DataManager {
             if (!IJformat) {
                 headers = "nucId" + delimiter + "field" + delimiter + "nuc.idx" + delimiter + "idx" + delimiter;
             } else {
-                headers = " " + delimiter + "Label" + delimiter + "nuc.idx" + delimiter + "idx" + delimiter;
+                headers = " " + delimiter + "Label" + delimiter + "nuc.idx" + delimiter + "idx" + delimiter + "tag" + delimiter;
             }
             if (channel == 0) {
-                headers += "tag" + delimiter;
+                //headers += "tag" + delimiter;
                 for (int i = 0; i < channelNames.length; i++) {
                     headers += "nbObjects." + channelNames[i] + delimiter;
                 }
@@ -276,11 +279,11 @@ public class DataManager {
                     if (!IJformat) {
                         line = nucIds.get(key) + delimiter + key.fieldName + delimiter + key.nucIdx + delimiter + i + delimiter;
                     } else {
-                        line = c + delimiter + key.fieldName + delimiter + key.nucIdx + delimiter + i + delimiter;
+                        line = c + delimiter + key.fieldName + delimiter + key.nucIdx + delimiter + i + delimiter + nucTags.get(key) + delimiter;
                         c++;
                     }
                     if (channel == 0) {
-                        line += nucTags.get(key) + delimiter;
+                        //line += nucTags.get(key) + delimiter;
                         for (int n : nbO) {
                             line += n + delimiter;
                         }
@@ -316,7 +319,7 @@ public class DataManager {
             if (!IJformat) {
                 headers = "nucId" + delimiter + "field" + delimiter + "nuc.idx" + delimiter + "idx1" + delimiter + "idx2" + delimiter;
             } else {
-                headers = " " + delimiter + "Label" + delimiter + "nuc.idx" + delimiter + "idx1" + delimiter + "idx2" + delimiter;
+                headers = " " + delimiter + "Label" + delimiter + "nuc.idx" + delimiter + "tag" + delimiter + "idx1" + delimiter + "idx2" + delimiter;
             }
             for (String k : keys) {
                 headers += k + delimiter;
@@ -336,7 +339,7 @@ public class DataManager {
                             if (!IJformat) {
                                 line = nucIds.get(key) + delimiter + key.fieldName + delimiter + key.nucIdx + delimiter + i + delimiter + j + delimiter;
                             } else {
-                                line = c + delimiter + key.fieldName + delimiter + key.nucIdx + delimiter + i + delimiter + j + delimiter;
+                                line = c + delimiter + key.fieldName + delimiter + key.nucIdx + delimiter + nucTags.get(key) + delimiter + i + delimiter + j + delimiter;
                                 c++;
                             }
                             for (String k : keys) {
