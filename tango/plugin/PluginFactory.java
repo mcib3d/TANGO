@@ -10,7 +10,6 @@ import tango.plugin.measurement.MeasurementObject;
 import tango.plugin.measurement.Measurement;
 import tango.plugin.measurement.MeasurementStructure;
 import ij.IJ;
-import ij3d.Image3DUniverse;
 import java.util.*;
 import tango.gui.Core;
 import tango.plugin.measurement.MeasurementObject2Object;

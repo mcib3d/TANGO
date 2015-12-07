@@ -381,6 +381,11 @@ public abstract class ProcessingSequenceTemplateEditor implements ActionListener
     }
 
     private void displayText() {
+        Double version = Double.parseDouble(System.getProperty("java.specification.version"));
+        if (version < 1.8) {
+            IJ.log("TANGO export text for processing chains will not work with this version of Java " + version);
+            return;
+        }
         ProcessingChainsToText ProcText = new ProcessingChainsToText(data);
         IJ.log("");
         IJ.log("Processing chain " + ProcText.getName() + " : ");

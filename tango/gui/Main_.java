@@ -36,21 +36,24 @@ public class Main_ implements PlugIn {
     protected static Core core;
 
     public Main_() {
-        
+
     }
 
     @Override
     public void run(String arg) {
+
         String req = "1.47m";
         boolean version = IJ.versionLessThan(req);
         if (version) {
-            IJ.log("currentImageJ version: "+IJ.getVersion()+" requiered: "+ req +". please update ImageJ");
+            IJ.log("currentImageJ version: " + IJ.getVersion() + " requiered: " + req + ". please update ImageJ");
             return;
         }
-        if (Core.TESTING) IJ.log("TANGO::TESTING == TRUE");
+        if (Core.TESTING) {
+            IJ.log("TANGO::TESTING == TRUE");
+        }
         IJ.showStatus("TANGO.. checking installation...");
-        IJ.log("TANGO VERSION: "+Core.VERSION);
-        
+        IJ.log("TANGO VERSION: " + Core.VERSION);
+
         IJ.log("TANGO.. checking installation...");
         boolean osarch = checkSystem();
         if (!osarch) {
@@ -62,39 +65,50 @@ public class Main_ implements PlugIn {
         if (!install) {
             ij.IJ.error("Install incomplete. Please see log for details, and installation instructions on our website: http://tango.tuxfamily.org/");
         }
-        double maxMem = IJ.maxMemory()/(1024*1024);
-        String errorMem = "Maximum memory is:" +maxMem+ " Mb. This value should be increased in order to be able to import and process large images. It should larger than twice the size of images. Please see imageJ documentation in order to increase memory";
-        if (maxMem<1499) IJ.log(errorMem);
-        IJ.log("MCIB VERSION: "+AboutMCIB.VERSION);
+        double maxMem = IJ.maxMemory() / (1024 * 1024);
+        String errorMem = "Maximum memory is:" + maxMem + " Mb. This value should be increased in order to be able to import and process large images. It should larger than twice the size of images. Please see imageJ documentation in order to increase memory";
+        if (maxMem < 1499) {
+            IJ.log(errorMem);
+        }
+        IJ.log("MCIB VERSION: " + AboutMCIB.VERSION);
         IJ.showStatus("TANGO.. initializing...");
         IJ.log("TANGO.. initializing...");
-        
+
         if (core != null) {
             IJ.log("TANGO is already opened");
             IJ.showStatus("TANGO is already opened");
             return;
         }
-        
+
         //instance = this;
-        
-         
-        
-        
-        
         core = new Core();
     }
-    
-    
 
     protected boolean checkSystem() {
-        String os="?";
-        if (IJ.isMacOSX()) os="MacOSX";
-        if (IJ.isWindows()) os = "Windows";
-        if (IJ.isVista()) os = "Vista";
-        if (IJ.isLinux()) os="Linux :)";
-        ij.IJ.log("OS: "+os);
+        Double version = Double.parseDouble(System.getProperty("java.specification.version"));
+        if (version < 1.6) {
+            IJ.log("TANGO will not work with this version of Java "+version);
+            return false;
+        }
+        if (version < 1.8) {
+            IJ.log("TANGO export text for processing chains will not work with this version of Java "+version);
+        }
+        String os = "?";
+        if (IJ.isMacOSX()) {
+            os = "MacOSX";
+        }
+        if (IJ.isWindows()) {
+            os = "Windows";
+        }
+        if (IJ.isVista()) {
+            os = "Vista";
+        }
+        if (IJ.isLinux()) {
+            os = "Linux :)";
+        }
+        ij.IJ.log("OS: " + os);
         String osarch = System.getProperty("os.arch");
         ij.IJ.log(("os architecture: " + osarch));
-        return (osarch.indexOf("64") >= 0);
+        return (osarch.contains("64"));
     }
 }
