@@ -333,7 +333,10 @@ public class MongoConnector {
     
     public boolean mongoDumpSettings(String outputPath) {
         boolean r = true;
-        for (String col : collectionsSettings) r = r && dumpCollection(this.settings.getName(), col, outputPath);
+        for (String col : collectionsSettings) {
+            r = r && dumpCollection(this.settings.getName(), col, outputPath);
+            //IJ.log(col);
+        }
         return r;
     }
     
