@@ -6,7 +6,6 @@
 package tango.util;
 
 import com.mongodb.BasicDBObject;
-import ij.IJ;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,26 +14,90 @@ import org.json.JSONObject;
  * @author thomasb
  */
 public class ProcessingChainsToText {
+
+    //BasicDBObject chain = null;
+    JSONObject json = null;
     
-    BasicDBObject chain;
-    JSONObject json;
 
     public ProcessingChainsToText(BasicDBObject chain) {
-        this.chain = chain;
-        json=new JSONObject(chain.toString());
+        if (chain != null) {
+            json = new JSONObject(chain.toString());
+        }
     }
-    
-    public String getName(){
-        if(json==null) return null;
+
+    public String getName() {
+        if (json == null) {
+            return null;
+        }
         return json.getString("name");
     }
-    
-    public String getPreFilters(){
-         if(json==null) return null;
-         JSONArray pre=json.getJSONArray("preFilters");
-         IJ.log("prefilters "+pre.length());
-         JSONObject pre0=pre.getJSONObject(0);
-         return pre0.toString();
+
+    public String getPreFilters() {
+        String res = "";
+        if (json == null) {
+            return null;
+        }
+        JSONArray pre = json.getJSONArray("preFilters");
+        int nb = pre.length();
+        //res = res.concat("prefilters " + pre.length());
+        for (int pf = 0; pf < nb; pf++) {
+            JSONObject pre0 = pre.getJSONObject(pf);
+            res = res.concat("* Prefilter " + (pf + 1) + "\n");
+            res = res.concat(getString(pre0));
+        }
+        return res;
     }
-    
+
+    public String getPostFilters() {
+        String res = "";
+        if (json == null) {
+            return null;
+        }
+        JSONArray pre = json.getJSONArray("postFilters");
+        int nb = pre.length();
+        //res = res.concat("prefilters " + pre.length());
+        for (int pf = 0; pf < nb; pf++) {
+            JSONObject pre0 = pre.getJSONObject(pf);
+            res = res.concat("* PostFilter " + (pf + 1) + "\n");
+            res = res.concat(getString(pre0));
+        }
+        return res;
+    }
+
+    private String getString(JSONObject js) {
+        if (js == null) {
+            return "";
+        }
+        String res = "";
+        for (String key : js.keySet()) {
+            Object O = js.get(key);
+            if (O instanceof JSONObject) {
+                res = res.concat(key + "\n");
+                res = res.concat(getString((JSONObject) O));
+            } else if (O instanceof JSONArray) {
+                res = res.concat(key + "\n");
+                int nb = ((JSONArray) O).length();
+                for (int pf = 0; pf < nb; pf++) {
+                    res = res.concat("* " + key + " " + (pf + 1) + "\n");
+                    JSONObject pre0 = ((JSONArray) O).getJSONObject(pf);
+                    res = res.concat(getString(pre0));
+                }
+            } else {
+                res = res.concat("\t" + key + " : " + js.get(key) + "\n");
+            }
+        }
+
+        return res;
+    }
+
+    public String getSegmentation() {
+        if (json == null) {
+            return null;
+        }
+
+        JSONObject seg = json.getJSONObject("segmentation");
+
+        return getString(seg);
+    }
+
 }

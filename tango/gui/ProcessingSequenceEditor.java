@@ -68,6 +68,7 @@ public class ProcessingSequenceEditor implements ActionListener {
     protected JButton copyFromTemplate, copyToTemplate, createNewTemplate, save, test;
     protected JLabel structureLabel, templateLabel;
     protected Helper ml;
+    //private JButton text;
 
     public ProcessingSequenceEditor(Core main) {
         this.core = main;
@@ -198,6 +199,14 @@ public class ProcessingSequenceEditor implements ActionListener {
         save.setMaximumSize(buttonDim);
         save.setPreferredSize(buttonDim);
         layout.controlPanel.add(controlPanel);
+
+        // TEST THOMAS
+//        text = new JButton("Text");
+//        text.addActionListener(this);
+//        text.setAlignmentX(0);
+//        controlPanel.add(text);
+//        text.setMinimumSize(buttonDim);
+//        text.setMaximumSize(buttonDim);
 
         setStructure(0);
     }
@@ -410,7 +419,7 @@ public class ProcessingSequenceEditor implements ActionListener {
         populatingTemplates = true;
         template.setSelectedItem(name);
         populatingTemplates = false;
-        
+
         if (name.length() == 0) {
             currentTemplate = null;
         } else {
@@ -509,7 +518,7 @@ public class ProcessingSequenceEditor implements ActionListener {
             } else {
                 core.getFieldManager().test();
             }
-        }
+        } 
     }
 
     public void test(int step, int subStep) {
@@ -521,5 +530,7 @@ public class ProcessingSequenceEditor implements ActionListener {
             core.getFieldManager().testProcess(step, subStep);
         }
     }
+
+   
 
 }
