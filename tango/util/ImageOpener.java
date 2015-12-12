@@ -21,8 +21,8 @@ import loci.formats.services.OMEXMLService;
 import loci.plugins.util.ImageProcessorReader;
 import loci.plugins.util.LociPrefs;
 import mcib3d.image3d.ImageHandler;
-import ome.units.quantity.Length;
 import loci.formats.meta.IMetadata;
+import ome.xml.model.primitives.PositiveFloat;
 
 /**
  *
@@ -67,12 +67,13 @@ public class ImageOpener {
                 
                 //MetadataRetrieve meta=(MetadataRetrieve)r.getMetadataStore();
                 if (meta!=null) {
-                    Length xy=meta.getPixelsPhysicalSizeX(0);
-                    Length z=meta.getPixelsPhysicalSizeZ(0);
+                    PositiveFloat xy=meta.getPixelsPhysicalSizeX(0);
+                    PositiveFloat z=meta.getPixelsPhysicalSizeZ(0);
                     
                     if (xy!=null && z!=null) {
                         //ij.IJ.log("calibration: xy"+ xy.value()+" z:"+z.value()+ "  units:"+xy.unit().getSymbol());
-                        res.setScale((Double)xy.value(), (Double)z.value(), xy.unit().getSymbol());
+                        //res.setScale((Double)xy.value(), (Double)z.value(), xy.unit().getSymbol());
+                        res.setScale(xy.getValue(), z.getValue(), "µm");
                     } else ij.IJ.log("no calibration found");
                 }
                 r.close();
