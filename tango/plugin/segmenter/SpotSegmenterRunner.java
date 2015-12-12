@@ -62,6 +62,7 @@ public class SpotSegmenterRunner {
             return null;
         }
         try {
+            System.out.println("Running segmenter: "+segmenter.getClass().getSimpleName());
             ImageInt res = segmenter.runSpot(currentStructureIdx, in, images);
             if (res!=null) {
                 res.setScale(in);
