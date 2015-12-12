@@ -92,13 +92,13 @@ public class PluginFactory {
         try {
             loader.loadClass("mcib3d.image3d.ImageHandler");
         } catch (Exception e) {
-            ij.IJ.log("mcib3d-core not installed");
+            ij.IJ.log("mcib3d-core not installed : TANGO cannot run");
             complete = false;
         }
         try {
             loader.loadClass("imageware.ImageWare");
         } catch (Exception e) {
-            ij.IJ.log("ImageWare not installed");
+            ij.IJ.log("ImageWare not installed : some plugins will not be available");
         }
         ij5d = true;
         try {
@@ -111,13 +111,14 @@ public class PluginFactory {
         try {
             loader.loadClass("javax.vecmath.Point3f");
         } catch (Exception e) {
-            ij.IJ.log("Java3D not installed");
+            ij.IJ.log("Java3D not installed: 3D view not available");
             java3d = false;
             ij3d = false;
         }
         ij3d = true;
         if (java3d) {
             try {
+                IJ.log("New version 4.0 of 3D viewer will not work (yet) with TANGO");
                 loader.loadClass("ij3d.Image3DUniverse");
             } catch (Exception e) {
                 ij.IJ.log("ij 3D Viewer not installed: 3D view not available");
@@ -127,7 +128,7 @@ public class PluginFactory {
         try {
             loader.loadClass("imagescience.image.Image");
         } catch (Exception e) {
-            ij.IJ.log("imagescience not installed");
+            ij.IJ.log("imagescience not installed : TANGO cannot run");
             complete = false;
         }
         return complete;

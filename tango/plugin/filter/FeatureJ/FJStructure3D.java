@@ -6,7 +6,6 @@ import imagescience.image.Coordinates;
 import imagescience.image.Dimensions;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import imagescience.utility.ImageScience;
 import imagescience.utility.Messenger;
 import imagescience.utility.Progressor;
 import imagescience.utility.Timer;
@@ -44,22 +43,14 @@ public class FJStructure3D {
 	*/
 	public Vector<Image> run(final Image image, final double sscale, final double iscale, int nbCPUs) {
 		
-		messenger.log(ImageScience.prelude()+"Structure");
-		
-		final Timer timer = new Timer();
-		timer.messenger.log(messenger.log());
-		timer.start();
 		
 		// Initialize:
-		messenger.log("Checking arguments");
 		if (sscale <= 0) throw new IllegalArgumentException("Smoothing scale less than or equal to 0");
 		if (iscale <= 0) throw new IllegalArgumentException("Integration scale less than or equal to 0");
 		
 		final Dimensions dims = image.dimensions();
-		messenger.log("Input image dimensions: (x,y,z,t,c) = ("+dims.x+","+dims.y+","+dims.z+","+dims.t+","+dims.c+")");
 		
 		final Aspects asps = image.aspects();
-		messenger.log("Element aspect-ratios: ("+asps.x+","+asps.y+","+asps.z+","+asps.t+","+asps.c+")");
 		if (asps.x <= 0) throw new IllegalStateException("Aspect-ratio value in x-dimension less than or equal to 0");
 		if (asps.y <= 0) throw new IllegalStateException("Aspect-ratio value in y-dimension less than or equal to 0");
 		if (asps.z <= 0) throw new IllegalStateException("Aspect-ratio value in z-dimension less than or equal to 0");
@@ -77,41 +68,28 @@ public class FJStructure3D {
 			final double[] pls = {0, 0.2, 0.4, 0.45, 0.63, 0.80, 0.95, 1}; int pl = 0;
 			
 			// Compute structure tensor components:
-			logstatus("Computing Ix"); progressor.range(pls[pl],pls[++pl]);
+			logstatus("Computing Ix"); 
 			final Image Ix2 = differentiator.run(smoothImage.duplicate(),sscale,1,0,0, nbCPUs);
-			logstatus("Computing Iy"); progressor.range(pls[pl],pls[++pl]);
+			logstatus("Computing Iy"); 
 			final Image Iy2 = differentiator.run(smoothImage,sscale,0,1,0, nbCPUs);
 			
-			progressor.range(pls[pl],pls[++pl]);
-			progressor.steps(3);
-			progressor.start();
 			final Image IxIy = Ix2.duplicate();
-			logstatus("Computing IxIy"); IxIy.multiply(Iy2); progressor.step();
-			logstatus("Squaring Ix"); Ix2.square(); progressor.step();
-			logstatus("Squaring Iy"); Iy2.square(); progressor.step();
-			progressor.stop();
+			logstatus("Computing IxIy"); IxIy.multiply(Iy2); 
+			logstatus("Squaring Ix"); Ix2.square(); 
+			logstatus("Squaring Iy"); Iy2.square(); 
 			
 			// Integrate tensor components:
-			messenger.log("Gaussian integration at scale "+iscale);
-			logstatus("Integrating IxIx"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(Ix2,iscale,0,0,0, nbCPUs);
-			logstatus("Integrating IxIy"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(IxIy,iscale,0,0,0, nbCPUs);
-			logstatus("Integrating IyIy"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(Iy2,iscale,0,0,0, nbCPUs);
 			
 			// Compute eigenimages (Ix2 and Iy2 are reused to save memory):
 			logstatus("Computing eigenimages");
-			progressor.steps(dims.c*dims.t*dims.y);
-			progressor.range(pls[pl],pls[++pl]);
 			Ix2.axes(Axes.X); IxIy.axes(Axes.X); Iy2.axes(Axes.X);
 			final double[] axx = new double[dims.x];
 			final double[] axy = new double[dims.x];
 			final double[] ayy = new double[dims.x];
 			final Coordinates coords = new Coordinates();
-			messenger.log("Comparing and storing eigenvalues");
-			
-			progressor.start();
 			for (coords.c=0; coords.c<dims.c; ++coords.c)
 				for (coords.t=0; coords.t<dims.t; ++coords.t)
 					for (coords.y=0; coords.y<dims.y; ++coords.y) {
@@ -140,9 +118,7 @@ public class FJStructure3D {
 						}
 						Ix2.set(coords,axx);
 						Iy2.set(coords,ayy);
-						progressor.step();
 					}
-			progressor.stop();
 			
 			Ix2.name(name+" largest structure eigenvalues");
 			Iy2.name(name+" smallest structure eigenvalues");
@@ -159,49 +135,30 @@ public class FJStructure3D {
 			final double[] pls = {0, 0.1, 0.2, 0.3, 0.34, 0.40, 0.46, 0.52, 0.58, 0.64, 0.7, 1}; int pl = 0;
 			
 			// Compute structure tensor components:
-			logstatus("Computing Ix"); progressor.range(pls[pl],pls[++pl]);
 			final Image Ix2 = differentiator.run(smoothImage.duplicate(),sscale,1,0,0, nbCPUs);
-			logstatus("Computing Iy"); progressor.range(pls[pl],pls[++pl]);
 			final Image Iy2 = differentiator.run(smoothImage.duplicate(),sscale,0,1,0, nbCPUs);
-			logstatus("Computing Iz"); progressor.range(pls[pl],pls[++pl]);
 			final Image Iz2 = differentiator.run(smoothImage,sscale,0,0,1, nbCPUs);
 			
-			progressor.range(pls[pl],pls[++pl]);
-			progressor.steps(6);
-			progressor.start();
-			logstatus("Computing IxIy"); final Image IxIy = Ix2.duplicate(); IxIy.multiply(Iy2); progressor.step();
-			logstatus("Computing IxIz"); final Image IxIz = Ix2.duplicate(); IxIz.multiply(Iz2); progressor.step();
-			logstatus("Computing IyIz"); final Image IyIz = Iy2.duplicate(); IyIz.multiply(Iz2); progressor.step();
-			logstatus("Squaring Ix"); Ix2.square(); progressor.step();
-			logstatus("Squaring Iy"); Iy2.square(); progressor.step();
-			logstatus("Squaring Iz"); Iz2.square(); progressor.step();
-			progressor.stop();
+			logstatus("Computing IxIy"); final Image IxIy = Ix2.duplicate(); IxIy.multiply(Iy2);
+			logstatus("Computing IxIz"); final Image IxIz = Ix2.duplicate(); IxIz.multiply(Iz2);
+			logstatus("Computing IyIz"); final Image IyIz = Iy2.duplicate(); IyIz.multiply(Iz2);
+			logstatus("Squaring Ix"); Ix2.square(); 
+			logstatus("Squaring Iy"); Iy2.square(); 
+			logstatus("Squaring Iz"); Iz2.square(); 
 			
 			// Integrate tensor components:
-			messenger.log("Gaussian integration at scale "+iscale);
-			logstatus("Integrating IxIx"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(Ix2,iscale,0,0,0, nbCPUs);
-			logstatus("Integrating IxIy"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(IxIy,iscale,0,0,0, nbCPUs);
-			logstatus("Integrating IxIz"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(IxIz,iscale,0,0,0, nbCPUs);
-			logstatus("Integrating IyIy"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(Iy2,iscale,0,0,0, nbCPUs);
-			logstatus("Integrating IyIz"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(IyIz,iscale,0,0,0, nbCPUs);
-			logstatus("Integrating IzIz"); progressor.range(pls[pl],pls[++pl]);
 			differentiator.run(Iz2,iscale,0,0,0, nbCPUs);
 			
 			// Compute eigenimages (Ix2, Iy2, Iz2 are reused to save memory):
 			logstatus("Computing eigenimages");
-			progressor.steps(dims.c*dims.t*dims.z*dims.y);
-			progressor.range(pls[pl],pls[++pl]);
 			Ix2.axes(Axes.X); IxIy.axes(Axes.X); IxIz.axes(Axes.X);
 			Iy2.axes(Axes.X); IyIz.axes(Axes.X); Iz2.axes(Axes.X);
 			
-			messenger.log("Comparing and storing eigenvalues");
-			
-			progressor.start();
                         final ThreadRunner tr = new ThreadRunner(0, dims.z, nbCPUs);
                         for (int i = 0; i<tr.threads.length; i++) {
                                 tr.threads[i]= new Thread(
@@ -267,7 +224,6 @@ public class FJStructure3D {
 
                         }
                         tr.startAndJoin();
-                        progressor.stop();
 			
 			Ix2.name(name+" largest structure eigenvalues");
 			Iy2.name(name+" middle structure eigenvalues");
@@ -283,24 +239,13 @@ public class FJStructure3D {
 			eigenimages.add(Iz2);
 		}
 		
-		messenger.status("");
-		
-		timer.stop();
 		
 		return eigenimages;
 	}
 	
 	private void logstatus(final String s) {
 		
-		messenger.log(s);
-		messenger.status(s+"...");
 	}
-	
-	/** The object used for message displaying. */
-	public final Messenger messenger = new Messenger();
-	
-	/** The object used for progress displaying. */
-	public final Progressor progressor = new Progressor();
 	
 	/** The object used for image differentiation. */
 	public final FJDifferentiator3D differentiator = new FJDifferentiator3D();

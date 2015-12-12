@@ -11,9 +11,6 @@ import imagescience.image.Coordinates;
 import imagescience.image.Dimensions;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import imagescience.utility.ImageScience;
-import imagescience.utility.Messenger;
-import imagescience.utility.Progressor;
 import imagescience.utility.Timer;
 import java.util.Vector;
 
@@ -48,21 +45,17 @@ public class FJHessian3D {
 	*/
 	public Vector<Image> run(final Image image, final double scale, int nbCPUs) {
 
-		messenger.log(ImageScience.prelude()+"Hessian");
+		//messenger.log(ImageScience.prelude()+"Hessian");
 
 		final Timer timer = new Timer();
-		timer.messenger.log(messenger.log());
 		timer.start();
 
 		// Initialize:
-		messenger.log("Checking arguments");
 		if (scale <= 0) throw new IllegalArgumentException("Smoothing scale less than or equal to 0");
 
 		final Dimensions dims = image.dimensions();
-		messenger.log("Input image dimensions: (x,y,z,t,c) = ("+dims.x+","+dims.y+","+dims.z+","+dims.t+","+dims.c+")");
 
 		final Aspects asps = image.aspects();
-		messenger.log("Element aspect-ratios: ("+asps.x+","+asps.y+","+asps.z+","+asps.t+","+asps.c+")");
 		if (asps.x <= 0) throw new IllegalStateException("Aspect-ratio value in x-dimension less than or equal to 0");
 		if (asps.y <= 0) throw new IllegalStateException("Aspect-ratio value in y-dimension less than or equal to 0");
 		if (asps.z <= 0) throw new IllegalStateException("Aspect-ratio value in z-dimension less than or equal to 0");
@@ -78,24 +71,18 @@ public class FJHessian3D {
 			final double[] pls = {0, 0.32, 0.64, 0.96, 1}; int pl = 0;
 
 			// Compute Hessian components:
-			logstatus("Computing Hxx"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hxx = differentiator.run(smoothImage,scale,2,0,0, nbCPUs);
-			logstatus("Computing Hxy"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hxy = differentiator.run(smoothImage,scale,1,1,0, nbCPUs);
-			logstatus("Computing Hyy"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hyy = differentiator.run(smoothImage,scale,0,2,0, nbCPUs);
 
 			// Compute eigenimages (Hxx and Hyy are reused to save memory):
 			logstatus("Computing eigenimages");
-			progressor.steps(dims.c*dims.t*dims.y);
-			progressor.range(pls[pl],pls[++pl]);
 			Hxx.axes(Axes.X); Hxy.axes(Axes.X); Hyy.axes(Axes.X);
 			final double[] ahxx = new double[dims.x];
 			final double[] ahxy = new double[dims.x];
 			final double[] ahyy = new double[dims.x];
 			final Coordinates coords = new Coordinates();
 
-			progressor.start();
                         for (coords.c=0; coords.c<dims.c; ++coords.c)
                                 for (coords.t=0; coords.t<dims.t; ++coords.t)
                                         for (coords.y=0; coords.y<dims.y; ++coords.y) {
@@ -124,10 +111,8 @@ public class FJHessian3D {
                                                 }
                                                 Hxx.set(coords,ahxx);
                                                 Hyy.set(coords,ahyy);
-                                                progressor.step();
                                         }
 			
-			progressor.stop();
 
 			Hxx.name(name+" largest Hessian eigenvalues");
 			Hyy.name(name+" smallest Hessian eigenvalues");
@@ -144,28 +129,19 @@ public class FJHessian3D {
 			final double[] pls = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1}; int pl = 0;
 
 			// Compute Hessian components:
-			logstatus("Computing Hxx"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hxx = differentiator.run(smoothImage,scale,2,0,0, nbCPUs);
-			logstatus("Computing Hxy"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hxy = differentiator.run(smoothImage,scale,1,1,0, nbCPUs);
-			logstatus("Computing Hxz"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hxz = differentiator.run(smoothImage,scale,1,0,1, nbCPUs);
-			logstatus("Computing Hyy"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hyy = differentiator.run(smoothImage,scale,0,2,0, nbCPUs);
-			logstatus("Computing Hyz"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hyz = differentiator.run(smoothImage,scale,0,1,1, nbCPUs);
-			logstatus("Computing Hzz"); progressor.range(pls[pl],pls[++pl]);
 			final Image Hzz = differentiator.run(smoothImage,scale,0,0,2, nbCPUs);
 
 			// Compute eigenimages (Hxx, Hyy, Hzz are reused to save memory):
 			logstatus("Computing eigenimages");
-			progressor.steps(dims.c*dims.t*dims.z*dims.y);
-			progressor.range(pls[pl],pls[++pl]);
 			Hxx.axes(Axes.X); Hxy.axes(Axes.X); Hxz.axes(Axes.X);
 			Hyy.axes(Axes.X); Hyz.axes(Axes.X); Hzz.axes(Axes.X);
 			
 			
-			progressor.start();
 			
                         final ThreadRunner tr = new ThreadRunner(0, dims.z, nbCPUs);
                         for (int i = 0; i<tr.threads.length; i++) {
@@ -233,7 +209,6 @@ public class FJHessian3D {
 
                         }
                         tr.startAndJoin();
-			progressor.stop();
 
 			Hxx.name(name+" largest Hessian eigenvalues");
 			Hyy.name(name+" middle Hessian eigenvalues");
@@ -249,7 +224,6 @@ public class FJHessian3D {
 			eigenimages.add(Hzz);
 		}
 
-		messenger.status("");
 
 		timer.stop();
 
@@ -258,15 +232,15 @@ public class FJHessian3D {
 
 	private void logstatus(final String s) {
 
-		messenger.log(s);
-		messenger.status(s+"...");
+		//messenger.log(s);
+		//messenger.status(s+"...");
 	}
 
 	/** The object used for message displaying. */
-	public final Messenger messenger = new Messenger();
+	//public final Messenger messenger = new Messenger();
 
 	/** The object used for progress displaying. */
-	public final Progressor progressor = new Progressor();
+	//public final Progressor progressor = new Progressor();
 
 	/** The object used for image differentiation. */
 	public final FJDifferentiator3D differentiator = new FJDifferentiator3D();

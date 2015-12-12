@@ -1,5 +1,6 @@
 package tango.plugin.filter.mergeRegions;
 
+import ij.IJ;
 import tango.plugin.filter.*;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -69,7 +70,7 @@ public class MergeRegions implements PostFilter {
     
     @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt in, InputImages images) {
-        
+        IJ.log("merge region debug mode: "+debug);
         if (choice.getSelectedIndex()==0) mergeAllConnected(in, debug);
         else if (choice.getSelectedIndex()==1) mergeAll(in);
         else if (choice.getSelectedIndex()==2) {

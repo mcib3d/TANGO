@@ -1,7 +1,6 @@
 package tango.plugin.filter;
 
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
 import tango.parameter.Parameter;
 import tango.parameter.SliderDoubleParameter;
@@ -41,7 +40,7 @@ public class Normalize implements PreFilter {
     }
     
     @Override
-    public ImageHandler runPreFilter(int currentStructureIdx, ImageHandler input, InputImages images) {
+    public ImageHandler runPreFilter(int currentStructureIdx, ImageHandler input, InputImages images) {       
         return input.normalize(images.getMask(), satu.getValue()/100d);
     }
 

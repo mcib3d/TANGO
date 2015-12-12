@@ -6,10 +6,6 @@
 package tango.util;
 
 import ij.IJ;
-import ij.ImagePlus;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,13 +17,12 @@ import loci.formats.FormatException;
 import loci.formats.IFormatWriter;
 import loci.formats.ImageWriter;
 import loci.formats.meta.IMetadata;
-import loci.formats.meta.MetadataRetrieve;
-import loci.formats.out.APNGWriter;
 import loci.formats.services.OMEXMLService;
 import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageShort;
+import ome.units.UNITS;
 import ome.units.quantity.Length;
 import ome.units.unit.Unit;
 import ome.xml.model.enums.DimensionOrder;
@@ -101,10 +96,9 @@ public class WriteImage {
                 if (image instanceof ImageByte) meta.setPixelsType(PixelType.UINT8,0);
                 else if (image instanceof ImageShort) meta.setPixelsType(PixelType.UINT16,0);
                 else if (image instanceof ImageFloat) meta.setPixelsType(PixelType.UINT32,0);
-                Unit<Length> unit = Unit.CreateBaseUnit("", "µm");
-                meta.setPixelsPhysicalSizeX(new Length(image.getScaleXY(), unit), 0);
-                meta.setPixelsPhysicalSizeY(new Length(image.getScaleXY(), unit), 0);
-                meta.setPixelsPhysicalSizeZ(new Length(image.getScaleZ(), unit), 0);
+                //meta.setPixelsPhysicalSizeX(new Length(image.getScaleXY(), UNITS.MICROM), 0);
+                //meta.setPixelsPhysicalSizeY(new Length(image.getScaleXY(), UNITS.MICROM), 0);
+                //meta.setPixelsPhysicalSizeZ(new Length(image.getScaleZ(), UNITS.MICROM), 0);
             } catch (ServiceException ex) {
                 Logger.getLogger(ImageOpener.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -51,6 +51,9 @@ http://www.rforge.net/JavaGD/
 * droplet-finder, for image processing, band-pass filtering
 http://imagejdocu.tudor.lu/doku.php?id=plugin:analysis:droplet_counter:start
 
+* JSON, for JSON extraction of data, export processing chains as text
+http://json.org/
+
 
 
 

@@ -17,12 +17,12 @@ import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
 import loci.formats.ChannelSeparator;
 import loci.formats.FormatException;
-import loci.formats.meta.IMetadata;
 import loci.formats.services.OMEXMLService;
 import loci.plugins.util.ImageProcessorReader;
 import loci.plugins.util.LociPrefs;
 import mcib3d.image3d.ImageHandler;
 import ome.units.quantity.Length;
+import loci.formats.meta.IMetadata;
 
 /**
  *
@@ -177,8 +177,6 @@ public class ImageOpener {
         return null;
     }
     
-    
-        
     public static int[] getSTCNumbers(File file) {
         ImageProcessorReader r = new ImageProcessorReader(new ChannelSeparator(LociPrefs.makeImageReader()));
         try {
