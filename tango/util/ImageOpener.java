@@ -22,7 +22,7 @@ import loci.plugins.util.ImageProcessorReader;
 import loci.plugins.util.LociPrefs;
 import mcib3d.image3d.ImageHandler;
 import loci.formats.meta.IMetadata;
-import ome.xml.model.primitives.PositiveFloat;
+import ome.units.quantity.Length;
 
 /**
  *
@@ -67,13 +67,12 @@ public class ImageOpener {
                 
                 //MetadataRetrieve meta=(MetadataRetrieve)r.getMetadataStore();
                 if (meta!=null) {
-                    PositiveFloat xy=meta.getPixelsPhysicalSizeX(0);
-                    PositiveFloat z=meta.getPixelsPhysicalSizeZ(0);
+                    Length xy=meta.getPixelsPhysicalSizeX(0);
+                    Length z=meta.getPixelsPhysicalSizeZ(0);
                     
                     if (xy!=null && z!=null) {
                         //ij.IJ.log("calibration: xy"+ xy.value()+" z:"+z.value()+ "  units:"+xy.unit().getSymbol());
-                        //res.setScale((Double)xy.value(), (Double)z.value(), xy.unit().getSymbol());
-                        res.setScale(xy.getValue(), z.getValue(), "µm");
+                        res.setScale((Double)xy.value(), (Double)z.value(), xy.unit().getSymbol());
                     } else ij.IJ.log("no calibration found");
                 }
                 r.close();
@@ -81,11 +80,8 @@ public class ImageOpener {
                 
                 
             }
-            catch (FormatException exc) {
+            catch (Exception exc) {
                 IJ.log("An error occurred while opering image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
-            }
-            catch (IOException exc) {
-                IJ.log("An error occurred while opering of image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
             }
         return res;
     }
@@ -128,10 +124,7 @@ public class ImageOpener {
                 tmb.setGraysLut();
                 return tmb.getThumbNail(sizeX, sizeY);
             }
-            catch (FormatException exc) {
-                IJ.log("An error occurred during import of image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
-            }
-            catch (IOException exc) {
+            catch (Exception exc) {
                 IJ.log("An error occurred during import of image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
             }
         return null;
@@ -169,10 +162,7 @@ public class ImageOpener {
                 r.close();
                 return tmbs;
             }
-            catch (FormatException exc) {
-                IJ.log("An error occurred during creation of thumbnails for image: "+file.getName()+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
-            }
-            catch (IOException exc) {
+            catch (Exception exc) {
                 IJ.log("An error occurred during creation of thumbnails for image: "+file.getName()+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
             }
         return null;
@@ -190,10 +180,7 @@ public class ImageOpener {
             res[2] = r.getSizeC();
             return res;
         }
-        catch (FormatException exc) {
-            IJ.log("Sorry, an error occurred: " + exc.getMessage());
-        }
-        catch (IOException exc) {
+        catch (Exception exc) {
             IJ.log("Sorry, an error occurred: " + exc.getMessage());
         }
         return null;
