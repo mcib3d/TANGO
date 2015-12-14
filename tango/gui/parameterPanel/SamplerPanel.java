@@ -54,6 +54,7 @@ public class SamplerPanel extends ParameterPanelPlugin implements DocumentListen
     
     @Override
     protected Parameter[] getParameters() {
+        if (plugin==null) return new Parameter[]{name};
         Parameter[] params = plugin.getParameters();
         Parameter[] parameters=new Parameter[params.length+1];
         parameters[0]=name;
