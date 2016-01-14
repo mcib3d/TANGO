@@ -94,16 +94,20 @@ public class ShellAnalysis implements MeasurementObject {
         if (!group.isSelected()) {
             return;
         }
-        ImageHandler intensity = (segmented.isSelected()) ? segmentedImages.getImage(structure.getIndex()) : rawImages.getImage(structure.getIndex());
-        if (segmented.isSelected() && intensity == null) {
-            if (verbose) {
-                ij.IJ.log("Measure proportion of segmented signal is selected, but no segmented image found for structure:" + structure.getIndex());
+        ImageHandler intensity;
+        if (segmented.isSelected()) {
+            intensity = segmentedImages.getImage(structure.getIndex());
+            if (intensity == null) {
+                if (verbose) {
+                    ij.IJ.log("Measure proportion of segmented signal is selected, but no segmented image found for structure:" + structure.getIndex());
+                }
+                return;
             }
-            return;
+        } else {
+            intensity = preFilter.isSelected()?  rawImages.getFilteredImage(structure.getIndex()) : rawImages.getImage(structure.getIndex());
+            intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensity, rawImages, nCPUs, verbose);
         }
-        ImageHandler intensityMap = (preFilter.isSelected() && !segmented.isSelected()) ? rawImages.getFilteredImage(structure.getIndex()) : rawImages.getImage(structure.getIndex());
-        intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensityMap, rawImages, nCPUs, verbose);
-
+        
         if (object.isSelected()) {
             Object3DVoxels[] obs = segmentedImages.getObjects(this.structureMask.getIndex());
             double[][] shells = new double[nbShells.getValue()][obs.length];
