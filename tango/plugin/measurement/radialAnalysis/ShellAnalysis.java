@@ -182,7 +182,7 @@ public class ShellAnalysis implements MeasurementObject {
                         System.arraycopy(keys, 0, newKeys, 0, keys.length);
                     }
                     for (int i = keys.length; i < newKeys.length; i++) {
-                        newKeys[i] = new KeyParameterObjectNumber("Shell " + (i + 1) + ":", "shell" + (i + 1), "" + (i + 1), true);
+                        newKeys[i] = new KeyParameterObjectNumber("Shell " + (i + 1) + ":", "shell" + (i + 1), "shell" + (i + 1), true);
                     }
                 }
             }
