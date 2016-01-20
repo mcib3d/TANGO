@@ -7,10 +7,8 @@ import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.Segment3DSpots;
 import mcib3d.image3d.processing.FastFilters3D;
-//import mcib_plugins.tools.RoiManager3D_;
 import tango.dataStructure.InputImages;
 import tango.parameter.*;
-import tango.plugin.filter.PreFilter;
 
 /**
  * Description of the Class
@@ -60,7 +58,8 @@ public class SeedSpots_Plus implements SpotSegmenter {
     String[] spot_methods = {"Classical", "Maximum", "Block"};
     String[] outputs = {"Label Image", "Roi Manager 3D", "Both"};
     // DB
-    PreFilterParameter algoSeeds = new PreFilterParameter("Seeds Filter", "pluginseeds", "");
+    //PreFilterParameter algoSeeds = new PreFilterParameter("Seeds Filter", "pluginseeds", "");
+    PreFilterSequenceParameter preFilters = new PreFilterSequenceParameter("Pre-Filters for watershed", "preFilters");
     IntParameter DB_radseeds = new IntParameter("Radius for seeds (pix)", "radSeeds", radiusSeeds);
     ThresholdParameter DB_global_background = new ThresholdParameter("Global seeds threshold:", "thldHigh", "Value");
     // test with gaussian method
@@ -77,25 +76,26 @@ public class SeedSpots_Plus implements SpotSegmenter {
     SpinnerParameter DB_rad2 = new SpinnerParameter("Radius 2", "rad1", 0, 10, 6);
     //IntParameter DB_volumeMin = new IntParameter("Volume minimum (pix)", "volMin", volumeMin);
     //IntParameter DB_volumeMax = new IntParameter("Volume maximum (pix)", "volMax", volumeMax);
-    Parameter[] parameters = new Parameter[]{algoSeeds, DB_radseeds, DB_global_background, DB_algos, cond};
+    Parameter[] parameters = new Parameter[]{preFilters, DB_radseeds, DB_global_background, DB_algos, cond};
     private boolean debug = true;
     private int nbCPUs = 1;
 
     public SeedSpots_Plus() {
         //DB_algos.setRefreshOnAction();
-        algoSeeds.setCompulsary(false);  
+        //algoSeeds.setCompulsary(false);  
         cond.setCondition(local_methods[0], new Parameter[]{DB_local_background});
         cond.setCondition(local_methods[1], new Parameter[]{DB_rad0, DB_rad1, DB_rad2});
         cond.setCondition(local_methods[2], new Parameter[]{DB_radmax, DB_sdpc});
     }
 
     private void computeSeeds(int currentStructureIdx, ImageHandler input, InputImages images) {
-        PreFilter filter = algoSeeds.getPlugin(nbCPUs, debug);
-        if (filter != null) {
-            filteredSeed = filter.runPreFilter(currentStructureIdx, input, images);
-        } else {
-            filteredSeed = input;
-        }
+        //PreFilter filter = algoSeeds.getPlugin(nbCPUs, debug);
+//        if (filter != null) {
+//            filteredSeed = filter.runPreFilter(currentStructureIdx, input, images);
+//        } else {
+//            filteredSeed = input;
+//        }
+        filteredSeed = preFilters.runPreFilterSequence(currentStructureIdx, input.duplicate(), images, nbCPUs, false);
         seed3DImage = FastFilters3D.filterImage(filteredSeed, FastFilters3D.MAXLOCAL, (float) radiusSeeds, (float) radiusSeeds, (float) radiusSeeds, 0, false);
     }
 
@@ -140,8 +140,8 @@ public class SeedSpots_Plus implements SpotSegmenter {
 
     @Override
     public Parameter[] getParameters() {
-        algoSeeds.setHelp("Prefilter to fin the seeds, in the case no prefilter is selected, only local maxima will be used.", true);
-        algoSeeds.setHelp("Prefilter to fin the seeds, in the case no prefilter is selected, only local maxima will be used. A robust spot detector is the Image Features Hessian", false);
+        preFilters.setHelp("Prefilters to detect the seeds, note that local maxima will be used on the filtered image.", true);
+        preFilters.setHelp("Prefilters to detect the seeds, note that local maxima will be used on the filtered image. A robust seed detector is the Image Features Hessian or the symmetry filter.", false);
         DB_radseeds.setHelp("Radius to compute max local for seeds", true);
         DB_global_background.setHelp("Threshold for seeds", true);
         //DB_volumeMax.setCompulsary(false);
@@ -169,7 +169,6 @@ public class SeedSpots_Plus implements SpotSegmenter {
     @Override
     public ImageInt runSpot(int currentStructureIdx, ImageHandler input, InputImages images) {
         spot3DImage = input;
-
 
         local_background = 0;
         radmax = DB_radmax.getIntValue(radmax);
