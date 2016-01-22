@@ -1,0 +1,21 @@
+## FIXME: we are temporarily using libs to include dependencies
+##        only available as local jars files.
+/lib/
+
+## We are using Maven for the build system
+/target/
+
+## Eclipse is far too common, such that deserves its own attention
+## on a java project.
+/.classpath
+/.project
+/.settings/
+
+## Binaries files that may be added accidentally
+*.jar
+*.pdf
+*.png
+*.tif
+
+## Because some people use Mac
+.DS_Store

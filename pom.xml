@@ -1,0 +1,211 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <properties>
+    <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+  </properties>
+
+  <groupId>fr.mnhn.biophysique</groupId>
+  <artifactId>TANGO</artifactId>
+  <version>0.8.4-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>TANGO</name>
+  <description>ImageJ plugin for batch processing and analysis of the nuclear genome organization.</description>
+  <url>http://biophysique.mnhn.fr/tango</url>
+  <inceptionYear>2012</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License</name>
+      <url>https://gnu.org/licenses/gpl.html</url>
+      <distribution>repo</distribution>
+      <comments>Version 3 of the License or (at your option) any later version.</comments>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Julien Cochennec</name>
+      <email>julien.cochennec@mnhn.fr</email>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <contributors>
+    <contributor>
+      <name>Ollion Jean</name>
+      <email>ollion@mnhn.fr</email>
+      <roles>
+        <role>past developer</role>
+      </roles>
+    </contributor>
+    <contributor>
+      <name>Thomas Boudier</name>
+      <email>thomas.boudier@snv.jussieu.fr</email>
+      <roles>
+        <role>past developer</role>
+      </roles>
+    </contributor>
+  </contributors>
+
+  <scm>
+    <connection>scm:git:git://gitorious.org/tango/tango</connection>
+    <developerConnection>scm:git:git@gitorious.org:tango/tango</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://gitorious.org/tango</url>
+  </scm>
+  <!--
+    TODO add a issueManagement field once there is a bug tracker
+  -->
+
+  <dependencies>
+    <dependency>
+      <groupId>net.imagej</groupId>
+      <artifactId>ij</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongo-java-driver</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>loci</groupId>
+      <artifactId>loci_plugins</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.imagej</groupId>
+      <artifactId>Image_5D</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>sc.fiji</groupId>
+      <artifactId>3D_Viewer</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>java3d</groupId>
+      <artifactId>j3d-core</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>java3d</groupId>
+      <artifactId>j3d-core-utils</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>java3d</groupId>
+      <artifactId>vecmath</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>sc.fiji</groupId>
+      <artifactId>imagescience</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
+    <dependency>
+      <groupId>sc.fiji</groupId>
+      <artifactId>imageware</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.htmlparser.jericho</groupId>
+      <artifactId>jericho-html</artifactId>
+      <version>RELEASE</version>
+    </dependency>
+
+
+    <!--
+      FIXME We are depedent on mcib3d, mcib_plugins, omancode, and rosuda, but
+            there is no Maven repositories for them. So we use this temporary
+            very ugly workaround, until that happens.
+    -->
+    <dependency>
+      <groupId>mcib3d</groupId>
+      <artifactId>mcib3d</artifactId>
+      <version>20140604</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/mcib3d-core-20140604.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>mcib_plugins</groupId>
+      <artifactId>mcib_plugins</artifactId>
+      <version>20140604</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/mcib3d_plugins-20140604.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.rosuda</groupId>
+      <artifactId>REngine</artifactId>
+      <version>1.7-17</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/JGR-1.7-17.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.rosuda</groupId>
+      <artifactId>JavaGD</artifactId>
+      <version>0.6-1</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/javaGD-0.6-1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.rosuda</groupId>
+      <artifactId>JRI</artifactId>
+      <version>0.5-5</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/JRI-0.5-5.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.omancode</groupId>
+      <artifactId>r</artifactId>
+      <version>1.1.7</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/romanface-1.1.7.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>filter.Bandpass3D</groupId>
+      <artifactId>filter.Bandpass3D</artifactId>
+      <version>0</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/droplet_finder.jar</systemPath>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>imagej.public</id>
+      <url>http://maven.imagej.net/content/groups/public</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- We depend on at least java 1.5. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
