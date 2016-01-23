@@ -77,12 +77,21 @@
       <version>RELEASE</version>
     </dependency>
 
-    <dependency>
-      <groupId>loci</groupId>
-      <artifactId>loci_plugins</artifactId>
-      <version>RELEASE</version>
-    </dependency>
-
+	<dependency>
+	  <groupId>loci</groupId>
+	  <artifactId>loci_plugins</artifactId>
+	  <version>RELEASE</version>
+	</dependency>
+	<!--<dependency>-->
+	  <!--<groupId>loci</groupId>-->
+	  <!--<artifactId>bio-formats</artifactId>-->
+	  <!--<version>5.0.0-beta1</version>-->
+	<!--</dependency>-->
+	<dependency>
+	  <groupId>ome</groupId>
+	  <artifactId>bio-formats_plugins</artifactId>
+	  <version>5.1.7</version>
+	</dependency>
     <dependency>
       <groupId>net.imagej</groupId>
       <artifactId>Image_5D</artifactId>
@@ -128,8 +137,32 @@
       <artifactId>jericho-html</artifactId>
       <version>RELEASE</version>
     </dependency>
-
-
+    <dependency>
+      <groupId>org.nuiton.thirdparty</groupId>
+      <artifactId>JRI</artifactId>
+      <version>0.9-6</version>
+    </dependency>
+	<dependency>
+	  <groupId>org.rosuda</groupId>
+	  <artifactId>javaGD</artifactId>
+	  <version>0.6.1</version>
+    </dependency>
+	<dependency>
+	  <groupId>org.rosuda</groupId>
+	  <artifactId>REngine</artifactId>
+	  <version>0.6.3</version>
+    </dependency>
+    <dependency>
+	  <groupId>org.json</groupId>
+	  <artifactId>json</artifactId>
+	  <version>20151123</version>
+	</dependency>
+	<!--<dependency>-->
+	  <!--<groupId>org.omancode</groupId>-->
+	  <!--<artifactId>romanface</artifactId>-->
+	  <!--<version>1.1.7</version>-->
+	<!--</dependency>-->
+  
     <!--
       FIXME We are depedent on mcib3d, mcib_plugins, omancode, and rosuda, but
             there is no Maven repositories for them. So we use this temporary
@@ -138,45 +171,39 @@
     <dependency>
       <groupId>mcib3d</groupId>
       <artifactId>mcib3d</artifactId>
-      <version>20140604</version>
+      <version>20151214</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/mcib3d-core-20140604.jar</systemPath>
+      <!--<systemPath>${basedir}/lib/mcib3d-core-20151214144913.jar</systemPath>-->
+	  <systemPath>${basedir}/lib/mcib3d-core-20151214144913.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>mcib_plugins</groupId>
       <artifactId>mcib_plugins</artifactId>
-      <version>20140604</version>
+      <version>20151214</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/mcib3d_plugins-20140604.jar</systemPath>
+      <systemPath>${basedir}/lib/mcib3d_plugins-20151214144913.jar</systemPath>
     </dependency>
-    <dependency>
-      <groupId>org.rosuda</groupId>
-      <artifactId>REngine</artifactId>
-      <version>1.7-17</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/JGR-1.7-17.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.rosuda</groupId>
-      <artifactId>JavaGD</artifactId>
-      <version>0.6-1</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/javaGD-0.6-1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.rosuda</groupId>
-      <artifactId>JRI</artifactId>
-      <version>0.5-5</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/JRI-0.5-5.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.omancode</groupId>
-      <artifactId>r</artifactId>
-      <version>1.1.7</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/romanface-1.1.7.jar</systemPath>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.rosuda</groupId>-->
+      <!--<artifactId>JavaGD</artifactId>-->
+      <!--<version>0.6-1</version>-->
+      <!--<scope>system</scope>-->
+      <!--<systemPath>${basedir}/lib/javaGD-0.6-1.jar</systemPath>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.rosuda</groupId>-->
+      <!--<artifactId>JRI</artifactId>-->
+      <!--<version>0.5-5</version>-->
+      <!--<scope>system</scope>-->
+      <!--<systemPath>${basedir}/lib/JRI-0.5-5.jar</systemPath>-->
+    <!--</dependency>-->
+	<dependency>
+	  <groupId>org.omancode</groupId>
+	  <artifactId>r</artifactId>
+	  <version>1.1.7</version>
+	  <scope>system</scope>
+	  <systemPath>${basedir}/lib/romanface-1.1.7.jar</systemPath>
+	</dependency>
     <dependency>
       <groupId>filter.Bandpass3D</groupId>
       <artifactId>filter.Bandpass3D</artifactId>
@@ -191,8 +218,14 @@
       <id>imagej.public</id>
       <url>http://maven.imagej.net/content/groups/public</url>
     </repository>
-  </repositories>
-
+    <repository>
+      <id>romanface.repo</id>
+      <url>http://romanface.googlecode.com/git/repo</url>
+    </repository>
+ 	<repository>
+		<id>casper-repo</id>
+		<url>https://raw.github.com/casperds/casperdatasets/master/repo/releases/</url>
+	</repository> </repositories>
   <build>
     <plugins>
       <plugin>
