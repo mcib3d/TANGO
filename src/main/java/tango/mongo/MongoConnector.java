@@ -119,11 +119,7 @@ public class MongoConnector {
     
     private synchronized void createMongo() {
         if (Core.GUIMode) IJ.showStatus("creating connection with db...");
-        try {
-            m = new MongoClient(host);
-        } catch (UnknownHostException e) {
-            exceptionPrinter.print(e, "ukhe:", Core.GUIMode);
-        }
+		m = new MongoClient(host);
     }
     
     public boolean isConnected() {
@@ -140,13 +136,7 @@ public class MongoConnector {
     
     public static boolean isMongoOn(String host) {
         MongoClient m;
-        m=null;
-        try {
-            m = new MongoClient(host);
-        } catch (UnknownHostException e) {
-            exceptionPrinter.print(e, "ukhe:", Core.GUIMode);
-            return false;
-        }
+		m = new MongoClient(host);
         if (m==null) return false;
         List<String> l;
         try {
