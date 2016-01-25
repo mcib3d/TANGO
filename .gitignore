@@ -14,7 +14,7 @@
 ## Binaries files that may be added accidentally
 *.jar
 *.pdf
-*.png
+#*.png
 *.tif
 
 ## Because some people use Mac
