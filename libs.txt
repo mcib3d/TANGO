@@ -21,14 +21,8 @@ http://imagejdocu.tudor.lu/doku.php?id=plugin:stacks:3d_ij_suite:start (included
 * bioformats-package, to read files in different formats
 http://www.openmicroscopy.org/site/products/bio-formats (included in fiji)
 
-* MongoDB, for database storing
+* MongoDB, for database storage
 http://docs.mongodb.org/ecosystem/drivers/java/
-
-* JGR, graphical interface for R
-http://rforge.net/JGR/
-
-* JRI, interface between java and R
-http://www.rforge.net/JRI/
 
 * commons-lang, apache extension for java
 https://commons.apache.org/proper/commons-lang/
@@ -36,20 +30,14 @@ https://commons.apache.org/proper/commons-lang/
 * gson, for gson editing
 https://code.google.com/p/google-gson/
 
-* ibase, R related library ??
-??
-
 * jericho-html, for parsing html files (for help)
 http://jericho.htmlparser.net/docs/index.html
 
-* javaGD, jave R graphical
-http://www.rforge.net/JavaGD/
-
-* romanface, R interface ??
-??
-
 * droplet-finder, for image processing, band-pass filtering
 http://imagejdocu.tudor.lu/doku.php?id=plugin:analysis:droplet_counter:start
+
+* JSON, for JSON extraction of data, export processing chains as text
+http://json.org/
 
 
 

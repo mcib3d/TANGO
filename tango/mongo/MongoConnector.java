@@ -333,7 +333,10 @@ public class MongoConnector {
     
     public boolean mongoDumpSettings(String outputPath) {
         boolean r = true;
-        for (String col : collectionsSettings) r = r && dumpCollection(this.settings.getName(), col, outputPath);
+        for (String col : collectionsSettings) {
+            r = r && dumpCollection(this.settings.getName(), col, outputPath);
+            //IJ.log(col);
+        }
         return r;
     }
     
@@ -1124,7 +1127,9 @@ public class MongoConnector {
     
     public synchronized void removeNucleusImage(ObjectId nucleus_id, int fileIdx, int fileType) {
         BasicDBObject query = new BasicDBObject("nucleus_id", nucleus_id).append("fileIdx", fileIdx).append("fileType", fileType);
-        gfsNucleus.remove(query);
+        System.out.println("removing nucleus image: "+query.toString());
+        
+        gfsNucleus.remove(query); // TODO BUG NE REMOVE PLUS!
     }
     
     public synchronized void removeNucleusImage(ObjectId nucleus_id, int fileIdx) {
@@ -1138,8 +1143,11 @@ public class MongoConnector {
     }
     
     public synchronized void saveNucleusImage(ObjectId nucleus_id, int fileIdx, int fileType, ImageHandler img) {
-        if (img==null) return;
         removeNucleusImage(nucleus_id, fileIdx, fileType);
+        if (img==null) {
+            System.out.println("set nucleus image null");
+            return;
+        }
         try {
             GridFSInputFile gfi = this.gfsNucleus.createFile(img.getBinaryData());
             gfi.setFilename(img.getImagePlus().getShortTitle());
@@ -1236,6 +1244,7 @@ public class MongoConnector {
     public synchronized ImageHandler getNucImage(ObjectId cellId, int fileIdx, int fileType) {
         BasicDBObject query = new BasicDBObject("nucleus_id", cellId).append("fileIdx", fileIdx).append("fileType", fileType);
         GridFSDBFile f = this.gfsNucleus.findOne(query);
+        System.out.println("get nucleus image: "+query.toString() +" found? "+(f!=null));
         if (f!=null) return createImage(f);
         return null;
     }

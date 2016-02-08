@@ -1,7 +1,5 @@
 package tango.plugin.measurement.radialAnalysis;
 
-import java.util.HashMap;
-import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;

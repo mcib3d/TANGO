@@ -21,8 +21,8 @@ import loci.formats.services.OMEXMLService;
 import loci.plugins.util.ImageProcessorReader;
 import loci.plugins.util.LociPrefs;
 import mcib3d.image3d.ImageHandler;
-import ome.units.quantity.Length;
 import loci.formats.meta.IMetadata;
+import ome.units.quantity.Length;
 
 /**
  *
@@ -80,11 +80,8 @@ public class ImageOpener {
                 
                 
             }
-            catch (FormatException exc) {
+            catch (Exception exc) {
                 IJ.log("An error occurred while opering image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
-            }
-            catch (IOException exc) {
-                IJ.log("An error occurred while opering of image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
             }
         return res;
     }
@@ -127,10 +124,7 @@ public class ImageOpener {
                 tmb.setGraysLut();
                 return tmb.getThumbNail(sizeX, sizeY);
             }
-            catch (FormatException exc) {
-                IJ.log("An error occurred during import of image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
-            }
-            catch (IOException exc) {
+            catch (Exception exc) {
                 IJ.log("An error occurred during import of image: "+file.getName()+ " channel:"+channel+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
             }
         return null;
@@ -168,10 +162,7 @@ public class ImageOpener {
                 r.close();
                 return tmbs;
             }
-            catch (FormatException exc) {
-                IJ.log("An error occurred during creation of thumbnails for image: "+file.getName()+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
-            }
-            catch (IOException exc) {
+            catch (Exception exc) {
                 IJ.log("An error occurred during creation of thumbnails for image: "+file.getName()+" t:"+timePoint+" s:"+seriesNumber + exc.getMessage());
             }
         return null;
@@ -189,10 +180,7 @@ public class ImageOpener {
             res[2] = r.getSizeC();
             return res;
         }
-        catch (FormatException exc) {
-            IJ.log("Sorry, an error occurred: " + exc.getMessage());
-        }
-        catch (IOException exc) {
+        catch (Exception exc) {
             IJ.log("Sorry, an error occurred: " + exc.getMessage());
         }
         return null;

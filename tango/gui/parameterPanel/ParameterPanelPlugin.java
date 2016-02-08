@@ -140,6 +140,9 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
             curMethod=method;
             help=plugin.getHelp();
             this.label.setText(method);
+        } else {
+            curMethod="";
+            this.label.setText("");
         }
     }
     
@@ -203,7 +206,7 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
     }
     
     public void displayParameters() {
-        if (plugin==null) return;
+        //if (plugin==null) return;
         currentParameters=getParameters();
         for (Parameter p : currentParameters) {
             p.setParameterPanel(this);
@@ -265,7 +268,8 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
     }
     
     protected Parameter[] getParameters() {
-        return plugin.getParameters();
+        if (plugin==null) return new Parameter[0];
+        else return plugin.getParameters();
     }
     
     @Override
@@ -277,7 +281,7 @@ public abstract class ParameterPanelPlugin extends ParameterPanelAbstract implem
 
     @Override
     public boolean checkValidity() {
-        if (plugin==null) return false;
+        if (plugin==null) return true;
         else {
             if (currentParameters!=null) for (Parameter p : currentParameters) if (!p.isValidOrNotCompulsary()) return false;
             return true;

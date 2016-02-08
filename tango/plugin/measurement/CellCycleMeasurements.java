@@ -90,6 +90,7 @@ public class CellCycleMeasurements implements MeasurementObject {
     BooleanParameter doNLRep =  new BooleanParameter("Compute?","doNL", false);
     ConditionalParameter condNLRep = new ConditionalParameter("Localisation towards nucleoli and periphery", doNLRep);
     StructureParameter nlRep = new StructureParameter("Nucleoli:", "nl", -1, true);
+    BooleanParameter insideNL =  new BooleanParameter("Take in account signal inside Nucleoli","insideNL", true);
     
     KeyParameterObjectNumber rep_loc = new KeyParameterObjectNumber("Replication Localization", "replication_loc");
     
@@ -107,7 +108,7 @@ public class CellCycleMeasurements implements MeasurementObject {
         doReplication.setFireChangeOnAction();
         condReplication.setCondition(true, new Parameter[]{replication, smoothRep, radiusRep, condNLRep});
         doNLRep.setFireChangeOnAction();
-        condNLRep.setCondition(true, new Parameter[]{nlRep});
+        condNLRep.setCondition(true, new Parameter[]{nlRep}); //insideNL
     }
 
     @Override
@@ -135,9 +136,9 @@ public class CellCycleMeasurements implements MeasurementObject {
             }
             if (replication_sd.isSelected()) {
                 quantifications.setQuantificationObjectNumber(replication_sd, new double[]{nuc.getPixStdDevValue(rep)});
-            }  
-            RadialAutoCorrelation rac=null;
+            }
             if (rep_rac.isSelected()) {
+                RadialAutoCorrelation rac=null;
                 ImageHandler repSmooth = rep;
                 if (smoothRep.getValue()>0) repSmooth = ImageFeaturesCore.gaussianSmooth(rep, smoothRep.getValue(), smoothRep.getValue() * raw.getMask().getScaleXY() / raw.getMask().getScaleZ(), nCPUs);
                 rac = new RadialAutoCorrelation(repSmooth, mask, 2);
@@ -145,7 +146,7 @@ public class CellCycleMeasurements implements MeasurementObject {
                 if (verbose) rac.intensityResampled.show("RAC replication Image");
             }
             if (this.doNLRep.isSelected() && rep_loc.isSelected()) {// grayscale radial moment
-                ImageHandler dm = DistanceMapParameter.getMaskAndDistanceMap(raw,  seg, 0, new int[] {0, nlRep.getIndex()}, true, true, false, null, verbose, nCPUs)[1];
+                ImageHandler dm = DistanceMapParameter.getMaskAndDistanceMap(raw,  seg, 0, new int[] {0, nlRep.getIndex()}, true, insideNL.isSelected(), false, null, verbose, nCPUs)[1];
                 GrayscaleRadialMoments grm = new GrayscaleRadialMoments();
                 grm.computeMoments(rep, mask, (ImageFloat)dm);
                 quantifications.setQuantificationObjectNumber(rep_loc, new double[]{grm.getMean()});                    

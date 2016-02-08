@@ -76,7 +76,7 @@ public class Structure extends AbstractStructure {
     @Override
     public void createObjects() {
         ImageInt S = cell.segImages.getImage(idx);
-        //System.out.println("create objects:"+this.name+ " S==null?"+(S==null));
+        System.out.println("create objects:"+this.name+ " S==null?"+(S==null));
         if (S!=null) {
             try {
                 ImageFloat pm = cell.segImages.getProbabilityMap(idx);
@@ -134,18 +134,20 @@ public class Structure extends AbstractStructure {
             if (cell.verbose) System.out.println(name+ " prefilter ok.");
             segment();
             if (cell.verbose) System.out.println(name+ " segmentation ok.");
-            if (cell.verbose && cell.segImages.getImage(idx)!=null) {
-                cell.segImages.getImage(idx).set332RGBLut();
-                cell.segImages.getImage(idx).showDuplicate("Segmented Image");
+            if (cell.segImages.getImage(idx)!=null) {
+                if (cell.verbose) {
+                    cell.segImages.getImage(idx).set332RGBLut();
+                    cell.segImages.getImage(idx).showDuplicate("Segmented Image");
+                }
+                ImageInt pp = postFilter(cell.segImages.getImage(idx));
+                cell.segImages.setSegmentedImage(pp, idx);
+                if (cell.verbose) System.out.println(name+ " postfilter ok.");
+                if (cell.verbose && cell.segImages.getImage(idx)!=null) {
+                    cell.segImages.getImage(idx).set332RGBLut();
+                    cell.segImages.getImage(idx).showDuplicate(null);
+                }
+                if (!cell.verbose) this.shiftObjectIndexes(false);
             }
-            ImageInt pp = postFilter(cell.segImages.getImage(idx));
-            cell.segImages.setSegmentedImage(pp, idx);
-            if (cell.verbose) System.out.println(name+ " postfilter ok.");
-            if (cell.verbose && cell.segImages.getImage(idx)!=null) {
-                cell.segImages.getImage(idx).set332RGBLut();
-                cell.segImages.getImage(idx).showDuplicate(null);
-            }
-            if (!cell.verbose) this.shiftObjectIndexes(false);
         } catch (Exception e) {
             String n = (cell.field!=null) ? "field: "+cell.field.name+ " ": "";
             n+="cell: "+cell.name+ " channel: "+name;
@@ -163,12 +165,20 @@ public class Structure extends AbstractStructure {
                 cell.inputImages.getFilteredImage(idx).showDuplicate("pre Filtered Image");
                 cell.setVerbose(true);
                 segment();
+                if (cell.segImages.getImage(idx)==null) {
+                    IJ.log("no segmented image found: check processing chain");
+                    return;
+                }
                 cell.segImages.getImage(idx).showDuplicate("Segmented Image");
                 cell.segImages.setSegmentedImage(null, idx);
             } else if (step == 2) { // stops within post-process
                 cell.setVerbose(false);
                 segment();
                 ImageInt in = cell.segImages.getImage(idx);
+                if (in==null) {
+                    IJ.log("no segmented image found: check processing chain");
+                    return;
+                }
                 PostFilterSequence pofs= xp.getPostFilterSequence(idx, cell.nbCPUs, false);
                 pofs.test(idx, in, cell.inputImages, subStep, false);
                 cell.segImages.setSegmentedImage(null, idx);
@@ -220,6 +230,9 @@ public class Structure extends AbstractStructure {
             S.setOffset(in);
             cell.segImages.setSegmentedImage(S, idx);
             cell.segImages.setProbabilityMap(SP, idx);
+        } else {
+            cell.segImages.setSegmentedImage(null, idx);
+            cell.segImages.setProbabilityMap(null, idx);
         }
     }
     

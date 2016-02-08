@@ -51,7 +51,7 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
     BooleanParameter useUnit = new BooleanParameter("Use units", "ITunits", true);
     SliderParameter step = new SliderParameter("Step for iteration", "step", 1, 1000, 10);
     BooleanParameter deleteOutsideNuclei = new BooleanParameter("Delete outside nuclei", "deleteOutsideNuclei", true);
-    // TODO creat choice to choose among different criteria method
+    // TODO create choice to choose among different criteria method
 
     private boolean nucMode;
 

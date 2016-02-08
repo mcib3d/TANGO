@@ -11,8 +11,6 @@ import imagescience.image.Coordinates;
 import imagescience.image.Dimensions;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
-import imagescience.utility.Messenger;
-import imagescience.utility.Progressor;
 import imagescience.utility.Timer;
 import java.util.Vector;
 

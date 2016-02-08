@@ -1,5 +1,6 @@
 package tango.plugin.measurement.radialAnalysis;
 
+import ij.IJ;
 import ij.gui.Plot;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.image3d.ImageHandler;
@@ -9,6 +10,7 @@ import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
 import tango.parameter.BooleanParameter;
+import tango.parameter.ChoiceParameter;
 import tango.parameter.ConditionalParameter;
 import tango.parameter.GroupKeyParameter;
 import tango.parameter.KeyParameterObjectNumber;
@@ -48,18 +50,20 @@ public class ShellAnalysis implements MeasurementObject {
     StructureParameter structure = new StructureParameter("Signal:", "structure", -1, true);
     BooleanParameter preFilter = new BooleanParameter("Use filtered image", "filtered", false);
     PreFilterSequenceParameter preFilters = new PreFilterSequenceParameter("Pre-Filters", "preFilters");
-    BooleanParameter segmented = new BooleanParameter("Measure proportion of segmented signal", "segmented", false);
+    ChoiceParameter inputSignal = new ChoiceParameter("Input signal", "inputSignal", new String[]{"Grayscale", "Segmented", "Grayscale within segmented"}, "Grayscale within segmented");
     StructureParameter structureMask = new StructureParameter("Distance from structure:", "structureMask", 0, true);
-    BooleanParameter object = new BooleanParameter("Perform around each obect separately", "objects", false);
+    BooleanParameter inside = new BooleanParameter("Inside structure", "inside", true);
+    BooleanParameter object = new BooleanParameter("Perform around each object separately", "objects", false);
     ConditionalParameter referenceObjectCond = new ConditionalParameter("Reference for distance calculation:", structureMask);
     //IntParameter nbShells = new IntParameter("Number of Shells", "nbShells", 5);
     SpinnerParameter nbShells = new SpinnerParameter("Number of Shells", "nbShells", 2, 100, 5);
     BooleanParameter normalize = new BooleanParameter("Normalize with nucleus Signal", "normalize", false);
 
-    Parameter[] parameters = new Parameter[]{structure, preFilter, preFilters, segmented, referenceObjectCond, nbShells, normalize};
-    GroupKeyParameter group = new GroupKeyParameter("Shells", "shell", "shell_", true, new KeyParameterObjectNumber[0], true);
+    Parameter[] parameters = new Parameter[]{structure, preFilter, preFilters, inputSignal, referenceObjectCond, nbShells, normalize};
     //KeyParameterObjectNumber key = new KeyParameterObjectNumber("Shell", "shell", "shell", true);
     KeyParameterObjectNumber[] keys = new KeyParameterObjectNumber[0];
+    //GroupKeyParameter group = new GroupKeyParameter("Shells", "shell", "shell_", true, new KeyParameterObjectNumber[0], true);
+    GroupKeyParameter group = new GroupKeyParameter("", "shells", "", true, keys, false);
     Parameter[] allKeys = new Parameter[]{group};
     int nCPUs = 1;
     boolean verbose;
@@ -69,7 +73,7 @@ public class ShellAnalysis implements MeasurementObject {
         referenceObjectCond.setDefaultParameter(new Parameter[]{object});
         referenceObjectCond.setCondition(0, new Parameter[]{});
         structure.setHelp("Signal to measure, either raw signal or segmented signal.", true);
-        segmented.setHelp("If unchecked measure percentage of fluorescence in each shell, if checked percentage of segmented voxels.", true);
+        inputSignal.setHelp("Grayscale: measure percentage of fluorescence in each shell; Segmented: percentage of segmented voxels; Grayscale within segmented: idem to Grayscale but limit to the segmented volume", true);
         structureMask.setHelp("Shells are created from this reference structure, either inside if nucleus or outside if other structure.", true);
         object.setHelp("If checked shells are build around each object, if unchecked shells are build around the whole population of objects.", true);
         referenceObjectCond.setHelp("The structure around which perform shell analysis.", true);
@@ -91,16 +95,19 @@ public class ShellAnalysis implements MeasurementObject {
         if (!group.isSelected()) {
             return;
         }
-        ImageHandler intensity = (segmented.isSelected()) ? segmentedImages.getImage(structure.getIndex()) : rawImages.getImage(structure.getIndex());
-        if (segmented.isSelected() && intensity == null) {
-            if (verbose) {
-                ij.IJ.log("Measure proportion of segmented signal is selected, but no segmented image found for structure:" + structure.getIndex());
-            }
+        int mode = inputSignal.getSelectedIndex();
+        ImageInt segMap = mode==0? null: segmentedImages.getImage(structure.getIndex());
+        ImageHandler intensity =  mode==1? null: ( preFilter.isSelected()?  rawImages.getFilteredImage(structure.getIndex()) : rawImages.getImage(structure.getIndex()) ) ;
+        if (mode!=0 && segMap==null && verbose) { 
+            ij.IJ.log("Measure proportion of segmented signal is selected, but no raw image found for structure: " + structure.getIndex());
             return;
         }
-        ImageHandler intensityMap = (preFilter.isSelected() && !segmented.isSelected()) ? rawImages.getFilteredImage(structure.getIndex()) : rawImages.getImage(structure.getIndex());
-        intensityMap = preFilters.runPreFilterSequence(structure.getIndex(), intensityMap, rawImages, nCPUs, verbose);
-
+        if (mode!=1 && intensity==null && verbose ) {
+            ij.IJ.log("Measure proportion of raw signal is selected, but no segmented image found for structure: " + structure.getIndex());
+            return;
+        }
+        if (intensity!=null) intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensity, rawImages, nCPUs, verbose);
+        
         if (object.isSelected()) {
             Object3DVoxels[] obs = segmentedImages.getObjects(this.structureMask.getIndex());
             double[][] shells = new double[nbShells.getValue()][obs.length];
@@ -108,7 +115,7 @@ public class ShellAnalysis implements MeasurementObject {
             for (int i = 0; i < obs.length; i++) {
                 Object3DVoxels o = obs[i];
                 o.draw(image, o.getValue());
-                double[] shellsO = getShells(rawImages.getMask(), image, intensity, rawImages.getImage(0));
+                double[] shellsO = getShells(rawImages.getMask(), image, intensity, segMap, rawImages.getImage(0));
                 for (int s = 0; s < shellsO.length; s++) {
                     shells[s][i] = shellsO[s];
                 }
@@ -118,25 +125,34 @@ public class ShellAnalysis implements MeasurementObject {
                 quantifications.setQuantificationObjectNumber(keys[i], shells[i]);
             }
         } else {
-            double[] shells = getShells(rawImages.getMask(), segmentedImages.getImage(structureMask.getIndex()), intensity, rawImages.getImage(0));
+            double[] shells = getShells(rawImages.getMask(), segmentedImages.getImage(structureMask.getIndex()), intensity, segMap, rawImages.getImage(0));
             for (int i = 0; i < shells.length; i++) {
                 quantifications.setQuantificationObjectNumber(keys[i], new double[]{shells[i]});
-                if (verbose) {
-                    ij.IJ.log(keys[i].getKey() + ":" + shells[i]);
-                }
+                //if (verbose) {
+                //ij.IJ.log(keys[i].getKey() + ":" + shells[i]);
+                //}
             }
         }
     }
 
-    protected double[] getShells(ImageInt nuc, ImageInt ref, ImageHandler intensity, ImageHandler intensityRef) {
-        ShellAnalysisCore shell = new ShellAnalysisCore(nuc, ref, ref == nuc, nCPUs, false);
+    protected double[] getShells(ImageInt nuc, ImageInt ref, ImageHandler intensity, ImageInt objects, ImageHandler intensityRef) {
+        int mode = inputSignal.getSelectedIndex();
+        boolean in = inside.getValue();
+        if (ref == nuc) {
+            //IJ.log("Shell analysis inside nucleus only");
+            in = true;
+        }
+        ShellAnalysisCore shell = new ShellAnalysisCore(nuc, ref, in, nCPUs, false);
         int nbShell = nbShells.getValue();
         int[] indexes = (normalize.isSelected()) ? shell.getShellIndexesNormalized(nbShell, intensityRef) : shell.getShellIndexes(nbShell);
         double[] shells;
-        if (segmented.isSelected()) {
-            shells = shell.getShellRepartitionMask((ImageInt) intensity, indexes);
-        } else {
-            shells = shell.getShellRepartition(intensity, indexes);
+        switch(mode) {
+            case 0: shells = shell.getShellRepartition(intensity, indexes);
+            break;
+            case 1: shells =  shell.getShellRepartitionMask(objects, indexes);
+            break;
+            case 2: default: shells = shell.getShellRepartitionMask(objects, intensity, indexes);       
+            break;
         }
 
         if (verbose) {
@@ -170,7 +186,7 @@ public class ShellAnalysis implements MeasurementObject {
                         System.arraycopy(keys, 0, newKeys, 0, keys.length);
                     }
                     for (int i = keys.length; i < newKeys.length; i++) {
-                        newKeys[i] = new KeyParameterObjectNumber("Shell " + (i + 1) + ":", "shell" + (i + 1), "" + (i + 1), true);
+                        newKeys[i] = new KeyParameterObjectNumber("Shell " + (i + 1) + ":", "shell" + (i + 1), "shell" + (i + 1), true);
                     }
                 }
             }
@@ -178,6 +194,28 @@ public class ShellAnalysis implements MeasurementObject {
             this.group.setKeys(keys);
         }
         return allKeys;
+
+//          if (nbRads.getValue() != keys.length) {
+//            KeyParameterObjectNumber[] newKeys = new KeyParameterObjectNumber[nbRads.getValue()];
+//            if (newKeys.length > 0) {
+//                if (nbRads.getValue() < keys.length) {
+//                    if (keys.length > 0) {
+//                        System.arraycopy(keys, 0, newKeys, 0, newKeys.length);
+//                    }
+//                } else {
+//                    if (keys.length > 0) {
+//                        System.arraycopy(keys, 0, newKeys, 0, keys.length);
+//                    }
+//                    for (int i = keys.length; i < newKeys.length; i++) {
+//
+//                        newKeys[i] = new KeyParameterObjectNumber("Rad_" + (i + 1) + ":", "rad" + (i + 1), "rad" + (i + 1), true);
+//                    }
+//                }
+//            }
+//            keys = newKeys;
+//            this.group.setKeys(keys);
+//        }
+//        return returnKeys;
     }
 
     @Override

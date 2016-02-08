@@ -4,7 +4,6 @@
  */
 package tango.plugin.filter;
 
-import ij.IJ;
 import java.util.HashMap;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Voxel3D;
@@ -16,7 +15,6 @@ import tango.parameter.ConditionalParameter;
 import tango.parameter.DoubleParameter;
 import tango.parameter.IntParameter;
 import tango.parameter.Parameter;
-import tango.parameter.SliderParameter;
 
 /**
  *
@@ -51,7 +49,7 @@ public class SizeFilter implements PostFilter {
     DoubleParameter minVox = new DoubleParameter("Min volume:", "minVox", 1.0, DoubleParameter.nfDEC2);
     DoubleParameter maxVox = new DoubleParameter("Max volume:", "maxVox", 0.0, DoubleParameter.nfDEC2);
     BooleanParameter useUnits = new BooleanParameter("Size in calibrated units:", "useUnits", false);
-    BooleanParameter max_P = new BooleanParameter("use", "useMaw", false);
+    BooleanParameter max_P = new BooleanParameter("Use max volume", "useMax", false);
     BooleanParameter edge_PXY = new BooleanParameter("Remove", "edgeXY", false);
     BooleanParameter edge_PZ = new BooleanParameter("Remove", "edgeZ", false);
     IntParameter edgeSurf_PXY = new IntParameter("Min nb of Voxels touching XY edges:", "edgeSurfXY", 1);

@@ -444,7 +444,7 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
                     }
                 }
                 );
-                SwingUtilities.invokeLater(t2);
+                t2.start();
             }
         }
         );

@@ -144,6 +144,22 @@ public class ShellAnalysisCore {
         return shells;
     }
     
+    public double[] getShellRepartitionMask(ImageInt objects, ImageHandler values, int[] shellIndexes) {
+        double[] shells = new double[shellIndexes.length];
+        int currentShell=0;
+        for (int i =0;i<sortedVoxels.length; i++) {
+            if (objects.getPixelInt(sortedVoxels[i].xy, sortedVoxels[i].z)!=0) {
+                if (i>shellIndexes[currentShell]) currentShell++;
+                shells[currentShell]+=values.getPixel(sortedVoxels[i].xy, sortedVoxels[i].z);
+            }
+        }
+        //normalize
+        double sum = 0;
+        for (double d : shells) sum+=d;
+        for (int i = 0;i<shells.length;i++) shells[i]/=sum;
+        return shells;
+    }
+    
     public double[] getShellRepartition(ImageHandler objects, int[] shellIndexes) {
         double[] shells = new double[shellIndexes.length];
         int currentShell=0;
