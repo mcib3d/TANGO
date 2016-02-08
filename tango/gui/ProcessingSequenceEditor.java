@@ -21,6 +21,7 @@ import tango.helper.Helper;
 import tango.helper.ID;
 import tango.helper.RetrieveHelp;
 import tango.parameter.StructureParameter;
+import tango.util.ProcessingChainsToText;
 import tango.util.Utils;
 
 /**

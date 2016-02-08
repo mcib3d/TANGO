@@ -102,11 +102,6 @@ public class ShellAnalysis implements MeasurementObject {
             ij.IJ.log("Measure proportion of segmented signal is selected, but no raw image found for structure: " + structure.getIndex());
             return;
         }
-        if (mode!=1 && intensity==null && verbose ) {
-            ij.IJ.log("Measure proportion of raw signal is selected, but no segmented image found for structure: " + structure.getIndex());
-            return;
-        }
-        if (intensity!=null) intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensity, rawImages, nCPUs, verbose);
         
         if (object.isSelected()) {
             Object3DVoxels[] obs = segmentedImages.getObjects(this.structureMask.getIndex());
@@ -135,8 +130,11 @@ public class ShellAnalysis implements MeasurementObject {
         }
     }
 
-    protected double[] getShells(ImageInt nuc, ImageInt ref, ImageHandler intensity, ImageInt objects, ImageHandler intensityRef) {
-        int mode = inputSignal.getSelectedIndex();
+        if (mode!=1 && intensity==null && verbose ) {
+            ij.IJ.log("Measure proportion of raw signal is selected, but no segmented image found for structure: " + structure.getIndex());
+            return;
+        }
+        if (intensity!=null) intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensity, rawImages, nCPUs, verbose);
         boolean in = inside.getValue();
         if (ref == nuc) {
             //IJ.log("Shell analysis inside nucleus only");
@@ -239,3 +237,5 @@ public class ShellAnalysis implements MeasurementObject {
     }
 
 }
+    protected double[] getShells(ImageInt nuc, ImageInt ref, ImageHandler intensity, ImageInt objects, ImageHandler intensityRef) {
+        int mode = inputSignal.getSelectedIndex();
