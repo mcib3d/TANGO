@@ -261,7 +261,7 @@ public class FieldManagerLayout extends javax.swing.JPanel {
 
         override.setText("Override Meas.");
 
-        test.setIcon(new javax.swing.ImageIcon(getClass().getResource("/tango/icons/test.png"))); // NOI18N
+        test.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/test.png"))); // NOI18N
         test.setToolTipText("Test");
         test.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
