@@ -386,6 +386,7 @@ public abstract class ProcessingSequenceTemplateEditor implements ActionListener
             IJ.log("TANGO export text for processing chains will not work with this version of Java " + version);
             return;
         }
+        
         ProcessingChainsToText ProcText = new ProcessingChainsToText(data);
         IJ.log("");
         IJ.log("Processing chain " + ProcText.getName() + " : ");
@@ -395,5 +396,6 @@ public abstract class ProcessingSequenceTemplateEditor implements ActionListener
         IJ.log(ProcText.getSegmentation());
         IJ.log("POSTFILTERS-----------------------------------");
         IJ.log(ProcText.getPostFilters());
+                
     }
 }

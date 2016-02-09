@@ -14,7 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import tango.analysis.AnalysisCore;
 import tango.dataStructure.Experiment;
 import tango.gui.util.VerticalTextIcon;
 import tango.helper.Helper;
@@ -59,7 +58,7 @@ public class Core extends JFrame implements Displayer {
     private JTabbedPane tabs,processingTabs;
     public static MongoConnector mongoConnector;
     private static Experiment experiment;
-    private static AnalysisCore analysis;
+    //private static AnalysisCore analysis;
     public static Helper helper;
     private Connector connector;
     private XPEditor xpEditor;
@@ -258,9 +257,9 @@ public class Core extends JFrame implements Displayer {
         tabs.addTab("Edit Processing Chains", new JPanel());
         tabs.addTab("Data", new JPanel());
         if(ANALYSIS){
-               analysis = new AnalysisCore(this);
+               /*analysis = new AnalysisCore(this);
                panels[4]=analysis.getPanel();
-               tabs.addTab("Analysis", new JPanel());
+               tabs.addTab("Analysis", new JPanel());*/
         }
         //this.dimensions=new Dimension[panels.length];
         //for (int i = 0; i<dimensions.length;i++) dimensions[i]=new Dimension(minSize.width+15, minSize.height+15);
@@ -287,8 +286,8 @@ public class Core extends JFrame implements Displayer {
                 } else if (selectedTab == 4) { //analysis
                     try {
                         Core.experiment.refresh();
-                        System.out.println("Analysis On");
-                        analysis.setXP();
+                        /*System.out.println("Analysis On");
+                        analysis.setXP();*/
                     } catch (Exception ex) {
                         exceptionPrinter.print(ex, "", Core.GUIMode);
                     }

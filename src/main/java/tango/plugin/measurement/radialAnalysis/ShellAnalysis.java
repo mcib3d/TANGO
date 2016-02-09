@@ -10,6 +10,7 @@ import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
 import tango.parameter.BooleanParameter;
+import tango.parameter.ChoiceParameter;
 import tango.parameter.ConditionalParameter;
 import tango.parameter.GroupKeyParameter;
 import tango.parameter.KeyParameterObjectNumber;
@@ -49,7 +50,7 @@ public class ShellAnalysis implements MeasurementObject {
     StructureParameter structure = new StructureParameter("Signal:", "structure", -1, true);
     BooleanParameter preFilter = new BooleanParameter("Use filtered image", "filtered", false);
     PreFilterSequenceParameter preFilters = new PreFilterSequenceParameter("Pre-Filters", "preFilters");
-    BooleanParameter segmented = new BooleanParameter("Measure proportion of segmented signal", "segmented", false);
+    ChoiceParameter inputSignal = new ChoiceParameter("Input signal", "inputSignal", new String[]{"Grayscale", "Segmented", "Grayscale within segmented"}, "Grayscale within segmented");
     StructureParameter structureMask = new StructureParameter("Distance from structure:", "structureMask", 0, true);
     BooleanParameter inside = new BooleanParameter("Inside structure", "inside", true);
     BooleanParameter object = new BooleanParameter("Perform around each object separately", "objects", false);
@@ -58,7 +59,7 @@ public class ShellAnalysis implements MeasurementObject {
     SpinnerParameter nbShells = new SpinnerParameter("Number of Shells", "nbShells", 2, 100, 5);
     BooleanParameter normalize = new BooleanParameter("Normalize with nucleus Signal", "normalize", false);
 
-    Parameter[] parameters = new Parameter[]{structure, preFilter, preFilters, segmented, referenceObjectCond, nbShells, normalize};
+    Parameter[] parameters = new Parameter[]{structure, preFilter, preFilters, inputSignal, referenceObjectCond, nbShells, normalize};
     //KeyParameterObjectNumber key = new KeyParameterObjectNumber("Shell", "shell", "shell", true);
     KeyParameterObjectNumber[] keys = new KeyParameterObjectNumber[0];
     //GroupKeyParameter group = new GroupKeyParameter("Shells", "shell", "shell_", true, new KeyParameterObjectNumber[0], true);
@@ -72,7 +73,7 @@ public class ShellAnalysis implements MeasurementObject {
         referenceObjectCond.setDefaultParameter(new Parameter[]{object});
         referenceObjectCond.setCondition(0, new Parameter[]{});
         structure.setHelp("Signal to measure, either raw signal or segmented signal.", true);
-        segmented.setHelp("If unchecked measure percentage of fluorescence in each shell, if checked percentage of segmented voxels.", true);
+        inputSignal.setHelp("Grayscale: measure percentage of fluorescence in each shell; Segmented: percentage of segmented voxels; Grayscale within segmented: idem to Grayscale but limit to the segmented volume", true);
         structureMask.setHelp("Shells are created from this reference structure, either inside if nucleus or outside if other structure.", true);
         object.setHelp("If checked shells are build around each object, if unchecked shells are build around the whole population of objects.", true);
         referenceObjectCond.setHelp("The structure around which perform shell analysis.", true);
@@ -94,18 +95,12 @@ public class ShellAnalysis implements MeasurementObject {
         if (!group.isSelected()) {
             return;
         }
-        ImageHandler intensity;
-        if (segmented.isSelected()) {
-            intensity = segmentedImages.getImage(structure.getIndex());
-            if (intensity == null) {
-                if (verbose) {
-                    ij.IJ.log("Measure proportion of segmented signal is selected, but no segmented image found for structure:" + structure.getIndex());
-                }
-                return;
-            }
-        } else {
-            intensity = preFilter.isSelected()?  rawImages.getFilteredImage(structure.getIndex()) : rawImages.getImage(structure.getIndex());
-            intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensity, rawImages, nCPUs, verbose);
+        int mode = inputSignal.getSelectedIndex();
+        ImageInt segMap = mode==0? null: segmentedImages.getImage(structure.getIndex());
+        ImageHandler intensity =  mode==1? null: ( preFilter.isSelected()?  rawImages.getFilteredImage(structure.getIndex()) : rawImages.getImage(structure.getIndex()) ) ;
+        if (mode!=0 && segMap==null && verbose) { 
+            ij.IJ.log("Measure proportion of segmented signal is selected, but no raw image found for structure: " + structure.getIndex());
+            return;
         }
         
         if (object.isSelected()) {
@@ -115,7 +110,7 @@ public class ShellAnalysis implements MeasurementObject {
             for (int i = 0; i < obs.length; i++) {
                 Object3DVoxels o = obs[i];
                 o.draw(image, o.getValue());
-                double[] shellsO = getShells(rawImages.getMask(), image, intensity, rawImages.getImage(0));
+                double[] shellsO = getShells(rawImages.getMask(), image, intensity, segMap, rawImages.getImage(0));
                 for (int s = 0; s < shellsO.length; s++) {
                     shells[s][i] = shellsO[s];
                 }
@@ -125,7 +120,7 @@ public class ShellAnalysis implements MeasurementObject {
                 quantifications.setQuantificationObjectNumber(keys[i], shells[i]);
             }
         } else {
-            double[] shells = getShells(rawImages.getMask(), segmentedImages.getImage(structureMask.getIndex()), intensity, rawImages.getImage(0));
+            double[] shells = getShells(rawImages.getMask(), segmentedImages.getImage(structureMask.getIndex()), intensity, segMap, rawImages.getImage(0));
             for (int i = 0; i < shells.length; i++) {
                 quantifications.setQuantificationObjectNumber(keys[i], new double[]{shells[i]});
                 //if (verbose) {
@@ -135,7 +130,11 @@ public class ShellAnalysis implements MeasurementObject {
         }
     }
 
-    protected double[] getShells(ImageInt nuc, ImageInt ref, ImageHandler intensity, ImageHandler intensityRef) {
+        if (mode!=1 && intensity==null && verbose ) {
+            ij.IJ.log("Measure proportion of raw signal is selected, but no segmented image found for structure: " + structure.getIndex());
+            return;
+        }
+        if (intensity!=null) intensity = preFilters.runPreFilterSequence(structure.getIndex(), intensity, rawImages, nCPUs, verbose);
         boolean in = inside.getValue();
         if (ref == nuc) {
             //IJ.log("Shell analysis inside nucleus only");
@@ -145,10 +144,13 @@ public class ShellAnalysis implements MeasurementObject {
         int nbShell = nbShells.getValue();
         int[] indexes = (normalize.isSelected()) ? shell.getShellIndexesNormalized(nbShell, intensityRef) : shell.getShellIndexes(nbShell);
         double[] shells;
-        if (segmented.isSelected()) {
-            shells = shell.getShellRepartitionMask((ImageInt) intensity, indexes);
-        } else {
-            shells = shell.getShellRepartition(intensity, indexes);
+        switch(mode) {
+            case 0: shells = shell.getShellRepartition(intensity, indexes);
+            break;
+            case 1: shells =  shell.getShellRepartitionMask(objects, indexes);
+            break;
+            case 2: default: shells = shell.getShellRepartitionMask(objects, intensity, indexes);       
+            break;
         }
 
         if (verbose) {
@@ -235,3 +237,5 @@ public class ShellAnalysis implements MeasurementObject {
     }
 
 }
+    protected double[] getShells(ImageInt nuc, ImageInt ref, ImageHandler intensity, ImageInt objects, ImageHandler intensityRef) {
+        int mode = inputSignal.getSelectedIndex();
