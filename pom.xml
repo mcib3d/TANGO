@@ -193,8 +193,22 @@
 			<id>romanface.repo</id>
 			<url>http://romanface.googlecode.com/git/repo</url>
 		</repository>
+		
 	</repositories>
+<!-- 	<pluginRepositories>
+	<pluginRepository>
+    <id>sonatype-public-repository</id>
+    <url>https://oss.sonatype.org/content/groups/public</url>
+    <snapshots>
+        <enabled>true</enabled>
+    </snapshots>
+    <releases>
+        <enabled>true</enabled>
+    </releases>
+</pluginRepository>
+	</pluginRepositories> -->
 	<build>
+	   <pluginManagement>
 		<plugins>
 			<plugin>
 				<!-- We depend on at least java 1.5. -->
@@ -269,6 +283,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+		   </pluginManagement>
 	</build>
 
 </project>
