@@ -61,14 +61,14 @@ public class ImageUtils {
     }
 
     public static void initIcons() {
-        edit = getIcon("/tango/icons/edit.png");
-        editDiff = getIcon("/tango/icons/edit_diff.png");
-        editError = getIcon("/tango/icons/edit_error.png");
-        add = getIcon("/tango/icons/add.png");
-        remove = getIcon("/tango/icons/remove.png");
-        up = getIcon("/tango/icons/up.png");
-        down = getIcon("/tango/icons/down.png");
-        test = getIcon("/tango/icons/test.png");
+        edit = getIcon("/icons/edit.png");
+        editDiff = getIcon("/icons/edit_diff.png");
+        editError = getIcon("/icons/edit_error.png");
+        add = getIcon("/icons/add.png");
+        remove = getIcon("/icons/remove.png");
+        up = getIcon("/icons/up.png");
+        down = getIcon("/icons/down.png");
+        test = getIcon("/icons/test.png");
     }
 
     public static void zoom(ImagePlus image, double magnitude) {
