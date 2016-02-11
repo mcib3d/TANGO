@@ -193,22 +193,21 @@
 			<id>romanface.repo</id>
 			<url>http://romanface.googlecode.com/git/repo</url>
 		</repository>
-		
+
 	</repositories>
 <!-- 	<pluginRepositories>
 	<pluginRepository>
-    <id>sonatype-public-repository</id>
-    <url>https://oss.sonatype.org/content/groups/public</url>
-    <snapshots>
-        <enabled>true</enabled>
-    </snapshots>
-    <releases>
-        <enabled>true</enabled>
-    </releases>
+	<id>sonatype-public-repository</id>
+	<url>https://oss.sonatype.org/content/groups/public</url>
+	<snapshots>
+		<enabled>true</enabled>
+	</snapshots>
+	<releases>
+		<enabled>true</enabled>
+	</releases>
 </pluginRepository>
 	</pluginRepositories> -->
 	<build>
-	   <pluginManagement>
 		<plugins>
 			<plugin>
 				<!-- We depend on at least java 1.5. -->
@@ -227,7 +226,6 @@
 				<executions>
 					<execution>
 						<id>install-drop_finder</id>
-						<!--<phase>pre-integration-test</phase>-->
 						<phase>process-resources</phase>
 						<goals>
 							<goal>wget</goal>
@@ -283,7 +281,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-		   </pluginManagement>
 	</build>
 
 </project>
