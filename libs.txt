@@ -1,0 +1,44 @@
+Libraries require for TANGO :
+
+* ImageJ, visualisation and basic editing of images 
+http://imagej.nih.gov/ij/ (included in fiji)
+
+* ImageScience, for processing of images
+http://www.imagescience.org/meijering/software/featurej/ (included in fiji)
+
+* ImageJ 3D Viewer, for 3D visualisation
+http://132.187.25.13/ij3d/?page=Home&category=Home  (included in fiji)
+
+* Image5D, for 3D overlay visualisation
+http://imagej.net/Image5D (included in fiji)
+
+* imageware, for image processing
+http://bigwww.epfl.ch/algorithms.html (included in fiji)
+
+* mcib-core and mcib_plugins, main class for image processing and objects manipulation
+http://imagejdocu.tudor.lu/doku.php?id=plugin:stacks:3d_ij_suite:start (included in fiji)
+
+* bioformats-package, to read files in different formats
+http://www.openmicroscopy.org/site/products/bio-formats (included in fiji)
+
+* MongoDB, for database storage
+http://docs.mongodb.org/ecosystem/drivers/java/
+
+* commons-lang, apache extension for java
+https://commons.apache.org/proper/commons-lang/
+
+* gson, for gson editing
+https://code.google.com/p/google-gson/
+
+* jericho-html, for parsing html files (for help)
+http://jericho.htmlparser.net/docs/index.html
+
+* droplet-finder, for image processing, band-pass filtering
+http://imagejdocu.tudor.lu/doku.php?id=plugin:analysis:droplet_counter:start
+
+* JSON, for JSON extraction of data, export processing chains as text
+http://json.org/
+
+
+
+
