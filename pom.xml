@@ -29,8 +29,17 @@
 
 	<developers>
 		<developer>
-			<name>Julien Cochennec</name>
-			<email>julien.cochennec@mnhn.fr</email>
+                        <id>jeanollion</id>
+			<name>Jean Ollion</name>
+			<email>ollion@mnhn.fr</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+                        <timezone>2</timezone>
+		</developer>
+                <developer>
+			<name>Thomas Boudier</name>
+			<email>thomas.boudier@snv.jussieu.fr</email>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -39,17 +48,10 @@
 
 	<contributors>
 		<contributor>
-			<name>Ollion Jean</name>
-			<email>ollion@mnhn.fr</email>
+			<name>Julien Cochennec</name>
+			<email>julien.cochennec@mnhn.fr</email>
 			<roles>
-				<role>past developer</role>
-			</roles>
-		</contributor>
-		<contributor>
-			<name>Thomas Boudier</name>
-			<email>thomas.boudier@snv.jussieu.fr</email>
-			<roles>
-				<role>past developer</role>
+				<role>past developer (R integration within TANGO)</role>
 			</roles>
 		</contributor>
 	</contributors>
