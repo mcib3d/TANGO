@@ -29,8 +29,17 @@
 
 	<developers>
 		<developer>
-			<name>Julien Cochennec</name>
-			<email>julien.cochennec@mnhn.fr</email>
+                        <id>jeanollion</id>
+			<name>Jean Ollion</name>
+			<email>ollion@mnhn.fr</email>
+			<roles>
+				<role>developer</role>
+			</roles>
+                        <timezone>2</timezone>
+		</developer>
+                <developer>
+			<name>Thomas Boudier</name>
+			<email>thomas.boudier@snv.jussieu.fr</email>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -39,26 +48,19 @@
 
 	<contributors>
 		<contributor>
-			<name>Ollion Jean</name>
-			<email>ollion@mnhn.fr</email>
+			<name>Julien Cochennec</name>
+			<email>julien.cochennec@mnhn.fr</email>
 			<roles>
-				<role>past developer</role>
-			</roles>
-		</contributor>
-		<contributor>
-			<name>Thomas Boudier</name>
-			<email>thomas.boudier@snv.jussieu.fr</email>
-			<roles>
-				<role>past developer</role>
+				<role>past developer (R integration within TANGO)</role>
 			</roles>
 		</contributor>
 	</contributors>
 
 	<scm>
-		<connection>scm:git:git://gitorious.org/tango/tango</connection>
-		<developerConnection>scm:git:git@gitorious.org:tango/tango</developerConnection>
+		<connection>scm:git:git://gitorious.org/salsaj-boudier/TANGO</connection>
+		<developerConnection>scm:git:git@gitorious.org:salsaj-boudier/TANGO</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://gitorious.org/tango</url>
+		<url>ttps://github.com/salsaj-boudier/TANGO</url>
 	</scm>
 	<!--
 	TODO add a issueManagement field once there is a bug tracker
@@ -121,32 +123,12 @@
 			<version>RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>org.nuiton.thirdparty</groupId>
-			<artifactId>JRI</artifactId>
-			<version>0.9-6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.rosuda</groupId>
-			<artifactId>javaGD</artifactId>
-			<version>0.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.rosuda</groupId>
-			<artifactId>REngine</artifactId>
-			<version>0.6.3</version>
-		</dependency>
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20151123</version>
 		</dependency>
-		<dependency>
-			<groupId>com.github.cmci.casperdatasets</groupId>
-			<artifactId>casperdatasets</artifactId>
-			<version>simple-SNAPSHOT</version>
-		</dependency>
 		<!--
-	  FIXME We are depedent on mcib3d, mcib_plugins, omancode, and rosuda, but
+	  FIXME We are depedent on mcib3d and bandpass filter, but
 			there is no Maven repositories for them. So we use this temporary
 			very ugly workaround, until that happens.
 		-->
@@ -156,20 +138,6 @@
 			<version>20151214</version>
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/mcib3d-core-20151214144913.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>mcib_plugins</groupId>
-			<artifactId>mcib_plugins</artifactId>
-			<version>20151214</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/mcib3d_plugins-20151214144913.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.omancode</groupId>
-			<artifactId>r</artifactId>
-			<version>1.1.7</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/romanface-1.1.7.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>filter.Bandpass3D</groupId>
@@ -250,32 +218,6 @@
 							<outputDirectory>${basedir}/lib</outputDirectory>
 							<outputFileName>mcib3d-core-20151214144913.jar</outputFileName>
 							<!--<md5>df65b5642f33676313ebe4d5b69a3fff</md5>-->
-						</configuration>
-					</execution>
-					<execution>
-						<id>install-mcib3D_plugins</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>http://sites.imagej.net/Tboudier/plugins/mcib3d-suite/mcib3d_plugins.jar-20151214144913</url>
-							<unpack>false</unpack>
-							<outputDirectory>${basedir}/lib</outputDirectory>
-							<outputFileName>mcib3d_plugins-20151214144913.jar</outputFileName>
-							<!--<md5>df65b5642f33676313ebe4d5b69a3fff</md5>-->
-						</configuration>
-					</execution>
-					<execution>
-						<id>install-romanface</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>http://romanface.googlecode.com/git/repo/org/omancode/romanface/1.1.7/romanface-1.1.7.jar</url>
-							<unpack>false</unpack>
-							<outputDirectory>${basedir}/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
