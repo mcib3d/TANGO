@@ -157,11 +157,6 @@
 			<id>imagej.public</id>
 			<url>http://maven.imagej.net/content/groups/public</url>
 		</repository>
-		<repository>
-			<id>romanface.repo</id>
-			<url>http://romanface.googlecode.com/git/repo</url>
-		</repository>
-
 	</repositories>
 <!-- 	<pluginRepositories>
 	<pluginRepository>
