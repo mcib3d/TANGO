@@ -57,10 +57,10 @@
 	</contributors>
 
 	<scm>
-		<connection>scm:git:git://gitorious.org/tango/tango</connection>
-		<developerConnection>scm:git:git@gitorious.org:tango/tango</developerConnection>
+		<connection>scm:git:git://gitorious.org/salsaj-boudier/TANGO</connection>
+		<developerConnection>scm:git:git@gitorious.org:salsaj-boudier/TANGO</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://gitorious.org/tango</url>
+		<url>ttps://github.com/salsaj-boudier/TANGO</url>
 	</scm>
 	<!--
 	TODO add a issueManagement field once there is a bug tracker
@@ -128,7 +128,7 @@
 			<version>20151123</version>
 		</dependency>
 		<!--
-	  FIXME We are depedent on mcib3d, mcib_plugins, omancode, and rosuda, but
+	  FIXME We are depedent on mcib3d and bandpass filter, but
 			there is no Maven repositories for them. So we use this temporary
 			very ugly workaround, until that happens.
 		-->
