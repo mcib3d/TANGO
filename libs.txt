@@ -1,4 +1,4 @@
-Libraries require for TANGO :
+Libraries required for TANGO :
 
 * ImageJ, visualisation and basic editing of images 
 http://imagej.nih.gov/ij/ (included in fiji)
