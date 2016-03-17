@@ -2,12 +2,9 @@ package tango.plugin.filter;
 
 import mcib3d.utils.exceptionPrinter;
 import ij.IJ;
-import ij.ImagePlus;
-import ij.gui.GenericDialog;
-import ij.plugin.PlugIn;
 import java.util.HashMap;
-import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
+import mcib3d.image3d.ImageLabeller;
 import mcib3d.image3d.processing.BinaryMorpho;
 import tango.dataStructure.InputImages;
 import tango.parameter.*;
@@ -37,27 +34,30 @@ import tango.parameter.*;
  *
  * @author Jean Ollion
  */
-public class BinaryOpen implements PostFilter, PlugIn{
+public class BinaryErode implements PostFilter {
+
     // TODO utiliser une methode classique si le rayon est petit
     boolean debug;
-    int nbCPUs=1;
+    int nbCPUs = 1;
     DoubleParameter radiusXY = new DoubleParameter("XY-radius: ", "radiusXY", 1d, Parameter.nfDEC1);
     DoubleParameter radiusZ = new DoubleParameter("Z-radius: ", "radiusZ", 1d, Parameter.nfDEC1);
-    BooleanParameter useScale=new BooleanParameter("Use Image Scale for Z radius: ", "useScale", true);
-    HashMap<Object, Parameter[]> map = new HashMap<Object, Parameter[]>(){{
-        put(false, new Parameter[]{radiusZ}); 
-        put(true, new Parameter[0]);
-    }};
+    BooleanParameter useScale = new BooleanParameter("Use Image Scale for Z radius: ", "useScale", true);
+    HashMap<Object, Parameter[]> map = new HashMap<Object, Parameter[]>() {
+        {
+            put(false, new Parameter[]{radiusZ});
+            put(true, new Parameter[0]);
+        }
+    };
     ConditionalParameter cond = new ConditionalParameter("Z-radius", useScale, map);
-    Parameter[] parameters = new Parameter[] {radiusXY, cond};
+    Parameter[] parameters = new Parameter[]{radiusXY, cond};
 
-    public BinaryOpen() {
+    public BinaryErode() {
         radiusXY.setHelp("Radius in XY direction (pixels)", true);
         radiusZ.setHelp("Radius in Z direction (pixels)", true);
         useScale.setHelp("If selected, the radius in Z direction will be computed according to the image anisotropy", true);
         useScale.setHelp("If selected, radiusZ = radiusXY * scaleXY / scaleZ", false);
     }
-    
+
     @Override
     public Parameter[] getParameters() {
         return parameters;
@@ -65,56 +65,39 @@ public class BinaryOpen implements PostFilter, PlugIn{
 
     @Override
     public void setVerbose(boolean debug) {
-        this.debug=debug;
+        this.debug = debug;
     }
 
     @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt input, InputImages images) {
         try {
-            float radXY=Math.max(radiusXY.getFloatValue(1), 1);
+            float radXY = Math.max(radiusXY.getFloatValue(1), 1);
             float radZ;
-            if (useScale.isSelected()) radZ=Math.max(radXY*(float)(input.getScaleXY()/input.getScaleZ()), 1);
-            else radZ=radiusZ.getFloatValue(1);
-            if (debug) {
-                IJ.log("binaryOpen: radius XY"+radXY+ " radZ:"+radZ);
+            if (useScale.isSelected()) {
+                radZ = Math.max(radXY * (float) (input.getScaleXY() / input.getScaleZ()), 1);
+            } else {
+                radZ = radiusZ.getFloatValue(1);
             }
-            
-            return BinaryMorpho.binaryOpenMultilabel(input, radXY, radZ, nbCPUs);
+            if (debug) {
+                IJ.log("binaryErode: radius XY" + radXY + " radZ:" + radZ);
+            }
+            ImageLabeller label = new ImageLabeller(debug);
+            return label.getLabels(BinaryMorpho.binaryErode(input.thresholdAboveExclusive(0), radXY, radZ, nbCPUs));
+
         } catch (Exception e) {
-            exceptionPrinter.print(e,"", true);
-        } return null;
+            exceptionPrinter.print(e, "", true);
+        }
+        return null;
     }
 
     @Override
     public void setMultithread(int nbCPUs) {
-        this.nbCPUs=nbCPUs;
+        this.nbCPUs = nbCPUs;
     }
-    
-    @Override
-    public void run(String arg) {
-        ImagePlus imp = IJ.getImage();
-        if (imp==null || imp.getBitDepth()!=8) {
-            IJ.log("8-bit thresholded image");
-            return;
-        }
-        IJ.showStatus("binaryOpen");
-        GenericDialog gd = new GenericDialog("BinaryOpen");
-        gd.addNumericField("radiusXY:", 5, 1);
-        gd.addNumericField("radiusZ:", 3, 1);
-        gd.showDialog();
-        if (gd.wasOKed()) {
-            double radXY=gd.getNextNumber();
-            double radZ=gd.getNextNumber();
-            this.radiusXY.setValue(radXY);
-            this.radiusZ.setValue(radZ);
-            ImageHandler res=runPostFilter(0, (ImageInt)ImageHandler.wrap(imp), null);
-            res.show(imp.getTitle()+"::open");
-        }
-    }
-    
+
     @Override
     public String getHelp() {
-        return "morphological opening using distance maps, optimized for large radius. \nWorks on labelled masks, may need to re-label the image due to splitted objects.";
+        return "Morphological erode using distance maps, optimized for large radius.\n Note thay the number of objects may change due to some splittings.";
     }
-    
+
 }
