@@ -57,10 +57,10 @@
 	</contributors>
 
 	<scm>
-		<connection>scm:git:git://gitorious.org/salsaj-boudier/TANGO</connection>
-		<developerConnection>scm:git:git@gitorious.org:salsaj-boudier/TANGO</developerConnection>
+		<connection>scm:git:git://gitorious.org/mcib3d/TANGO</connection>
+		<developerConnection>scm:git:git@gitorious.org:mcib3d/TANGO</developerConnection>
 		<tag>HEAD</tag>
-		<url>ttps://github.com/salsaj-boudier/TANGO</url>
+		<url>ttps://github.com/mcib3d/TANGO</url>
 	</scm>
 	<!--
 	TODO add a issueManagement field once there is a bug tracker
@@ -127,24 +127,32 @@
 			<artifactId>json</artifactId>
 			<version>20151123</version>
 		</dependency>
+                <!--dependency>
+			<groupId>com.github.mcib3d</groupId>
+			<artifactId>mcib3d-core</artifactId>
+			<version>RELEASE</version>
+		</dependency-->
 		<!--
 	  FIXME We are depedent on mcib3d and bandpass filter, but
 			there is no Maven repositories for them. So we use this temporary
 			very ugly workaround, until that happens.
 		-->
-		<dependency>
+		<!--dependency>
 			<groupId>mcib3d</groupId>
 			<artifactId>mcib3d</artifactId>
 			<version>20151214</version>
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/mcib3d-core-20151214144913.jar</systemPath>
+		</dependency-->
+                <dependency>
+			<groupId>com.github.mcib3d</groupId>
+			<artifactId>mcib3d-core</artifactId>
+			<version>3.7</version>
 		</dependency>
 		<dependency>
-			<groupId>filter.Bandpass3D</groupId>
-			<artifactId>filter.Bandpass3D</artifactId>
-			<version>0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/droplet_finder.jar</systemPath>
+			<groupId>com.github.ebmoll</groupId>
+			<artifactId>lipid-droplet-counter</artifactId>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -182,41 +190,7 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.googlecode.maven-download-plugin</groupId>
-				<artifactId>download-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<id>install-drop_finder</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>http://imagejdocu.tudor.lu/lib/exe/fetch.php?media=plugin:analysis:droplet_counter:droplet_finder.jar</url>
-							<unpack>false</unpack>
-							<outputDirectory>${basedir}/lib</outputDirectory>
-							<outputFileName>droplet_finder.jar</outputFileName>
-							<!--<md5>df65b5642f33676313ebe4d5b69a3fff</md5>-->
-						</configuration>
-					</execution>
-					<execution>
-						<id>install-mcib3D</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>http://sites.imagej.net/Tboudier/plugins/mcib3d-suite/mcib3d-core.jar-20151214144913</url>
-							<unpack>false</unpack>
-							<outputDirectory>${basedir}/lib</outputDirectory>
-							<outputFileName>mcib3d-core-20151214144913.jar</outputFileName>
-							<!--<md5>df65b5642f33676313ebe4d5b69a3fff</md5>-->
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			
 		</plugins>
 	</build>
 

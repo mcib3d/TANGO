@@ -1,6 +1,6 @@
 package tango.plugin.filter;
 
-import filters.Bandpass3D;
+import ebmoll.lipid_droplet_counter.filters.Bandpass3D;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
