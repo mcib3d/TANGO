@@ -39,7 +39,7 @@
 		</developer>
                 <developer>
 			<name>Thomas Boudier</name>
-			<email>thomas.boudier@snv.jussieu.fr</email>
+			<email>thomas.boudier@upmc.fr</email>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -60,7 +60,7 @@
 		<connection>scm:git:git://gitorious.org/mcib3d/TANGO</connection>
 		<developerConnection>scm:git:git@gitorious.org:mcib3d/TANGO</developerConnection>
 		<tag>HEAD</tag>
-		<url>ttps://github.com/mcib3d/TANGO</url>
+		<url>https://github.com/mcib3d/TANGO</url>
 	</scm>
 	<!--
 	TODO add a issueManagement field once there is a bug tracker
@@ -147,7 +147,7 @@
                 <dependency>
 			<groupId>com.github.mcib3d</groupId>
 			<artifactId>mcib3d-core</artifactId>
-			<version>3.7</version>
+			<version>3.74</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.ebmoll</groupId>
