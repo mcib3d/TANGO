@@ -118,7 +118,7 @@ public class PluginFactory {
         ij3d = true;
         if (java3d) {
             try {
-                IJ.log("New version 4.0 of 3D viewer will not work (yet) with TANGO");
+                IJ.log("New version 4.0 of 3D viewer will not work (yet) with TANGO.\nPlease remove 3D_Viewer4.0 from plugins and install the legacy version at\nhttp://3dviewer.neurofly.de/");
                 loader.loadClass("ij3d.Image3DUniverse");
             } catch (Exception e) {
                 ij.IJ.log("ij 3D Viewer not installed: 3D view not available");

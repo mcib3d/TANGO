@@ -91,7 +91,7 @@ public class BinaryClose implements PostFilter, PlugIn {
                 radZ = radiusZ.getFloatValue(1);
             }
             if (debug) {
-                IJ.log("binaryClose: radius XY" + radXY + " radZ:" + radZ + " nbCPUs:" + nbCPUs);
+                IJ.log("binaryClose: radius XY:" + radXY + " radZ:" + radZ + " nbCPUs:" + nbCPUs);
             }
             ImageInt res = BinaryMorpho.binaryCloseMultilabel(input, radXY, radZ, nbCPUs);
 

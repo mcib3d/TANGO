@@ -45,7 +45,7 @@ public class Main_ implements PlugIn {
         String req = "1.47m";
         boolean version = IJ.versionLessThan(req);
         if (version) {
-            IJ.log("currentImageJ version: " + IJ.getVersion() + " requiered: " + req + ". please update ImageJ");
+            IJ.log("currentImageJ version: " + IJ.getVersion() + " required: " + req + ". please update ImageJ");
             return;
         }
         if (Core.TESTING) {

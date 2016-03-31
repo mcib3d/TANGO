@@ -1,10 +1,7 @@
 package tango.plugin.segmenter;
-import tango.parameter.Parameter;
-import ij.ImagePlus;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
-import tango.dataStructure.InputCellImages;
 import tango.dataStructure.InputImages;
 import tango.plugin.TangoPlugin;
 /**
