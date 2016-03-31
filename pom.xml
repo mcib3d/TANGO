@@ -10,7 +10,7 @@
 
 	<groupId>fr.mnhn.biophysique</groupId>
 	<artifactId>TANGO</artifactId>
-	<version>0.8.4-SNAPSHOT</version>
+	<version>master-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>TANGO</name>

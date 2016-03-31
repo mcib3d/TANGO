@@ -5,9 +5,7 @@
 package tango.plugin.segmenter;
 
 import mcib3d.image3d.IterativeThresholding.TrackThreshold;
-import ij.ImagePlus;
 import ij.measure.Calibration;
-import ij.plugin.Duplicator;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
@@ -17,6 +15,7 @@ import tango.parameter.DoubleParameter;
 import tango.parameter.NumberParameter;
 import tango.parameter.Parameter;
 import tango.parameter.SliderParameter;
+import tango.parameter.ThresholdParameter;
 
 /**
  *
@@ -46,6 +45,8 @@ import tango.parameter.SliderParameter;
 public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
 
     boolean verb = false;
+    int nCpus = 0;
+    ThresholdParameter minThresholdP = new ThresholdParameter("Minimum threshold", "minThreshold", "Value");
     DoubleParameter vminP = new DoubleParameter("Volume Minimum", "ITvmin", 100.0, NumberParameter.nfDEC3);
     DoubleParameter vmaxP = new DoubleParameter("Volume Maximum", "ITvmax", 10000.0, NumberParameter.nfDEC3);
     BooleanParameter useUnit = new BooleanParameter("Use units", "ITunits", true);
@@ -65,18 +66,18 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
             volMin /= volUnit;
             volMax /= volUnit;
         }
-        TrackThreshold TT = new TrackThreshold((int) volMin, (int) volMax, st, 0, 0);
+        TrackThreshold TT = new TrackThreshold((int) volMin, (int) volMax, st, st, minThresholdP.getThreshold(img, rawImages, nCpus, verb).intValue());
         TT.setMethodThreshold(TrackThreshold.THRESHOLD_METHOD_STEP); // others methods for histogram are available
         TT.setCriteriaMethod(TrackThreshold.CRITERIA_METHOD_MIN_ELONGATIO);// find roundest object 
         TT.verbose = verb;
-        
+
         ImageHandler res = ImageHandler.wrap(TT.segment(img.getImagePlus(), verb));
         // float images can be returned if nb objects > 65535
 
         if (deleteOutsideNuclei.isSelected() && !nucMode) {
             res.intersectMask(rawImages.getMask());
         }
-        
+
         if (res instanceof ImageInt) {
             return (ImageInt) res;
         } else {
@@ -96,12 +97,13 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
 //    }
     @Override
     public Parameter[] getParameters() {
+        minThresholdP.setHelp("The minimum value of intensity to start looking for objects.", true);
         vminP.setHelp("The minimum volume of detected objects", true);
         vmaxP.setHelp("The maximum volume of detected objects", true);
         useUnit.setHelp("Check to use calibrated volumes instead of voxels number", true);
         step.setHelp("The step for the iterations, use 1 for 8-bits images and large value for 16-bits images. The larger the step, the faster the algorithm, but the less accurate", true);
         deleteOutsideNuclei.setHelp("Delete objects or parts of them that are outside the nuclei (only for internal structures)", true);
-        Parameter[] par = {vminP, vmaxP, useUnit, step, deleteOutsideNuclei};
+        Parameter[] par = {minThresholdP, vminP, vmaxP, useUnit, step, deleteOutsideNuclei};
 
         return par;
     }
