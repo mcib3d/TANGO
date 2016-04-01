@@ -198,7 +198,7 @@ public abstract class Parameter implements MouseListener {
         }
         return col;
     }
-    
+
     public Color getColor() {
         return label.getForeground();
     }
@@ -233,6 +233,10 @@ public abstract class Parameter implements MouseListener {
 
     protected void unRegister() {
         label.removeMouseListener(this);
+    }
+
+    public void setHelp(String help) {
+        setHelp(help, true);
     }
 
     public void setHelp(String help, boolean basic) {
@@ -380,12 +384,14 @@ public abstract class Parameter implements MouseListener {
         }
         return ids;
     }
-    
+
     public static boolean isValidOrNotCompulsary(Parameter[] parameters) {
         boolean res = true;
         for (Parameter p : parameters) {
             res = res && p.isValidOrNotCompulsary();
-            if (!res) return res;
+            if (!res) {
+                return res;
+            }
         }
         return res;
     }

@@ -182,6 +182,6 @@ public class SeedSpots_Plus implements SpotSegmenter {
 
     @Override
     public String getHelp() {
-        return "3D Spot segmentation";
+        return "3D Spot segmentation based on seeds detection. ";
     }
 }
