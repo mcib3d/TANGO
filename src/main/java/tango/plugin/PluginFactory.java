@@ -102,26 +102,28 @@ public class PluginFactory {
         }
         ij5d = true;
         try {
-            loader.loadClass("i5d.Image5D");
+            //loader.loadClass("i5d.Image5D");
+            loader.loadClass("sc.fiji.i5d.Image5D");
         } catch (Exception e) {
             ij.IJ.log("Image5D not installed: overlay view not available");
             ij5d = false;
         }
         java3d = true;
-        try {
-            loader.loadClass("javax.vecmath.Point3f");
-        } catch (Exception e) {
-            ij.IJ.log("Java3D not installed: 3D view not available");
-            java3d = false;
-            ij3d = false;
-        }
         ij3d = true;
+        try {
+            //loader.loadClass("javax.vecmath.Point3f");
+            loader.loadClass("org.scijava.vecmath.Point3f");
+        } catch (Exception e) {
+            ij.IJ.log("Java3D not installed: 3D view not available. TANGO uses new version of 3D Viewer, please install package \"3D\" from Fiji");
+            java3d = false;
+        }
         if (java3d) {
             try {
-                IJ.log("New version 4.0 of 3D viewer will not work (yet) with TANGO.\nPlease remove 3D_Viewer4.0 from plugins and install the legacy version at\nhttp://3dviewer.neurofly.de/");
+                //IJ.log("New version 4.0 of 3D viewer will not work (yet) with TANGO.\nPlease remove 3D_Viewer4.0 from plugins and install the legacy version at\nhttp://3dviewer.neurofly.de/");
+                IJ.log("");
                 loader.loadClass("ij3d.Image3DUniverse");
             } catch (Exception e) {
-                ij.IJ.log("ij 3D Viewer not installed: 3D view not available");
+                ij.IJ.log("3D Viewer not installed: 3D view not available");
                 ij3d = false;
             }
         }
@@ -278,7 +280,7 @@ public class PluginFactory {
                 return ((MeasurementObject) res);
             }
         } catch (Throwable e) {
-            mcib3d.utils.exceptionPrinter.print(e, "getClass Mesurement exception...", Core.GUIMode);
+            mcib3d.utils.exceptionPrinter.print(e, "getClass Measurement exception...", Core.GUIMode);
         }
         
         
@@ -300,7 +302,7 @@ public class PluginFactory {
                 return ((MeasurementStructure) res);
             }
         } catch (Throwable e) {
-            mcib3d.utils.exceptionPrinter.print(e, "getClass Mesurement exception...", Core.GUIMode);
+            mcib3d.utils.exceptionPrinter.print(e, "getClass Measurement exception...", Core.GUIMode);
         }
         return null;
     }
@@ -318,7 +320,7 @@ public class PluginFactory {
                 return ((MeasurementObject2Object) res);
             }
         } catch (Throwable e) {
-            mcib3d.utils.exceptionPrinter.print(e, "getClass Mesurement exception...", Core.GUIMode);
+            mcib3d.utils.exceptionPrinter.print(e, "getClass Measurement exception...", Core.GUIMode);
         }
         return null;
     }
