@@ -63,9 +63,12 @@ public class Rank implements SDIEvaluator {
          if (!sdi_P.isSelected() || observedDescriptor==null || sampledDescriptor==null || observedDescriptor.length==0 || sampledDescriptor.length==0) return;
         int nbInf = 0;
         int nbEgual = 0;
-        for (int idx = 0; idx<sampledDescriptor.length; idx++) {
-            if (sampledDescriptor[idx][0]<observedDescriptor[0]) ++nbInf;
-            else if (sampledDescriptor[idx][0]==observedDescriptor[0]) ++nbEgual;
+        for (double[] sampledDescriptor1 : sampledDescriptor) {
+            if (sampledDescriptor1[0] < observedDescriptor[0]) {
+                ++nbInf;
+            } else if (sampledDescriptor1[0] == observedDescriptor[0]) {
+                ++nbEgual;
+            }
         }
         double rank = ((double)nbInf+ (double)nbEgual/2.0d)/(double)sampledDescriptor.length;
         double sdi = 1.0 - rank;
