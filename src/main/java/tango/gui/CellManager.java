@@ -3,7 +3,7 @@ package tango.gui;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import i5d.Image5D;
+import sc.fiji.i5d.Image5D;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -427,7 +427,6 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
         }
         core.toggleIsRunning(true);
         Thread t = new Thread(new Runnable() {
-            @Override
             public void run() {
                 if (process) {   
                     process();
@@ -437,7 +436,6 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
                 }
                 //core.toggleIsRunning(false);
                 Thread t2 = new Thread(new Runnable() {
-                    @Override
                     public void run() {
                         core.toggleIsRunning(false);
                         populateObjects(); // FIXME doesnt populate objects..
@@ -795,7 +793,6 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
         this.selectingCell=false;
     }
 
-    @Override
     public void valueChanged(ListSelectionEvent lse) {
         if (lse.getValueIsAdjusting()) {
             return;
@@ -940,13 +937,11 @@ public class CellManager implements  ListSelectionListener, AdjustmentListener, 
         }
         updateRoi();
     }
-    
-    @Override
+
     public void adjustmentValueChanged(AdjustmentEvent ae) {
         if (this.showFieldRoi) updateRoi();
     }
 
-    @Override
     public void mouseWheelMoved(MouseWheelEvent mwe) {
         if (this.showFieldRoi) updateRoi();
     }

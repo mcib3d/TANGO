@@ -18,10 +18,10 @@ import com.mongodb.BasicDBList;
 import com.mongodb.DBCursor;
 import tango.gui.util.FileFilterCell;
 import tango.gui.util.FileFilterTIF;
-import i5d.ChannelImagePlus;
-import i5d.Image5D;
-import i5d.cal.ChannelDisplayProperties;
-import i5d.gui.ChannelControl;
+import sc.fiji.i5d.ChannelImagePlus;
+import sc.fiji.i5d.Image5D;
+import sc.fiji.i5d.cal.ChannelDisplayProperties;
+import sc.fiji.i5d.gui.ChannelControl;
 import java.awt.Color;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -94,7 +94,6 @@ public class Field implements ObjectStructure, StructureContainer {
         this.verbose=verbose;
     }
 
-    @Override
     public ObjectId getId() {
         return id;
     }
@@ -164,15 +163,13 @@ public class Field implements ObjectStructure, StructureContainer {
     public InputFieldImages getInputImages() {
         return inputImages;
     }
-    
-    @Override
+
     public ImageInt getMask() {
         ImageHandler ref = inputImages.getImage(0);
         if (ref!=null) return new BlankMask(ref);
         else return null;
     }
-    
-    @Override
+
     public ImageHandler openInputImage(int fileIdx) {
         try {
             ImageHandler res = null;
@@ -252,7 +249,6 @@ public class Field implements ObjectStructure, StructureContainer {
         } else return input;
     }
 
-    @Override
     public ImageHandler preFilterStructure(ImageHandler input, int structureIdx) {
         if (structureIdx==0) {
             //filter channel
@@ -322,7 +318,6 @@ public class Field implements ObjectStructure, StructureContainer {
         }
     }
 
-    @Override
     public void saveOutput() {
         mc.saveNucleusImage(id, 0, MongoConnector.MASKS, segmented);
         //mc.saveInputImage(id, mongoConnector.MASKS, mask);
@@ -344,7 +339,6 @@ public class Field implements ObjectStructure, StructureContainer {
         return segmented;
     }
 
-    @Override
     public ImageInt postFilterStructure(ImageInt input, int structureIdx) {
         System.gc();
         PostFilterSequence pfs = xp.getPostFilterSequence(0, nbCPUs, verbose);
@@ -518,18 +512,15 @@ public class Field implements ObjectStructure, StructureContainer {
         this.inputImages.hideAll();
     }
 
-    @Override
     public Object3D[] getObjects() {
         if (this.objects == null) createObjects();
         return objects;
     }
-    
-    @Override
+
     public void createObjects() {
         objects = getSegmented().getObjects3D();
     }
 
-    @Override
     public ImageInt getSegmented() {
         if (this.segmented == null || !segmented.isOpened()) {
             openSegmented();
@@ -537,17 +528,14 @@ public class Field implements ObjectStructure, StructureContainer {
         return segmented;
     }
 
-    @Override
     public MongoConnector getConnector() {
         return this.mc;
     }
 
-    @Override
     public String getChannelName() {
         return this.getName();
     }
 
-    @Override
     public int getIdx() {
         return 0;
     }

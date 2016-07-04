@@ -6,8 +6,8 @@ import java.text.*;
 import com.mongodb.BasicDBObject;
 import tango.gui.util.Tag;
 import mcib3d.utils.exceptionPrinter;
-import i5d.Image5D;
-import i5d.cal.ChannelDisplayProperties;
+import sc.fiji.i5d.Image5D;
+import sc.fiji.i5d.cal.ChannelDisplayProperties;
 import org.bson.types.ObjectId;
 import mcib3d.image3d.*;
 import java.awt.Color;
@@ -198,8 +198,7 @@ public class Cell implements StructureContainer, Comparable<Cell> { //ObjectStru
     public AbstractStructure getStructure(int idx) {
         return channels[idx];
     }
-    
-    @Override
+
     public int getFileRank(int channelIdx) {
         return xp.getChannelFileIndexes()[channelIdx];
     }
@@ -328,27 +327,23 @@ public class Cell implements StructureContainer, Comparable<Cell> { //ObjectStru
             mc.deleteStructure(id, i);
         }
     }
-    
-    @Override
+
     public ImageInt getMask(){
         return this.segImages.getImage(0);
     }
-    
-    @Override
+
     public ImageHandler preFilterStructure(ImageHandler image, int structureIdx) {
         AbstractStructure ass = getStructure(structureIdx);
         if (ass instanceof Structure) return ((Structure)ass).preFilter(image);
         return image;
     }
-    
-    @Override
+
     public ImageInt postFilterStructure(ImageInt image, int structureIdx) {
         AbstractStructure ass = getStructure(structureIdx);
         if (ass instanceof Structure) return ((Structure)ass).postFilter(image);
         return image;
     }
-    
-    @Override
+
     public ImageHandler openInputImage(int fileIdx) {
         if (fileIdx>=0) {
             ImageHandler im=mc.getNucImage(id, fileIdx, MongoConnector.R);
@@ -387,8 +382,7 @@ public class Cell implements StructureContainer, Comparable<Cell> { //ObjectStru
     public int hashCode() {
         return id.toStringMongod().hashCode();
     }
-    
-    @Override
+
     public int compareTo(Cell t) {
         if (value<t.value) return -ascendingOrder;
         else if (value>t.value) return ascendingOrder;
