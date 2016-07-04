@@ -1,8 +1,8 @@
 package tango.util;
 
-import i5d.Image5D;
-import i5d.cal.ChannelDisplayProperties;
-import i5d.gui.ChannelControl;
+import sc.fiji.i5d.Image5D;
+import sc.fiji.i5d.cal.ChannelDisplayProperties;
+import sc.fiji.i5d.gui.ChannelControl;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
@@ -228,7 +228,6 @@ public class ImageUtils {
         Object3DVoxels[] objectLayers = new Object3DVoxels[layers.length];
         ArrayList<Voxel3D> vox = object.getVoxels();
         Collections.sort(vox, new Comparator<Voxel3D>() {
-            @Override
             public int compare(Voxel3D v1, Voxel3D v2) {
                 if (v1.value < v2.value) {
                     return -1;
