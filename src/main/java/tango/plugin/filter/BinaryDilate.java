@@ -58,17 +58,14 @@ public class BinaryDilate implements PostFilter {
         useScale.setHelp("If selected, radiusZ = radiusXY * scaleXY / scaleZ", false);
     }
 
-    @Override
     public Parameter[] getParameters() {
         return parameters;
     }
 
-    @Override
     public void setVerbose(boolean debug) {
         this.debug = debug;
     }
 
-    @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt input, InputImages images) {
         try {
             float radXY = Math.max(radiusXY.getFloatValue(1), 1);
@@ -90,14 +87,12 @@ public class BinaryDilate implements PostFilter {
         return null;
     }
 
-    @Override
     public void setMultithread(int nbCPUs) {
         this.nbCPUs = nbCPUs;
     }
 
-    @Override
     public String getHelp() {
-        return "Morphological erode using distance maps, optimized for large radius.\n Note thay the number of objects may change due to some mergings.";
+        return "Morphological dilate using distance maps, optimized for large radius.\n Note thay the number of objects may change due to some mergings.";
     }
 
 }

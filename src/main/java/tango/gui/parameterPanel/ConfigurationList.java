@@ -75,7 +75,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             this.jList.setLayoutOrientation(JList.VERTICAL);
             //listSelectionModel = this.jlist.getSelectionModel();
             jList.addListSelectionListener(new ListSelectionListener(){
-                @Override
                 public void valueChanged(ListSelectionEvent lse) {
                     if (lse.getValueIsAdjusting()) return;
                     int selIdx = jList.getSelectedIndex();
@@ -122,7 +121,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             add.setIcon(ImageUtils.add);
             add.setToolTipText("Add");
             add.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed(ActionEvent ae) {
                     addElement(null);
                 }
@@ -134,7 +132,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             remove.setIcon(ImageUtils.remove);
             remove.setToolTipText("Remove");
             remove.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed(ActionEvent ae) {
                     if (edit.isSelected()) {
                         master.hideConfigurationPanel(false);
@@ -158,7 +155,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
         edit.setIcon(ImageUtils.edit);
         edit.setToolTipText("Edit");
         edit.addActionListener(new ActionListener(){
-            @Override
             public void actionPerformed(ActionEvent ae) {
                 if (jList.getSelectedIndex()<0 && mono && edit.isSelected()) {
                     setSelectedElement(0);
@@ -183,7 +179,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             test.setIcon(ImageUtils.test);
             test.setToolTipText("Test");
             test.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed(ActionEvent ae) {
                     test();
                 }
@@ -199,7 +194,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             up.setIcon(ImageUtils.up);
             up.setToolTipText("Up");
             up.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int i = jList.getSelectedIndex();
                     if (i>0) {
@@ -219,7 +213,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             down.setIcon(ImageUtils.down);
             down.setToolTipText("Down");
             down.addActionListener(new ActionListener(){
-                @Override
                 public void actionPerformed(ActionEvent ae) {
                     int i = jList.getSelectedIndex();
                     if (i<0) return;
@@ -308,7 +301,6 @@ public class ConfigurationList<T extends ParameterPanelAbstract> {
             }
             if (b instanceof ConfigurationElementPlugin) {
                 ((ConfigurationElementPlugin)b).method.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         //instance.updateValidity();
                         jList.updateUI();

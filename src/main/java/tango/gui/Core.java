@@ -265,7 +265,6 @@ public class Core extends JFrame implements Displayer {
         //for (int i = 0; i<dimensions.length;i++) dimensions[i]=new Dimension(minSize.width+15, minSize.height+15);
         //dimension=new Dimension(minSize.width+15, minSize.height+15);
         tabs.addChangeListener(new ChangeListener() {
-            @Override
             public void stateChanged(ChangeEvent e) {
                 //dimensions[selectedTab]=new Dimension(getSize().width, getSize().height);
                 //dimensions[selectedTab]=new Dimension(getSize().width, getSize().height);
@@ -299,7 +298,6 @@ public class Core extends JFrame implements Displayer {
             }
         });
         processingTabs.addChangeListener(new ChangeListener() {
-            @Override
             public void stateChanged(ChangeEvent e) {
                 selectProcessingTab(processingTabs.getSelectedIndex());
             }
@@ -391,8 +389,7 @@ public class Core extends JFrame implements Displayer {
         super.dispose();
         close();
     }
-    
-    @Override
+
     public void refreshDisplay() {
         setPreferredSize(getSize());
         pack();

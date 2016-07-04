@@ -163,7 +163,6 @@ public class Misc_3DFilters implements PreFilter {
         return null;
     }
 
-    @Override
     public ImageHandler runPreFilter(int currentStructureIdx, ImageHandler input, InputImages images) {
         filter = filter_P.getSelectedIndex();
         voisx = voisXY_P.getDoubleValue(voisx);
@@ -176,22 +175,18 @@ public class Misc_3DFilters implements PreFilter {
         return process(input);
     }
 
-    @Override
     public void setVerbose(boolean debug) {
         this.debug = debug;
     }
 
-    @Override
     public void setMultithread(int nbCPUs) {
         this.nbCPUs = nbCPUs;
     }
 
-    @Override
     public Parameter[] getParameters() {
         return parameters;
     }
 
-    @Override
     public String getHelp() {
         switch (this.filter_P.getSelectedIndex()) {
             case 0:

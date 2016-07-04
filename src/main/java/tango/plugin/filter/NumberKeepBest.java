@@ -56,7 +56,6 @@ public class NumberKeepBest implements PostFilter {
         signal.setHelp("The structure used to compute mean intensity or integrated density.", true);
     }
 
-    @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt in, InputImages images) {
         Object3D[] objects = in.getObjects3D();
         int nbObj = objects.length;
@@ -92,22 +91,18 @@ public class NumberKeepBest implements PostFilter {
         return in;
     }
 
-    @Override
     public void setVerbose(boolean debug) {
         this.debug = debug;
     }
 
-    @Override
     public void setMultithread(int nbCPUs) {
         this.nbCPUs = nbCPUs;
     }
 
-    @Override
     public Parameter[] getParameters() {
         return parameters;
     }
 
-    @Override
     public String getHelp() {
         return "Keep only specified number of objects, based on criteria.";
     }

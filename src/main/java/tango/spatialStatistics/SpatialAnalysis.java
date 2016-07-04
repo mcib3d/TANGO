@@ -2,16 +2,12 @@ package tango.spatialStatistics;
 
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluator;
 import tango.spatialStatistics.spatialDescriptors.SpatialDescriptor;
-import ij.ImagePlus;
 import java.util.ArrayList;
-import java.util.HashMap;
-import mcib3d.geom.Object3D;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.SegmentedCellImages;
 import tango.dataStructure.StructureQuantifications;
 import tango.parameter.*;
 import tango.plugin.measurement.MeasurementStructure;
-import tango.plugin.PluginFactory;
 import tango.spatialStatistics.SDIEvaluator.SDIEvaluatorFactory;
 /**
  *

@@ -309,7 +309,6 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
 
             JButton msClose = manualSpot.jButtonClose;
             msClose.addActionListener(new java.awt.event.ActionListener() {
-                @Override
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     if (msChannel != null) {
                         msChannel.saveOutput();
@@ -593,7 +592,6 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         core.refreshDisplay();
     }
 
-    @Override
     public void valueChanged(ListSelectionEvent lse) {
         if (lse.getValueIsAdjusting()) {
             return;
@@ -613,12 +611,10 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         selectingObject = false;
     }
 
-    @Override
     public void adjustmentValueChanged(AdjustmentEvent ae) {
         updateRoi();
     }
 
-    @Override
     public void mouseWheelMoved(MouseWheelEvent mwe) {
         updateRoi();
     }

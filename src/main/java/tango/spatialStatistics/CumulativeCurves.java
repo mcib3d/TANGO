@@ -2,12 +2,10 @@ package tango.spatialStatistics;
 
 import ij.gui.Plot;
 import java.awt.Color;
-import java.util.HashMap;
 import mcib3d.utils.ArrayUtil;
 import mcib3d.utils.CDFTools;
 import tango.dataStructure.StructureQuantifications;
 import tango.parameter.*;
-import tango.plugin.measurement.MeasurementStructure;
 /**
  *
  **

@@ -1,22 +1,12 @@
 package tango.parameter;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
-import javax.swing.*;
-import java.text.*;
-import com.mongodb.DBObject;
 import com.mongodb.BasicDBObject;
-import ij.ImagePlus;
 import mcib3d.geom.Object3D;
-import mcib3d.geom.Object3DPoint;
-import mcib3d.geom.Point3D;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.SegmentedCellImages;
 import tango.gui.Core;
 import tango.plugin.PluginFactory;
 import tango.plugin.sampler.Sampler;
-import tango.util.Utils;
 /**
  *
  **

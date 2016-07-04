@@ -177,11 +177,9 @@ public class FieldManager implements ListSelectionListener {
             Core.mongoConnector.saveImportDir(curDir.getAbsolutePath());
             core.toggleIsRunning(true);
             Thread t = new Thread(new Runnable() {
-                @Override
                 public void run() {
                     FieldFactory.createFields(xp, files);
                     Thread t2 = new Thread(new Runnable() {
-                        @Override
                         public void run() {
                             core.toggleIsRunning(false);
                             populateFields();
@@ -521,7 +519,6 @@ public class FieldManager implements ListSelectionListener {
         if (JOptionPane.showConfirmDialog(layout, s, "tango", JOptionPane.OK_CANCEL_OPTION) == 0) {
 
             Thread t = new Thread(new Runnable() {
-                @Override
                 public void run() {
                     processAndCropFields(processNuclei, crop);
                     if (process) {
@@ -531,7 +528,6 @@ public class FieldManager implements ListSelectionListener {
                         mesureSelectedFields(override);
                     }
                     Thread t2 = new Thread(new Runnable() {
-                        @Override
                         public void run() {
                             core.toggleIsRunning(false);
                             populateCells();
@@ -763,7 +759,6 @@ public class FieldManager implements ListSelectionListener {
         }
     }
 
-    @Override
     public void valueChanged(ListSelectionEvent lse) {
         if (lse.getValueIsAdjusting()) {
             return;
