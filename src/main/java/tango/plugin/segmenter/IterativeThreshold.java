@@ -68,7 +68,7 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
         }
         TrackThreshold TT = new TrackThreshold((int) volMin, (int) volMax, st, st, minThresholdP.getThreshold(img, rawImages, nCpus, verb).intValue());
         TT.setMethodThreshold(TrackThreshold.THRESHOLD_METHOD_STEP); // others methods for histogram are available
-        TT.setCriteriaMethod(TrackThreshold.CRITERIA_METHOD_MIN_ELONGATIO);// find roundest object 
+        TT.setCriteriaMethod(TrackThreshold.CRITERIA_METHOD_MIN_ELONGATION);// find roundest object
         TT.verbose = verb;
 
         ImageHandler res = ImageHandler.wrap(TT.segment(img.getImagePlus(), verb));
@@ -85,7 +85,6 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
         }
     }
 
-    @Override
     public ImageInt runNucleus(int currentStructureIdx, ImageHandler input, InputImages rawImages) {
         nucMode = true;
         return process(input, rawImages);
@@ -95,7 +94,7 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
 //    public int[] getTags() {
 //        return null;
 //    }
-    @Override
+
     public Parameter[] getParameters() {
         minThresholdP.setHelp("The minimum value of intensity to start looking for objects.", true);
         vminP.setHelp("The minimum volume of detected objects", true);
@@ -108,28 +107,23 @@ public class IterativeThreshold implements NucleusSegmenter, SpotSegmenter {
         return par;
     }
 
-    @Override
     public String getHelp() {
         return "Segmentation method to detect spherical objects with volume in given range, by checking increasing thresholds. Can be quite slow for 16-bits images. "
                 + "\nSimilar to MSER approches, like HK-Means in ICY.";
     }
 
-    @Override
     public void setVerbose(boolean verbose) {
         verb = verbose;
     }
 
-    @Override
     public void setMultithread(int nCPUs) {
     }
 
-    @Override
     public ImageInt runSpot(int currentStructureIdx, ImageHandler input, InputImages rawImages) {
         nucMode = false;
         return process(input, rawImages);
     }
 
-    @Override
     public ImageFloat getProbabilityMap() {
         return null;
     }

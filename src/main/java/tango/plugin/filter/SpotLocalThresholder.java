@@ -235,7 +235,7 @@ public abstract class SpotLocalThresholder {
         seed.setLabel(label);
         
         while (!heap.isEmpty()) {
-            Vox3D v = heap.pollFirst();
+            Vox3D v = heap.first();
             int x = v.xy%segMap.sizeX;
             int y = v.xy/segMap.sizeX;
             if (x<limX && segMap.getPixelInt(v.xy+1, v.z)==negLabel && intensityMap.getPixel(v.xy+1, v.z)>=thld) {
@@ -385,7 +385,6 @@ public abstract class SpotLocalThresholder {
             segMap.setPixel(xy, z, label);
         }
 
-        @Override
         public int compareTo(Vox3D v) {
             if (v.xy==xy && v.z==z) return 0;
             // decreasing intensities

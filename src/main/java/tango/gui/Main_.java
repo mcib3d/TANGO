@@ -39,7 +39,6 @@ public class Main_ implements PlugIn {
 
     }
 
-    @Override
     public void run(String arg) {
 
         String req = "1.47m";
@@ -70,7 +69,7 @@ public class Main_ implements PlugIn {
         if (maxMem < 1499) {
             IJ.log(errorMem);
         }
-        IJ.log("MCIB VERSION: " + AboutMCIB.VERSION);
+        IJ.log("MCIB VERSION: " + AboutMCIB.getVERSION());
         IJ.showStatus("TANGO.. initializing...");
         IJ.log("TANGO.. initializing...");
 
