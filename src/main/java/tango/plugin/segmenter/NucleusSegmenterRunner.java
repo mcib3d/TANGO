@@ -1,6 +1,7 @@
 package tango.plugin.segmenter;
 
 import com.mongodb.BasicDBObject;
+import ij.IJ;
 import ij.ImagePlus;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
