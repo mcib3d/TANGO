@@ -105,7 +105,7 @@ public class PluginFactory {
             //loader.loadClass("i5d.Image5D");
             loader.loadClass("sc.fiji.i5d.Image5D");
         } catch (Exception e) {
-            ij.IJ.log("Image5D not installed: overlay view not available");
+            ij.IJ.log("Image5D 2.0 not installed: overlay view not available. TANGO uses new version of Image5D, please install package \"Java8\" from Fiji");
             ij5d = false;
         }
         java3d = true;
@@ -114,7 +114,7 @@ public class PluginFactory {
             //loader.loadClass("javax.vecmath.Point3f");
             loader.loadClass("org.scijava.vecmath.Point3f");
         } catch (Exception e) {
-            ij.IJ.log("Java3D not installed: 3D view not available. TANGO uses new version of 3D Viewer, please install package \"3D\" from Fiji");
+            ij.IJ.log("Java3D 4.0 not installed: 3D view not available. TANGO uses new version of 3D Viewer, please install package \"Java8\" from Fiji");
             java3d = false;
         }
         if (java3d) {

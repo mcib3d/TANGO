@@ -53,7 +53,7 @@ public class RandomPoint3DGeneratorProbaMap extends RandomPoint3DGenerator {
     
     
     protected void setProbaMap(ImageHandler probaImage, float saturation) {
-        if (!probaImage.sameDimentions(mask)) {
+        if (!probaImage.sameDimensions(mask)) {
             if (Core.GUIMode) IJ.log("proba map must be of same dimentions as mask..");
             return;
         }

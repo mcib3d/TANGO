@@ -4,6 +4,7 @@
  */
 package tango.gui.util;
 
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import javax.swing.*;
@@ -37,7 +38,7 @@ import javax.swing.*;
 
 public class VerticalTextIcon implements Icon, SwingConstants{ 
     private Font font = UIManager.getFont("Label.font"); 
-    private FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font); 
+    private FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
  
     private String text; 
     private int width, height; 

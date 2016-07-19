@@ -427,7 +427,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
 
         currentROIs = new HashMap<Integer, Roi>(nSlices);
         //stores the roi mask to save memory..
-        if (roiMask == null || !roiMask.sameDimentions(currentImage)) {
+        if (roiMask == null || !roiMask.sameDimensions(currentImage)) {
             roiMask = new ImageByte("mask", currentImage.getWidth(), currentImage.getHeight(), nSlices);
         } else {
             roiMask.erase();
