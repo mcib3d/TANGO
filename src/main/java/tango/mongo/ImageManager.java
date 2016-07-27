@@ -79,7 +79,7 @@ public class ImageManager {
     
     private void addExperiment(ObjectId id) {
         if (!gfsField.containsKey(id)) {
-            String collectionName="fieldImages_"+id.toStringMongod();
+            String collectionName="fieldImages_"+id.toHexString();
             if (project.collectionExists(collectionName+".files") || !project.collectionExists("field")) {
                 gfsField.put(id, new GridFS(project, collectionName));
                 DBCollection fieldsFiles = project.getCollection(collectionName+".files");
@@ -92,7 +92,7 @@ public class ImageManager {
             }
         }
         if (!gfsNucleus.containsKey(id)) {
-            String collectionName="nucleusImages_"+id.toStringMongod();
+            String collectionName="nucleusImages_"+id.toHexString();
             if (project.collectionExists(collectionName+".files") || !project.collectionExists("nucleus")) {
                 gfsNucleus.put(id, new GridFS(project, collectionName));
                 DBCollection nucleiFiles = project.getCollection(collectionName+".files");
@@ -110,7 +110,7 @@ public class ImageManager {
         ArrayList<String> res = new ArrayList<String>();
         if (gfsNucleusAll==null) {
             for (ObjectId oid : this.gfsNucleus.keySet()) {
-                String colName = "nucleusImages_"+oid.toStringMongod();
+                String colName = "nucleusImages_"+oid.toHexString();
                 res.add(colName+".files");
                 res.add(colName+".chunks");
             }
@@ -125,7 +125,7 @@ public class ImageManager {
         ArrayList<String> res = new ArrayList<String>();
         if (gfsFieldAll==null) {
             for (ObjectId oid : this.gfsField.keySet()) {
-                String colName = "fieldImages_"+oid.toStringMongod();
+                String colName = "fieldImages_"+oid.toHexString();
                 res.add(colName+".files");
                 res.add(colName+".chunks");
             }
@@ -293,8 +293,8 @@ public class ImageManager {
     }
     
     private void transferXP(ObjectId xpId, int counter) {
-        GridFS gfsNuc = new GridFS(project, "fieldImages_"+xpId.toStringMongod());
-        GridFS gfsF = new GridFS(project, "nucleusImages_"+xpId.toStringMongod());
+        GridFS gfsNuc = new GridFS(project, "fieldImages_"+xpId.toHexString());
+        GridFS gfsF = new GridFS(project, "nucleusImages_"+xpId.toHexString());
         String label = "Update Experiment:"+counter+" ";
         ArrayList<ObjectId> fids = mongo.getFieldIds(xpId);
         Core.getProgressor().setAction(label+" Field Images");

@@ -33,6 +33,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseWheelListener;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import mcib3d.geom.Object3D;
@@ -178,20 +179,20 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         }
     }
 
-    public void setStructures(ObjectId id, Object[] selectedChannels) {
+    public void setStructures(ObjectId id, List selectedChannels) {
         //System.out.println("Set Structures: cell"+id+ " sel channels length"+selectedChannels.length);
         this.currentNucId = id;
-        this.currentChannels = new ObjectStructure[selectedChannels.length];
-        currentStructureIdx = new int[selectedChannels.length];
-        for (int i = 0; i < selectedChannels.length; i++) {
-            currentChannels[i] = (ObjectStructure) selectedChannels[i];
+        this.currentChannels = new ObjectStructure[selectedChannels.size()];
+        currentStructureIdx = new int[selectedChannels.size()];
+        for (int i = 0; i < selectedChannels.size(); i++) {
+            currentChannels[i] = (ObjectStructure) selectedChannels.get(i);
             currentStructureIdx[i] = currentChannels[i].getIdx();
         }
         setSortKeys();
         populateObjects();
         if (showMeasurements.isSelected()) {
             measurements.setStructures(id, currentStructureIdx);
-            measurements.setObjects(list.getSelectedValues());
+            measurements.setObjects(list.getSelectedValuesList());
         }
     }
 
@@ -345,7 +346,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         populatingObjects = true;
         try {
             boolean[] modif = new boolean[currentChannels.length];
-            for (Object o : this.list.getSelectedValues()) {
+            for (Object o : this.list.getSelectedValuesList()) {
                 listModel.removeElement(o);
                 modif[getChannelRank(((Object3DGui) o).getChannel())] = true;
                 ((Object3DGui) o).delete(true);
@@ -417,10 +418,10 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
             return;
         }
         //verifier que l'image active a les memes dimentions
-        Object[] os = this.list.getSelectedValues();
+        List os = this.list.getSelectedValuesList();
 
-        if (os.length == 1) {
-            mcib3d.geom.Object3D o = ((Object3DGui) os[0]).getObject3D();
+        if (os.size() == 1) {
+            mcib3d.geom.Object3D o = ((Object3DGui) os.get(0)).getObject3D();
             currentImage.setSlice((o.getZmax() + o.getZmin()) / 2 + 1);
         }
         int nSlices = currentImage.getNSlices();
@@ -490,7 +491,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         for (ObjectStructure ass : currentChannels) {
             res.put(ass.getIdx(), new ArrayList<Object3DGui>());
         }
-        for (Object o : list.getSelectedValues()) {
+        for (Object o : list.getSelectedValuesList()) {
             Object3DGui o3D = (Object3DGui) (o);
             int idx = o3D.getChannel().getIdx();
             res.get(idx).add(o3D);
@@ -584,7 +585,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
     public void toggleShowMeasurements() {
         if (showMeasurements.isSelected()) {
             measurements.setStructures(currentNucId, currentStructureIdx);
-            measurements.setObjects(list.getSelectedValues());
+            measurements.setObjects(list.getSelectedValuesList());
             this.container.add(measurements);
         } else {
             this.container.remove(measurements);
@@ -601,7 +602,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
         }
         selectingObject = true;
         if (measurements != null && showMeasurements.isSelected()) {
-            measurements.setObjects(list.getSelectedValues());
+            measurements.setObjects(list.getSelectedValuesList());
         }
         try {
             showRois3D();
@@ -631,8 +632,8 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
     }
 
     public void splitObjects() {
-        Object[] os = this.list.getSelectedValues();
-        if (os.length == 0) {
+        List os = this.list.getSelectedValuesList();
+        if (os.size() == 0) {
             return;
         }
         Set<ObjectStructure> channels = new HashSet<ObjectStructure>();

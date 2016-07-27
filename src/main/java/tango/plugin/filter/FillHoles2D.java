@@ -1,33 +1,34 @@
 package tango.plugin.filter;
 
-import mcib3d.utils.exceptionPrinter;
-import java.util.TreeMap;
 import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
+import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.InputImages;
-import tango.parameter.*;
+import tango.parameter.BooleanParameter;
+import tango.parameter.Parameter;
+
+import java.util.TreeMap;
 
 /**
- *
- **
+ * *
  * /**
  * Copyright (C) 2012 Jean Ollion
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * This file is part of tango
- *
+ * <p>
  * tango is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -45,23 +46,6 @@ public class FillHoles2D implements PostFilter {
         useInterior.setHelp("If checked, the segmented object will only be the filled interior, useful for membrane labelling.", true);
     }
 
-    @Override
-    public Parameter[] getParameters() {
-        return parameters;
-    }
-
-    @Override
-    public void setVerbose(boolean debug) {
-        this.debug = debug;
-    }
-
-    @Override
-    public ImageInt runPostFilter(int currentStructureIdx, ImageInt input, InputImages images) {
-        ImageInt fill = fillHoles2D(input);
-        if (useInterior.isSelected()) fill = fill.substractImage(input); //  interior = filled - original
-        return fill;
-    }
-    
     public static ImageInt fillHoles2D(ImageInt input) {
         try {
             ImageInt fill = input;
@@ -85,13 +69,30 @@ public class FillHoles2D implements PostFilter {
     }
 
     @Override
+    public Parameter[] getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void setVerbose(boolean debug) {
+        this.debug = debug;
+    }
+
+    @Override
+    public ImageInt runPostFilter(int currentStructureIdx, ImageInt input, InputImages images) {
+        ImageInt fill = fillHoles2D(input);
+        if (useInterior.isSelected()) fill = fill.substractImage(input); //  interior = filled - original
+        return fill;
+    }
+
+    @Override
     public void setMultithread(int nbCPUs) {
         this.nbCPUs = nbCPUs;
     }
 
     @Override
     public String getHelp() {
-        return "2D fill holes from ImageJ. Algorithm by Gabriel Landini";
+        return "2D fill holes from ImageJ. Algorithm by Gabriel Landini.";
     }
 
 }

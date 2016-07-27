@@ -12,9 +12,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import mcib3d.geom.Object3D;
@@ -87,10 +86,10 @@ public class NucleusManager extends ObjectManager {
     }
 
     @Override
-    public void setStructures(ObjectId id, Object[] field) {
-        this.currentChannels = new ObjectStructure[(field.length > 0) ? 1 : 0];
-        if (field.length > 0 && field[0] != null) {
-            currentChannels[0] = (Field) field[0];
+    public void setStructures(ObjectId id, List field) {
+        this.currentChannels = new ObjectStructure[(field.size() > 0) ? 1 : 0];
+        if (field.size() > 0 && field.get(0) != null) {
+            currentChannels[0] = (Field) field.get(0);
             roiManager.populateRois(getMask().sizeZ);
         }
         populateObjects();
@@ -186,7 +185,7 @@ public class NucleusManager extends ObjectManager {
             Object3DGui o3D = (Object3DGui) list.getSelectedValue();
             process(o3D, process, instersectWithMask, postProcess, borderSize, test);
         } else {
-            for (Object o : list.getSelectedValues()) {
+            for (Object o : list.getSelectedValuesList()) {
                 Object3DGui o3D = (Object3DGui) o;
                 process(o3D, process, instersectWithMask, postProcess, borderSize, test);
             }
@@ -250,12 +249,12 @@ public class NucleusManager extends ObjectManager {
     }
 
     protected void addRoisToMask() {
-        Object[] masks = list.getSelectedValues();
-        if (masks.length > 1 || masks.length == 0) {
+        java.util.List masks = list.getSelectedValuesList();
+        if (masks.size() > 1 || masks.size() == 0) {
             ij.IJ.error("Invalid Selection! Select only 1 object.");
             return;
         }
-        Object3DGui o = (Object3DGui) masks[0];
+        Object3DGui o = (Object3DGui) masks.get(0);
         Roi[] rois = roiManager.getROIs();
         for (Roi roi : rois) {
             addToMask(o, roi, false);
@@ -304,14 +303,14 @@ public class NucleusManager extends ObjectManager {
     }
 
     private void removeFromMask() {
-        Object[] masks = list.getSelectedValues();
-        if (masks.length > 1 || masks.length == 0) {
+        List masks = list.getSelectedValuesList();
+        if (masks.size() > 1 || masks.size() == 0) {
             ij.IJ.error("Invalid Selection! Select only 1 object.");
             return;
         }
         ImageInt maskImage = getMask();
         Roi roi = maskImage.getImagePlus().getRoi();
-        Object3DGui o = (Object3DGui) masks[0];
+        Object3DGui o = (Object3DGui) masks.get(0);
         int l = o.getLabel();
         if (l == 0) {
             return;

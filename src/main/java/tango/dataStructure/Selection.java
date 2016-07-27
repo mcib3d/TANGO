@@ -94,18 +94,19 @@ public class Selection extends BasicDBObject {
     }
     
     protected BasicDBObject getNucleus (ObjectId id, boolean create) {
-        if (!nuclei.containsField(id.toStringMongod())) {
+        String idHex=id.toHexString();
+        if (!nuclei.containsField(idHex)) {
             if (create) {
                 BasicDBObject currentNuc = new BasicDBObject();
-                nuclei.append(id.toStringMongod(), currentNuc);
+                nuclei.append(idHex, currentNuc);
                 return currentNuc;
             } else return null;
         } else {
-            Object o = nuclei.get(id.toStringMongod());
+            Object o = nuclei.get(idHex);
             if (o instanceof BasicDBObject) return (BasicDBObject)o;
             else if (create) {
                 BasicDBObject currentNuc = new BasicDBObject();
-                nuclei.append(id.toStringMongod(), currentNuc);
+                nuclei.append(idHex, currentNuc);
                 return currentNuc;
             } else return null;
         }
@@ -145,7 +146,7 @@ public class Selection extends BasicDBObject {
     
     protected void appendToNucleus(ObjectId id, int structure, ArrayList<Integer> selectedObjects) {
         BasicDBObject nucleus = getNucleus(id, true);
-        System.out.println("appending structure:"+structure+ " to nucleus:"+id.toStringMongod());
+        System.out.println("appending structure:"+structure+ " to nucleus:"+id.toHexString());
         if (!nucleus.containsField(structure+"")) {
             nucleus.append(structure+"", selectedObjects);
         } else {
@@ -159,7 +160,7 @@ public class Selection extends BasicDBObject {
     
     public void appendCells(Cell[] cells) {
         for (Cell c: cells) {
-            String id = c.id.toStringMongod();
+            String id = c.id.toHexString();
             if (!nuclei.containsField(id)) nuclei.append(id, new BasicDBObject());
         }
         save();
@@ -169,7 +170,7 @@ public class Selection extends BasicDBObject {
     
     public void removeCells(Cell[] cells) {
         for (Cell c: cells) {
-            String id = c.id.toStringMongod();
+            String id = c.id.toHexString();
             nuclei.removeField(id);
         }
         save();
@@ -180,7 +181,7 @@ public class Selection extends BasicDBObject {
     public void appendToNucleus(ObjectId id, HashMap<Integer, ArrayList<Integer>> selectedObjects) {
         System.out.println("append to nucleus single cells:"+selectedObjects.size());
         if (selectedObjects.isEmpty()) {
-            String idm = id.toStringMongod();
+            String idm = id.toHexString();
             if (!nuclei.containsField(idm)) nuclei.append(idm, new BasicDBObject());
         } else {
             for (Map.Entry<Integer, ArrayList<Integer>> e : selectedObjects.entrySet()) {
@@ -212,7 +213,7 @@ public class Selection extends BasicDBObject {
     }
     
     public void removeNucleus(ObjectId id) {
-        nuclei.removeField(id.toStringMongod());
+        nuclei.removeField(id.toHexString());
         save();
     }
     

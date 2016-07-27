@@ -376,13 +376,13 @@ public class Cell implements StructureContainer, Comparable<Cell> { //ObjectStru
     @Override
     public boolean equals(Object o) {
         if (o instanceof Cell) return this.id.equals(((Cell)o).id);
-        else if (o instanceof String) return this.id.toStringMongod().equals(o);
+        else if (o instanceof String) return this.id.toHexString().equals(o);
         else return false;
     }
 
     @Override
     public int hashCode() {
-        return id.toStringMongod().hashCode();
+        return id.toHexString().hashCode();
     }
 
     public int compareTo(Cell t) {

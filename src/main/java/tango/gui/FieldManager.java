@@ -4,21 +4,6 @@ import com.mongodb.BasicDBObject;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
-import java.awt.Choice;
-import java.awt.Component;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Vector;
-import javax.swing.DefaultListModel;
-import javax.swing.JFileChooser;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import mcib3d.utils.exceptionPrinter;
@@ -26,8 +11,6 @@ import tango.dataStructure.Cell;
 import tango.dataStructure.Experiment;
 import tango.dataStructure.Field;
 import tango.dataStructure.InputFieldImages;
-import tango.dataStructure.ObjectStructure;
-import tango.gui.util.DeleteSlicesOptionPane;
 import tango.gui.util.FieldFactory;
 import tango.gui.util.FieldManagerLayout;
 import tango.gui.util.LCRenderer;
@@ -36,26 +19,34 @@ import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.filter.PreFilterSequence;
 import tango.plugin.segmenter.NucleusSegmenterRunner;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 /**
- *
- **
+ * *
  * /**
  * Copyright (C) 2012 Jean Ollion
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * This file is part of tango
- *
+ * <p>
  * tango is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -63,21 +54,21 @@ import tango.plugin.segmenter.NucleusSegmenterRunner;
  */
 public class FieldManager implements ListSelectionListener {
 
+    protected Field currentField;
+    Experiment xp;
+    int[] fileRank;
+    Core core;
+    boolean populatingFields, populatingCells, displaying;
+    int[] selectedFields;
     private javax.swing.JList list;
     private DefaultListModel listModel;
     private ListSelectionModel listSelectionModel;
     private JPanel mainPanel;
-    Experiment xp;
-    int[] fileRank;
     private JToggleButton showCells, showSelections, manualSegmentation;
-    Core core;
     private CellManager cellManager;
     private NucleusManager nucleusManager;
     private File curDir;
-    boolean populatingFields, populatingCells, displaying;
-    int[] selectedFields;
     private FieldManagerLayout layout;
-    protected Field currentField;
 
     public FieldManager(Core core) {
         try {
@@ -104,6 +95,90 @@ public class FieldManager implements ListSelectionListener {
 
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
+        }
+    }
+
+    public static void processAndCropFields(Field[] fields, boolean processNuclei, boolean crop) {
+        try {
+            System.out.println("Nb of fields: " + fields.length);
+            int[][] tags = new int[fields.length][];
+            if (processNuclei) {
+                if (Core.GUIMode) {
+                    Core.getProgressor().resetProgress(fields.length);
+                }
+                for (int i = 0; i < fields.length; i++) {
+                    if (Core.GUIMode) {
+                        Core.getProgressor().setAction("Processing field");
+                    }
+                    if (Core.GUIMode) {
+                        IJ.log("segment field:" + fields[i]);
+                    }
+                    if (Core.GUIMode) {
+                        IJ.showStatus("Nuclei segmentation: " + (i + 1) + "/" + fields.length);
+                    }
+                    System.out.println("Nuclei segmentation: " + (i + 1) + "/" + fields.length);
+                    Field field = (Field) fields[i];
+                    field.setVerbose(false);
+                    field.hide();
+                    boolean goOnCrop = true;
+                    try {
+                        tags[i] = field.processNucleus();
+                        field.saveOutput();
+                        System.out.println("output saved!"); //TODO : si on commente cette ligne, process + crop se bloque: comprendre pourquoi!
+                    } catch (Exception e) {
+                        exceptionPrinter.print(e, "process field error: " + field.getName(), Core.GUIMode);
+                        goOnCrop = false;
+                    }
+                    //System.out.println("process done.");
+                    if (crop && goOnCrop) {
+                        //System.out.println("cropping...");
+                        if (Core.GUIMode) {
+                            Core.getProgressor().setAction("Cropping field");
+                        }
+                        if (Core.GUIMode) {
+                            IJ.log("crop field:" + fields[i]);
+                        }
+                        if (Core.GUIMode) {
+                            IJ.showStatus("Nuclei cropping: " + (i + 1) + "/" + fields.length);
+                        }
+                        System.out.println("Nuclei cropping: " + (i + 1) + "/" + fields.length);
+                        try {
+                            field.cropCells(tags[i]);
+                        } catch (Exception e) {
+                            exceptionPrinter.print(e, "crop field error: " + field.getName(), Core.GUIMode);
+                        }
+                    }
+                    field.closeInputImages();
+                    field.closeOutputImages();
+                    if (Core.GUIMode) {
+                        Core.getProgressor().incrementStep();
+                    }
+                }
+            } else if (crop) {
+                if (Core.GUIMode) {
+                    Core.getProgressor().setAction("Cropping field");
+                }
+                if (Core.GUIMode) {
+                    Core.getProgressor().resetProgress(fields.length);
+                }
+                for (int i = 0; i < fields.length; i++) {
+                    Field field = (Field) fields[i];
+                    field.setVerbose(false);
+                    field.hide();
+                    if (Core.GUIMode) {
+                        IJ.log("crop field:" + fields[i]);
+                    }
+                    System.out.println("Nuclei cropping: " + (i + 1) + "/" + fields.length);
+                    field.cropCells(tags[i]);
+                    field.closeInputImages();
+                    field.closeOutputImages();
+                    if (Core.GUIMode) {
+                        Core.getProgressor().incrementStep();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            exceptionPrinter.print(e, "process field error::", Core.GUIMode);
         }
     }
 
@@ -272,9 +347,11 @@ public class FieldManager implements ListSelectionListener {
         try {
             populatingCells = true;
             if (list.getSelectedIndex() == -1) {
-                nucleusManager.setStructures(null, new ObjectStructure[]{});
+                nucleusManager.setStructures(null, new ArrayList());
             } else {
-                nucleusManager.setStructures(null, new ObjectStructure[]{(Field) list.getSelectedValue()});
+                List tmp = new ArrayList<>();
+                tmp.add((Field) list.getSelectedValue());
+                nucleusManager.setStructures(null, tmp);
             }
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
@@ -285,12 +362,12 @@ public class FieldManager implements ListSelectionListener {
     private void deleteSelectedFields() {
         populatingFields = true;
         try {
-            for (Object o : this.list.getSelectedValues()) {
+            for (Object o : this.list.getSelectedValuesList()) {
                 Field f = (Field) o;
-                IJ.log("deleting field: "+f.getName());
+                IJ.log("deleting field: " + f.getName());
                 f.delete();
                 listModel.removeElement(o);
-                
+
             }
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
@@ -300,7 +377,7 @@ public class FieldManager implements ListSelectionListener {
 
     private void deleteSelectedFieldsFiles() {
         try {
-            for (Object o : this.list.getSelectedValues()) {
+            for (Object o : this.list.getSelectedValuesList()) {
                 Field f = (Field) o;
                 f.deleteFiles();
             }
@@ -330,7 +407,7 @@ public class FieldManager implements ListSelectionListener {
     }
 
     public ArrayList<Cell> getSelectedCells() {
-        Object[] fields = list.getSelectedValues();
+        List fields = list.getSelectedValuesList();
         ArrayList<Cell> cells = new ArrayList<Cell>();
         if (fields == null) {
             return cells;
@@ -376,8 +453,8 @@ public class FieldManager implements ListSelectionListener {
          IJ.log("fin");
          System.runFinalization();
          }
-        
-         * 
+
+         *
          */
         if (this.list.getSelectedIndex() < 0) {
             ij.IJ.error("Select a Field First!");
@@ -421,7 +498,7 @@ public class FieldManager implements ListSelectionListener {
              input=field.getInputImages().getImage(0).duplicate();
              input.show();
              }
-             * 
+             *
              */
         }
 
@@ -435,7 +512,7 @@ public class FieldManager implements ListSelectionListener {
          }
          field.setVerbose(false);
          Core.debug=false;
-         * 
+         *
          */
     }
 
@@ -545,10 +622,10 @@ public class FieldManager implements ListSelectionListener {
     }
 
     protected Field[] getSelectedFields() {
-        Object[] fields = this.list.getSelectedValues();
-        Field[] f = new Field[fields.length];
+        List fields = this.list.getSelectedValuesList();
+        Field[] f = new Field[fields.size()];
         for (int i = 0; i < f.length; i++) {
-            f[i] = (Field) fields[i];
+            f[i] = (Field) fields.get(i);
         }
         return f;
     }
@@ -556,90 +633,6 @@ public class FieldManager implements ListSelectionListener {
     protected void processAndCropFields(boolean processNuclei, boolean crop) {
         Field[] f = getSelectedFields();
         processAndCropFields(f, processNuclei, crop);
-    }
-
-    public static void processAndCropFields(Field[] fields, boolean processNuclei, boolean crop) {
-        try {
-            System.out.println("Nb of fields: " + fields.length);
-            int[][] tags = new int[fields.length][];
-            if (processNuclei) {
-                if (Core.GUIMode) {
-                    Core.getProgressor().resetProgress(fields.length);
-                }
-                for (int i = 0; i < fields.length; i++) {
-                    if (Core.GUIMode) {
-                        Core.getProgressor().setAction("Processing field");
-                    }
-                    if (Core.GUIMode) {
-                        IJ.log("segment field:" + fields[i]);
-                    }
-                    if (Core.GUIMode) {
-                        IJ.showStatus("Nuclei segmentation: " + (i + 1) + "/" + fields.length);
-                    }
-                    System.out.println("Nuclei segmentation: " + (i + 1) + "/" + fields.length);
-                    Field field = (Field) fields[i];
-                    field.setVerbose(false);
-                    field.hide();
-                    boolean goOnCrop = true;
-                    try {
-                        tags[i] = field.processNucleus();
-                        field.saveOutput();
-                        System.out.println("output saved!"); //TODO : si on commente cette ligne, process + crop se bloque: comprendre pourquoi!
-                    } catch (Exception e) {
-                        exceptionPrinter.print(e, "process field error: " + field.getName(), Core.GUIMode);
-                        goOnCrop = false;
-                    }
-                    //System.out.println("process done.");
-                    if (crop && goOnCrop) {
-                        //System.out.println("cropping...");
-                        if (Core.GUIMode) {
-                            Core.getProgressor().setAction("Cropping field");
-                        }
-                        if (Core.GUIMode) {
-                            IJ.log("crop field:" + fields[i]);
-                        }
-                        if (Core.GUIMode) {
-                            IJ.showStatus("Nuclei cropping: " + (i + 1) + "/" + fields.length);
-                        }
-                        System.out.println("Nuclei cropping: " + (i + 1) + "/" + fields.length);
-                        try {
-                            field.cropCells(tags[i]);
-                        } catch (Exception e) {
-                            exceptionPrinter.print(e, "crop field error: " + field.getName(), Core.GUIMode);
-                        }
-                    }
-                    field.closeInputImages();
-                    field.closeOutputImages();
-                    if (Core.GUIMode) {
-                        Core.getProgressor().incrementStep();
-                    }
-                }
-            } else if (crop) {
-                if (Core.GUIMode) {
-                    Core.getProgressor().setAction("Cropping field");
-                }
-                if (Core.GUIMode) {
-                    Core.getProgressor().resetProgress(fields.length);
-                }
-                for (int i = 0; i < fields.length; i++) {
-                    Field field = (Field) fields[i];
-                    field.setVerbose(false);
-                    field.hide();
-                    if (Core.GUIMode) {
-                        IJ.log("crop field:" + fields[i]);
-                    }
-                    System.out.println("Nuclei cropping: " + (i + 1) + "/" + fields.length);
-                    field.cropCells(tags[i]);
-                    field.closeInputImages();
-                    field.closeOutputImages();
-                    if (Core.GUIMode) {
-                        Core.getProgressor().incrementStep();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            exceptionPrinter.print(e, "process field error::", Core.GUIMode);
-        }
     }
 
     public void viewOverlay() {
@@ -797,7 +790,7 @@ public class FieldManager implements ListSelectionListener {
             nucleusManager.toggleIsRunning(isRunning);
         }
     }
-    
+
     public void updateXP() {
         String structure = layout.getThumbnailStructure();
         layout.setStructures(xp.getStructureNames(false));

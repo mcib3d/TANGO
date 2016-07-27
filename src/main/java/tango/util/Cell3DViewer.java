@@ -1,30 +1,27 @@
 package tango.util;
 
-import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageByte;
-import tango.dataStructure.Cell;
-import tango.dataStructure.Nucleus;
-import tango.dataStructure.AbstractStructure;
-import tango.dataStructure.Structure;
-import ij3d.*;
-import ij.gui.GUI;
-import org.scijava.vecmath.Point3d;
-import org.scijava.vecmath.Color3f;
-//import javax.vecmath.Color3f;
-//import javax.vecmath.Point3d;
-import java.util.*;
-import com.sun.j3d.utils.universe.SimpleUniverse;
 import customnode.CustomMesh;
 import customnode.CustomMeshNode;
 import customnode.CustomMultiMesh;
 import customnode.CustomTriangleMesh;
-import ij.*;
+import ij.gui.GUI;
+import ij3d.*;
 import isosurface.MeshEditor;
 import isosurface.MeshGroup;
-import java.awt.Color;
-import javax.media.j3d.Background;
-import javax.media.j3d.Canvas3D;
-import voltex.VoltexGroup;
+import mcib3d.image3d.ImageByte;
+import mcib3d.image3d.ImageHandler;
+import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3d;
+import tango.dataStructure.AbstractStructure;
+import tango.dataStructure.Cell;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+//import javax.vecmath.Color3f;
+//import javax.vecmath.Point3d;
 
 /**
  *

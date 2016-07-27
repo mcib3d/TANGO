@@ -73,24 +73,24 @@ public class MeasurementDisplayer extends javax.swing.JPanel {
     }
     
     
-    public void setObjects(Object[] selectedObjects) {
+    public void setObjects(List selectedObjects) {
         eraseText();
         if (currentStructures==null) {
             refreshText();
             return;
         }
-        if (selectedObjects==null || selectedObjects.length==0) { //display misc & number
+        if (selectedObjects==null || selectedObjects.size()==0) { //display misc & number
             if (currentDBOs!=null) for (BasicDBObject o : currentDBOs) append(o);
             label.setText("structures");
-        } else if (selectedObjects.length==1) { //display o
-            Object3DGui o = (Object3DGui)selectedObjects[0];
+        } else if (selectedObjects.size()==1) { //display o
+            Object3DGui o = (Object3DGui)selectedObjects.get(0);
             append(Core.getExperiment().getConnector().getObject(nucId, o.getChannel().getIdx(), o.getLabel(), null));
             label.setText("object");
-        } else if (selectedObjects.length==2) { //display o2o
+        } else if (selectedObjects.size()==2) { //display o2o
             
             BasicDBObject disp = new BasicDBObject();
-            Object3DGui o1 = (Object3DGui)selectedObjects[0];
-            Object3DGui o2 = (Object3DGui)selectedObjects[1];
+            Object3DGui o1 = (Object3DGui)selectedObjects.get(0);
+            Object3DGui o2 = (Object3DGui)selectedObjects.get(1);
             int[] selStruct = new int[]{o1.getChannel().getIdx(), o2.getChannel().getIdx()};
             MeasurementKey key=new MeasurementKey(selStruct, MeasurementStructure.ArrayO2O); //currentStructures
             int size;
