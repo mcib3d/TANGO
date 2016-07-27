@@ -1,6 +1,9 @@
 package tango.mongo;
 
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -110,6 +113,7 @@ public class MongoConnector {
         }
     }
 
+    // method not used ??
     public static boolean isMongoOn(String host) {
         MongoClient m;
         m = null;
@@ -124,6 +128,7 @@ public class MongoConnector {
         }
         List<String> l;
         try {
+            MongoIterable ll = m.listDatabaseNames();
             l = m.getDatabaseNames();
         } catch (MongoException e) {
             if (Core.GUIMode) {
@@ -191,6 +196,49 @@ public class MongoConnector {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }
         return null;
+    }
+
+    // test for new version of mongodb 3.0
+    public boolean setAdminParameters2() {
+        MongoDatabase admin2;
+        try {
+            // FIXME for compatibility with older version...
+            String adminName = prefix + "_admin";
+            String oldAdminName = "ij3DM_admin";
+            //List<String> dbnames = m.getDatabaseNames();
+            MongoIterable<String> dbnames2 = m.listDatabaseNames();
+            for (String string : dbnames2) {
+                if (string.equals(adminName)) {
+                    admin2 = m.getDatabase(adminName);
+                    break;
+                } else if (string.equals(oldAdminName)) {
+                    admin2 = m.getDatabase(oldAdminName);
+                    break;
+                }
+            }
+            admin2 = m.getDatabase(adminName);
+
+//            if (dbnames.contains(adminName)) {
+//                admin2 = m.getDatabase(adminName);
+//            } else if (dbnames.contains(oldAdminName)) {
+//                admin = m.getDB(oldAdminName);
+//            } else {
+//                admin = m.getDB(adminName); //creates the admin database
+//            }
+
+            MongoCollection adminUser2= admin2.getCollection("user");
+            MongoCollection adminProject2= admin2.getCollection("dbnames");
+            MongoCollection help2= admin2.getCollection("help");
+
+//            adminUser = admin2.getCollection("user");
+//            adminProject = admin2.getCollection("dbnames");
+//            help = admin2.getCollection("help");
+
+            return true;
+        } catch (Exception e) {
+            exceptionPrinter.print(e, "Connection: ", Core.GUIMode);
+            return false;
+        }
     }
 
     public boolean setAdminParameters() {
