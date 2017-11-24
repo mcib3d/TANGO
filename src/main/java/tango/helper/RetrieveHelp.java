@@ -76,7 +76,7 @@ public class RetrieveHelp {
                    end = segment.getBegin();
                    follow = false;
                }
-               if(segment.getFirstStartTag().getAttributeValue("id").equals(id.element)){
+               if(segment!=null && segment.getFirstStartTag()!=null && segment.getFirstStartTag().getAttributeValue("id")!=null && segment.getFirstStartTag().getAttributeValue("id").equals(id.element)){
                    start = segment.getBegin();
                    follow = true;
                }
