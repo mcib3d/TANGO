@@ -9,8 +9,8 @@
 	</properties>
 
 	<groupId>fr.mnhn.biophysique</groupId>
-	<artifactId>tango_</artifactId>
-	<version>0.96</version>
+	<artifactId>TANGO</artifactId>
+	<version>_0.96</version>
 	<packaging>jar</packaging>
 
 	<name>TANGO</name>
