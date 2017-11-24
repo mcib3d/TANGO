@@ -1,7 +1,7 @@
 package tango.plugin.filter;
 
-import denoise.Denoising;
-import denoise.Operations;
+//import denoise.Denoising;
+//import denoise.Operations;
 import ebmoll.lipid_droplet_counter.filters.Bandpass3D;
 import ij.IJ;
 import ij.ImagePlus;
@@ -185,7 +185,7 @@ public class Misc_3DFilters implements PreFilter {
         int nxe = (int) (Math.ceil((double) nx / 16) * 16);
         int nye = (int) (Math.ceil((double) ny / 16) * 16);
         if (nxe != nx || nye != ny) {
-            original = Operations.symextend2D(original, nxe, nye, Ext);
+            //original = Operations.symextend2D(original, nxe, nye, Ext);
         } else {
             Ext[0] = 0;
             Ext[1] = 0;
@@ -199,7 +199,7 @@ public class Misc_3DFilters implements PreFilter {
         int CS = iteration_P.getValue();
         int NBFRAME = 1;
 
-        Denoising denoising = new Denoising(original, AlphaHat, DeltaHat, SigmaHat, FRAMEWISE, CS, NBFRAME);
+        /*Denoising denoising = new Denoising(original, AlphaHat, DeltaHat, SigmaHat, FRAMEWISE, CS, NBFRAME);
         denoising.setLog(false);
         denoising.setFramewise(FRAMEWISE);
         denoising.estimateNoiseParameters();
@@ -208,8 +208,9 @@ public class Misc_3DFilters implements PreFilter {
         denoising.perform();
         ImageWare output = denoising.getOutput();
         ImageStack stack = output.buildImageStack();
-
-        return ImageHandler.wrap(stack);
+        
+        return ImageHandler.wrap(stack);*/
+        return null;
     }
 
     public void setVerbose(boolean debug) {

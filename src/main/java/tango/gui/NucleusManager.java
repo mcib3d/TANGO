@@ -39,6 +39,7 @@ import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.segmenter.NucleusSegmenterRunner;
 import tango.util.ImageUtils;
 import tango.util.RoiInterpolator;
+import static tango.util.Utils.getObjects3D;
 
 /**
  *
@@ -553,7 +554,7 @@ public class NucleusManager extends ObjectManager {
      */
 
     protected void repaintObject(ImageInt image, Object3DGui o) {
-        Object3DVoxels[] newObjects = image.getObjects3D();
+        Object3DVoxels[] newObjects = getObjects3D(image);
         for (int i = 0; i < newObjects.length; i++) {
             newObjects[i].translate(image.offsetX, image.offsetY, image.offsetZ);
             Object3DGui oGui = i == 0 ? o : newObject();

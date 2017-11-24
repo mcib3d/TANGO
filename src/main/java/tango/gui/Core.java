@@ -49,7 +49,7 @@ import tango.util.Progressor;
  */
 public class Core extends JFrame implements Displayer {
     public static boolean SPATIALSTATS=true;
-    public static double VERSION  = 0.94;
+    public static double VERSION  = 0.96;
     public static boolean TESTING=false;
     public static boolean ANALYSIS = false;
     public static boolean MONGODB = true;

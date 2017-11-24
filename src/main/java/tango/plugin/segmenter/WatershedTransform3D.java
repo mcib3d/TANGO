@@ -103,7 +103,7 @@ public class WatershedTransform3D {
             segmentedMap.showDuplicate("Segmented map after propagation");
         }
         //if (this.useHessianThld || this.useIntensityThreshold) eraseSpotsQuantile();
-        if (!debug) shiftSegmentedMap();
+        if (!debug) shiftSegmentedMapLabels();
         return segmentedMap;
     }
 
@@ -151,7 +151,7 @@ public class WatershedTransform3D {
         return (upMean - lowMean);
     }
 
-    protected void shiftSegmentedMap() {
+    protected void shiftSegmentedMapLabels() {
         short currentLabel = 1;
         for (short i : spots.keySet()) {
             for (Vox3D v : spots.get(i).voxels) segmentedMap.pixels[v.z][v.xy] = currentLabel;
@@ -312,9 +312,9 @@ public class WatershedTransform3D {
             }
             */
             for (int zz = v.z - 1; zz <= v.z + 1; zz++) {
-                if (zz >= 0 && zz < limZ) {
+                if (zz >= 0 && zz <= limZ) {
                     for (int yy = y - 1; yy <= y + 1; yy++) {
-                        if (yy >= 0 && yy < limY) {
+                        if (yy >= 0 && yy <= limY) {
                             for (int xx = x - 1; xx <= x + 1; xx++) {
                                 if ((xx != x || yy != y || zz != v.z) && xx >= 0 && xx < sizeX && mask.getPixel(xx + yy * sizeX, zz) != 0) {
                                     propagate(currentSpot, v, new Vox3D(xx + yy * sizeX, zz, 0));

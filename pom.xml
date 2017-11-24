@@ -9,8 +9,8 @@
 	</properties>
 
 	<groupId>fr.mnhn.biophysique</groupId>
-	<artifactId>TANGO</artifactId>
-	<version>master-SNAPSHOT</version>
+	<artifactId>tango_</artifactId>
+	<version>0.96</version>
 	<packaging>jar</packaging>
 
 	<name>TANGO</name>
@@ -67,101 +67,66 @@
 	-->
 
 	<dependencies>
-		<dependency>
-			<groupId>net.imagej</groupId>
-			<artifactId>ij</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>3.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>bio-formats_plugins</artifactId>
-			<version>5.1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>Image_5D</artifactId>
-			<version>2.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>3D_Viewer</artifactId>
-			<version>4.0.1</version>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>java3d</groupId>
-			<artifactId>j3d-core</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>java3d</groupId>
-			<artifactId>j3d-core-utils</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>java3d</groupId>
-			<artifactId>vecmath</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		-->
-
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>imagescience</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>imageware</artifactId>
-			<version>2.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.htmlparser.jericho</groupId>
-			<artifactId>jericho-html</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20151123</version>
-		</dependency>
-        <dependency>
-            <groupId>org.scijava</groupId>
-            <artifactId>j3dcore</artifactId>
-            <version>1.6.0-scijava-2</version>
-        </dependency>
-                <!--dependency>
-			<groupId>com.github.mcib3d</groupId>
-			<artifactId>mcib3d-core</artifactId>
-			<version>RELEASE</version>
-		</dependency-->
-		<!--
-	  FIXME We are depedent on mcib3d and bandpass filter, but
-			there is no Maven repositories for them. So we use this temporary
-			very ugly workaround, until that happens.
-		-->
-		<!--dependency>
-			<groupId>mcib3d</groupId>
-			<artifactId>mcib3d</artifactId>
-			<version>20151214</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/mcib3d-core-20151214144913.jar</systemPath>
-		</dependency-->
-		<dependency>
-			<groupId>com.github.mcib3d</groupId>
-			<artifactId>mcib3d-core</artifactId>
-			<version>3.8.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.ebmoll</groupId>
-			<artifactId>lipid-droplet-counter</artifactId>
-			<version>master</version>
-		</dependency>
+            <dependency>
+                <groupId>net.imagej</groupId>
+                <artifactId>ij</artifactId>
+                <version>RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>3.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>ome</groupId>
+                <artifactId>bio-formats_plugins</artifactId>
+                <version>5.1.10</version>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>Image_5D</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>3D_Viewer</artifactId>
+                <version>4.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>imagescience</artifactId>
+                <version>RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>imageware</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.htmlparser.jericho</groupId>
+                <artifactId>jericho-html</artifactId>
+                <version>RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>20151123</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scijava</groupId>
+                <artifactId>j3dcore</artifactId>
+                <version>1.6.0-scijava-2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mcib3d</groupId>
+                <artifactId>mcib3d-core</artifactId>
+                <version>3.8.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ebmoll</groupId>
+                <artifactId>lipid-droplet-counter</artifactId>
+                <version>master-v1.0.0-gcb6b613-1</version>
+            </dependency>
 	</dependencies>
 
 	<repositories>

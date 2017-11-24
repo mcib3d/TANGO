@@ -14,6 +14,7 @@ import tango.parameter.ChoiceParameter;
 import tango.parameter.IntParameter;
 import tango.parameter.Parameter;
 import tango.parameter.StructureParameter;
+import static tango.util.Utils.getObjects3D;
 
 /**
  *
@@ -57,7 +58,7 @@ public class NumberKeepBest implements PostFilter {
     }
 
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt in, InputImages images) {
-        Object3D[] objects = in.getObjects3D();
+        Object3D[] objects = getObjects3D(in);
         int nbObj = objects.length;
         int nb = nbParam.getIntValue(0);
         if (debug) {

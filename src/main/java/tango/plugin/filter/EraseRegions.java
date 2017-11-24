@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.AutoThresholder;
 import mcib3d.geom.Object3D;
+import mcib3d.geom.Object3DFactory;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.*;
@@ -12,6 +13,7 @@ import tango.parameter.*;
 import tango.plugin.TangoPlugin;
 import tango.plugin.thresholder.AutoThreshold;
 import tango.plugin.thresholder.Thresholder;
+import static tango.util.Utils.getObjects3D;
 
 /**
  *
@@ -92,8 +94,10 @@ public class EraseRegions implements PostFilter {
     }
     
     protected void eraseRegions(ImageInt input, ImageHandler intensityMap, ImageHandler intensityMap2, InputImages images, boolean uniformBackground, boolean useOriginalMap) {
-        Object3D[] objects   = input.getObjects3D();
+        if (debug) input.showDuplicate("erase region input image");
+        Object3D[] objects=getObjects3D(input);
         double[] values = getObjectValues(objects, intensityMap, intensityMap2);
+        if (debug) ij.IJ.log("Erase regions number of objects: "+values.length);
         ImageHandler map;
         if (intensityMap2!=null) useOriginalMap=false;
         if (useOriginalMap || !uniformBackground) map = intensityMap.duplicate();
@@ -118,9 +122,8 @@ public class EraseRegions implements PostFilter {
         double threshold = thresholder.getThreshold(map, images, nbCPUs, debug);
         eraseRegions(input, threshold, values, objects);
         if (debug) {
-            ij.IJ.log("global thld: "+threshold);
+            ij.IJ.log("Erase regions: global thld: "+threshold);
             map.showDuplicate("intensityFilter map");
-            intensityMap.showDuplicate("input intensities map");
         }
     }
     
@@ -144,15 +147,21 @@ public class EraseRegions implements PostFilter {
         double q = quantile.getValue();
         double[] res = new double[objects.length];
         int c = choice.getSelectedIndex();
-        
+        if (debug) {
+            ij.IJ.log("object type: "+objects[0].getClass().getSimpleName());
+            ij.IJ.log("image offset: x:"+intensityMap.offsetX+" y:"+intensityMap.offsetY+" z:"+intensityMap.offsetZ);
+            ij.IJ.log("object offset: x:"+objects[0].getBoundingBox()[0]+"-"+objects[0].getBoundingBox()[1]+" y:"+objects[0].getBoundingBox()[2]+"-"+objects[0].getBoundingBox()[3]+" z:"+objects[0].getBoundingBox()[4]+"-"+objects[0].getBoundingBox()[5]);
+        }
         for (int i = 0; i<objects.length; i++) {
-            if (c==0) {
+            if (false && c==1) {
                 res[i]=objects[i].getQuantilePixValue(intensityMap, q);
                 if (intensityMap2!=null) res[i]*=objects[i].getQuantilePixValue(intensityMap2, q);
             }
-            else if (c==1) {
-                res[i]=objects[i].getPixMeanValue(intensityMap);
-                if (intensityMap2!=null) res[i]*=objects[i].getPixMeanValue(intensityMap2);
+            else if (c==0) {
+                for (Voxel3D v : objects[i].getVoxels()) res[i]+=intensityMap.getPixel((int)v.x, (int)v.y, (int)v.z);
+                res[i]/=objects[i].getVoxels().size();
+                //res[i]=objects[i].getPixMeanValue(intensityMap);
+                //if (intensityMap2!=null) res[i]*=objects[i].getPixMeanValue(intensityMap2);
             }
         }
         return res;
@@ -160,7 +169,7 @@ public class EraseRegions implements PostFilter {
     
     public void eraseRegionsQuantile(double quantile, ImageInt input, ImageHandler intensityMap, ImageHandler intensityMap2, InputImages images, boolean uniformBackground, boolean useOriginalMap) {
         this.setQuantileValue(quantile);
-        this.choice.getChoice().setSelectedIndex(0);
+        this.choice.getChoice().setSelectedIndex(1);
         eraseRegions(input, intensityMap, intensityMap2, images, uniformBackground, useOriginalMap);
     }
     

@@ -11,6 +11,7 @@ import tango.parameter.BooleanParameter;
 import tango.parameter.ConditionalParameter;
 import tango.parameter.IntParameter;
 import tango.parameter.Parameter;
+import static tango.util.Utils.getObjects3D;
 
 /**
  *
@@ -56,7 +57,7 @@ public class NumberFilter implements PostFilter {
 
     @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt in, InputImages images) {
-        Object3D[] objects = in.getObjects3D();
+        Object3D[] objects = getObjects3D(in);
         int nb = objects.length;
         int min = nbMin.getIntValue(1);
         int max = Integer.MAX_VALUE;

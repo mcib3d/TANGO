@@ -60,7 +60,11 @@ public class NucleusEdgeDetector implements NucleusSegmenter {
         // step 1 : global threshold
         double thld = thresholderGlobal.getThreshold(input, rawImages, nbCPUs, debug);
         ImageInt labelMap = HysteresisSegmenter.run(input, null, thld, thld, true, debug);
-        if (debug) labelMap.showDuplicate("Labelled image");
+        if (debug) {
+            input.showDuplicate("NED: input image");
+            System.out.println("NED: thld:" + thld);
+            labelMap.showDuplicate("Labelled image");
+        }
         // step 2: local adjustment to gradient
         TreeMap<Integer, int[]> bounds = labelMap.getBounds(false);
         ArrayList<Integer> labels = new ArrayList<Integer>(bounds.keySet());
@@ -83,11 +87,12 @@ public class NucleusEdgeDetector implements NucleusSegmenter {
             if (debug) System.out.println("NED: label:" + label + " volume:" + ici.getVolume());
             if (ici.getVolume() < minSize) continue;
             if (debug) System.out.println("NED: watershed transform...");
-            WatershedTransform3D ws = new WatershedTransform3D(nbCPUs, debug);
+            WatershedTransform3D ws = new WatershedTransform3D(nbCPUs, debug&&!verboseDone);
             ws.setDynamics(false, false, 0, false, 0, false, 0);
             ImageHandler in = ici.getFilteredImage(currentStructureIdx);
-
-            ImageInt segImage = ws.runWatershed(in, ImageFeaturesCore.getGradient(in, scale, nbCPUs), croppedMask);
+            ImageHandler grad = ImageFeaturesCore.getGradient(in, scale, nbCPUs);
+            if (debug&&!verboseDone) grad.showDuplicate("NED: ws map image");
+            ImageInt segImage = ws.runWatershed(in, grad, croppedMask);
             segImage.setScale(croppedMask);
             segImage.setOffset(croppedMask);
             if (debug) System.out.println("NED: erase regions...");
@@ -100,7 +105,7 @@ public class NucleusEdgeDetector implements NucleusSegmenter {
 
             MergeRegions.mergeAllConnected(segImage, debug && !verboseDone);
             postFilteredImages.add(segImage);
-            //if (debug) verboseDone=true;
+            if (debug) verboseDone=true;
         }
         // step 3 : merge nuclei
         if (debug) System.out.println("NED: merging nuclei... nb of nuclei:" + postFilteredImages.size());

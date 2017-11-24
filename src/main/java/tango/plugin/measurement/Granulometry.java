@@ -12,6 +12,7 @@ import tango.dataStructure.InputCellImages;
 import tango.dataStructure.SegmentedCellImages;
 import tango.dataStructure.StructureQuantifications;
 import tango.parameter.*;
+import static tango.util.Utils.getObjects3D;
 
 /**
  *
@@ -89,7 +90,7 @@ public class Granulometry implements MeasurementStructure {
         //ImageHandler temp = ImageHandler.newBlankImageHandler("temp", input);
         //ImageHandler open = ImageHandler.newBlankImageHandler("open", input);
         ImageHandler current = input;
-        Object3DVoxels maskObject = mask.getObjects3D()[0];
+        Object3DVoxels maskObject = getObjects3D(mask)[0];
         double[] qts = new double[quantiles.getNbParameters()];
         int idx = 0;
         for (Parameter p : quantiles.getParameters()) {

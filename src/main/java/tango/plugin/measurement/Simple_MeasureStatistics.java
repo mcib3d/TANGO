@@ -15,6 +15,7 @@ import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
 import tango.parameter.*;
+import static tango.util.Utils.getObjects3D;
 
 /*
  * To change this template, choose Tools | Templates and open the template in
@@ -142,7 +143,7 @@ public class Simple_MeasureStatistics implements PlugInFilter, MeasurementObject
         if (outside.isSelected() && channel1.getIndex()!=0) {
             ImageInt structure = seg.getImage(channel1.getIndex());
             ImageInt mask = structure.invertMask(raw.getMask());
-            os = mask.getObjects3D();
+            os = getObjects3D(mask);
         } else {
             os = seg.getObjects(channel1.getIndex());
         }

@@ -10,6 +10,8 @@ import tango.plugin.measurement.MeasurementObject;
 import tango.plugin.measurement.Measurement;
 import tango.plugin.measurement.MeasurementStructure;
 import ij.IJ;
+import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import tango.gui.Core;
 import tango.plugin.measurement.MeasurementObject2Object;
@@ -135,7 +137,27 @@ public class PluginFactory {
         }
         return complete;
     }
+    
+    /*public static void findPackagePlugins(String packageName) {
+        try {
+            for (Class c : getClasses(packageName)) {
+                //Class<?> clazz = Class.forName(c);
+                if (Plugin.class.isAssignableFrom(c) && !Modifier.isAbstract( c.getModifiers() )) { // ne check pas l'heritage indirect!!
+                    if (!plugins.containsKey(c.getSimpleName())) plugins.put(c.getSimpleName(), c);
+                    else {
+                        Class otherC = plugins.get(c.getSimpleName());
+                        //if (!otherC.equals(c)) logger.warn("Duplicate class name: {} & {}", otherC.getName(), c.getName());
+                    }
+                    //logger.debug("plugin found: "+c.getCanonicalName()+ " simple name:"+c.getSimpleName());
+                } //else logger.trace("class is not a plugin: "+c.getCanonicalName()+ " simple name:"+c.getSimpleName());
+            }
+        } catch (ClassNotFoundException ex) {
 
+        } catch (IOException ex) {
+
+        }
+    }*/
+    
     public static void findPlugins() {
         try {
             if (Core.GUIMode) {

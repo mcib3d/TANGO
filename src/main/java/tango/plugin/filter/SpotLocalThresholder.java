@@ -22,6 +22,7 @@ import tango.parameter.Parameter;
 import tango.parameter.SliderDoubleParameter;
 import tango.parameter.StructureParameter;
 import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
+import static tango.util.Utils.getObjects3D;
 /**
  *
  **
@@ -122,7 +123,7 @@ public abstract class SpotLocalThresholder {
         limY=segMap.sizeY-1;
         limZ=segMap.sizeZ-1;
         sizeX=segMap.sizeX;
-        spots=segMap.getObjects3D();
+        spots=getObjects3D(segMap);
         shiftIndexes();
         currentLabel=spots.length+1;
         globalMin = intensityMap.getMin(mask);
@@ -156,9 +157,13 @@ public abstract class SpotLocalThresholder {
             }
         }
         if (count!=0) globalMean/=count;
-        if (debug) ij.IJ.log("Local Fit: global mean thld: "+globalMean);
+        if (debug) {
+            System.out.println("Local Fit: global mean thld: "+globalMean+ " (rescue:"+rescueSpots+")");
+            ij.IJ.log("Local Fit: global mean thld: "+globalMean);
+        }
         //local threshold
-        //if (debug) segMap.showDuplicate("before local threshold");
+        if (debug) segMap.showDuplicate("before local threshold");
+        //if (true) return;
         for (int i = 0; i<thlds.length; i++) localThreshold((Object3DVoxels)spots[i], (float)adjustThld(thlds[i]), rescueSpots);
         //if (debug) segMap.showDuplicate("after local threshold");
         if (rescueSpots) {
@@ -225,7 +230,10 @@ public abstract class SpotLocalThresholder {
         TreeSet<Vox3D> heap = new TreeSet<Vox3D>();
         Vox3D seed = getSeed(spot);
         //Vox3D seed = getLocalExtremum(spot); // dans le cas de 2 spots très proches, avec 2 extremas hessien mais un seul en intensite -> fonctionne mal si la seg depend du hessien
-        if (debug) ij.IJ.log("Local Threshold: spot:"+spot.getValue()+ " thld:"+thld+ " max:"+seed.toString());
+        if (debug) {
+            System.out.println("Local Threshold: spot:"+spot.getValue()+ " thld:"+thld+ " max:"+seed.toString());
+            ij.IJ.log("Local Threshold: spot:"+spot.getValue()+ " thld:"+thld+ " max:"+seed.toString());
+        }
         heap.add(seed);
         //HashSet<Vox3D> newVox = new HashSet<Vox3D>(spot.getVoxels().size());
         //newVox.add(seed);
@@ -233,9 +241,8 @@ public abstract class SpotLocalThresholder {
         int negLabel = Short.MAX_VALUE-1;
         for (Voxel3D v : spot.getVoxels()) segMap.setPixel(v.getRoundX(), v.getRoundY(), v.getRoundZ(), negLabel);
         seed.setLabel(label);
-        
         while (!heap.isEmpty()) {
-            Vox3D v = heap.first();
+            Vox3D v = heap.pollFirst();
             int x = v.xy%segMap.sizeX;
             int y = v.xy/segMap.sizeX;
             if (x<limX && segMap.getPixelInt(v.xy+1, v.z)==negLabel && intensityMap.getPixel(v.xy+1, v.z)>=thld) {
@@ -270,11 +277,14 @@ public abstract class SpotLocalThresholder {
             }
         }
         ArrayList<Voxel3D> voxels = spot.getVoxels();
-        ArrayList<Voxel3D> newVoxels = new ArrayList<Voxel3D>();
+        ArrayList<Voxel3D> newVoxels = new ArrayList<>();
         for (Voxel3D v : voxels) {
             int xy = v.getRoundX() + v.getRoundY()*sizeX;
             if (segMap.getPixelInt(xy, v.getRoundZ())==negLabel) segMap.setPixel(xy, v.getRoundZ(), 0);
             else if (segMap.getPixelInt(xy, v.getRoundZ())==label) newVoxels.add(v);
+        }
+        if (debug) {
+            System.out.println("Local Threshold: spot:"+spot.getValue()+ " newVoxels:"+newVoxels.size()+ " oldVoxels:"+voxels.size());
         }
         spot.setVoxels(newVoxels);
         if (rescue) {

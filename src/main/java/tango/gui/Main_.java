@@ -1,7 +1,9 @@
 package tango.gui;
 
 import ij.IJ;
+import ij.ImageJ;
 import ij.plugin.PlugIn;
+import java.io.File;
 import mcib3d.utils.AboutMCIB;
 import tango.plugin.PluginFactory;
 
@@ -38,7 +40,13 @@ public class Main_ implements PlugIn {
     public Main_() {
 
     }
-
+    public static void main(String[] args) {
+        // workaround to get the internal plugins of tango loaded by ImageJ's class loader
+        File jarDir = new File(ClassLoader.getSystemClassLoader().getResource(".").getPath());
+        System.setProperty("plugins.dir", jarDir.getParent() );
+        new ImageJ();
+        new Main_().run("");
+    }
     public void run(String arg) {
 
         String req = "1.47m";

@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
+import mcib3d.geom.Object3D;
+import mcib3d.geom.Object3DFactory;
+import mcib3d.geom.Object3DVoxels;
+import mcib3d.image3d.ImageInt;
 
 /**
  *
@@ -36,7 +40,14 @@ import javax.swing.*;
  */
 public class Utils {
     static Pattern p = Pattern.compile("[^a-z0-9_-]", Pattern.CASE_INSENSITIVE);
-    
+    public static Object3DVoxels[] getObjects3D(ImageInt im) {
+        try {
+            Object3DFactory oc = new Object3DFactory(im);
+            return oc.getObjects(false);
+        } catch (Exception e) { 
+            return null;
+        }
+    }
     public static Color compareColor(Color oldC, Color newC) {
         if (oldC==null) oldC=Color.black;
         if (newC==Color.red) oldC=newC;

@@ -12,6 +12,7 @@ import tango.dataStructure.SegmentedCellImages;
 import tango.gui.Core;
 import tango.parameter.*;
 import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
+import static tango.util.Utils.getObjects3D;
 
 /*
  * To change this template, choose Tools | Templates and open the template in
@@ -159,7 +160,7 @@ public class CellCycleMeasurements implements MeasurementObject {
                 double rad = this.radErodeNuc.getDoubleValue(defRadErodeNuc) * mask.getScaleXY();
                 ImageByte erodedMask = mask.erode((float)rad, nCPUs);
                 if (verbose) erodedMask.show("Eroded Mask: "+this.radErodeNuc.getDoubleValue(defRadErodeNuc));
-                Object3DVoxels[] obj = erodedMask.getObjects3D();
+                Object3DVoxels[] obj = getObjects3D(erodedMask);
                 if (obj.length>=1) {
                     nuc=obj[0];
                     mask = erodedMask;
@@ -193,8 +194,8 @@ public class CellCycleMeasurements implements MeasurementObject {
                     maskNL.show("Nucleloi mask");
                     maskOutsideNL.show("Outside nucleoli mask");
                 }
-                Object3DVoxels[] nlsAr=maskNL.getObjects3D();
-                Object3DVoxels[] onlsAr=maskOutsideNL.getObjects3D();
+                Object3DVoxels[] nlsAr=getObjects3D(maskNL);
+                Object3DVoxels[] onlsAr=getObjects3D(maskOutsideNL);
                 if (nlsAr.length==1 && onlsAr.length==1) {
                     Object3DVoxels nls=nlsAr[0];
                     Object3DVoxels onls=onlsAr[0];

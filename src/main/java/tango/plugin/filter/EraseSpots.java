@@ -18,6 +18,7 @@ import tango.plugin.thresholder.AutoThreshold;
 import tango.plugin.thresholder.Thresholder;
 import tango.util.ImageUtils;
 import tango.util.SpearmanPairWiseCorrelationTest;
+import static tango.util.Utils.getObjects3D;
 
 /**
  *
@@ -98,7 +99,7 @@ public class EraseSpots implements PostFilter {
         ImageHandler intensityMap = preFilters.runPreFilterSequence(currentStructureIdx, input, images, nbCPUs, debug);
         if (debug) intensityMap.showDuplicate("erase spot input image");
         ArrayList<Parameter[]> alCrit = criteria.getParametersArrayList();
-        Object3DVoxels[] objectsArray = in.getObjects3D();
+        Object3DVoxels[] objectsArray = getObjects3D(in);
         ArrayList<Object3DVoxels> objects = new ArrayList<Object3DVoxels>(Arrays.asList(objectsArray));
         boolean isDistanceToPeripherySet=false;
         for (Parameter[] p : alCrit) {
@@ -204,10 +205,10 @@ public class EraseSpots implements PostFilter {
                 bcg = in.getObject3DBackground(mask);
             }
         } else if (dilate==0) bcg = in.getObject3DBackground(mask);
-        else bcg=mask.getObjects3D()[0];
+        else bcg=getObjects3D(mask)[0];
         if (bcg.getVolumePixels()==0) {
             ij.IJ.log("eraseSpots error: no background");
-            bcg=mask.getObjects3D()[0];
+            bcg=getObjects3D(mask)[0];
         }
         double sigma = bcg.getPixStdDevValue(intensity);
         double mean = bcg.getPixMeanValue(intensity);

@@ -12,6 +12,7 @@ import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
 import tango.parameter.*;
+import static tango.util.Utils.getObjects3D;
 
 /*
  * To change this template, choose Tools | Templates and open the template in
@@ -268,7 +269,7 @@ public class Simple_MeasureGeometrical implements PlugInFilter, MeasurementObjec
             Object3D[] os2D = new Object3D[os.length];
             for (int i = 0; i < os.length; i++) {
                 ImageInt proj = os[i].createSegImageMini2D(os[i].getValue(), 1);
-                os2D[i] = proj.getObjects3D()[0];
+                os2D[i] = getObjects3D(proj)[0];
             }
             if (k_XYEllMax.isSelected() || k_XYEllMin.isSelected()) {
                 double[] valuesMax = new double[os.length];

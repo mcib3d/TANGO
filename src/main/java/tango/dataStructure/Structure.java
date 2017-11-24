@@ -13,6 +13,7 @@ import tango.mongo.MongoConnector;
 import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.filter.PreFilterSequence;
 import tango.plugin.segmenter.SpotSegmenterRunner;
+import static tango.util.Utils.getObjects3D;
 
 /**
  * *
@@ -72,7 +73,7 @@ public class Structure extends AbstractStructure {
                 //ImageFloat pm = cell.segImages.getProbabilityMap(idx);
                 //if (pm != null) cell.segImages.setObjects(S.getObjects3D(pm, 0.5f), idx);
                 //else
-                cell.segImages.setObjects(S.getObjects3D(), idx);
+                cell.segImages.setObjects(getObjects3D(S), idx);
                 return;
             } catch (Exception e) {
                 exceptionPrinter.print(e, "", Core.GUIMode);

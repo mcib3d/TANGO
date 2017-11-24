@@ -15,6 +15,7 @@ import tango.parameter.ConditionalParameter;
 import tango.parameter.DoubleParameter;
 import tango.parameter.IntParameter;
 import tango.parameter.Parameter;
+import static tango.util.Utils.getObjects3D;
 
 /**
  *
@@ -97,7 +98,7 @@ public class SizeFilter implements PostFilter {
 
     @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt in, InputImages images) {
-        Object3D[] objects = in.getObjects3D();
+        Object3D[] objects = getObjects3D(in);
         edgeXY = edgeSurf_PXY.getIntValue(1);
         if (edgeXY < 1) {
             edgeXY = 1;

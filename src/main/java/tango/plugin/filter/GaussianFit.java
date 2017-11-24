@@ -119,6 +119,7 @@ public class GaussianFit extends SpotLocalThresholder {
         }
         double thld = CurveFitter.f(CurveFitter.GAUSSIAN, params, GAUSS_PC * params[3]);
         if (debug) {
+            System.out.println("local thld : spot:" + s.getValue() + " thld:" + thld);
             ij.IJ.log("local thld : spot:" + s.getValue() + " thld:" + thld);
         }
         return thld;

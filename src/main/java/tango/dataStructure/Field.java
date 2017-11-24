@@ -30,6 +30,7 @@ import java.awt.*;
 import java.awt.image.ColorModel;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import tango.util.Utils;
 
 /**
  * *
@@ -512,7 +513,7 @@ public class Field implements ObjectStructure, StructureContainer {
     }
 
     public void createObjects() {
-        objects = getSegmented().getObjects3D();
+        objects = Utils.getObjects3D(getSegmented());
     }
 
     public ImageInt getSegmented() {

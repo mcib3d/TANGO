@@ -120,7 +120,7 @@ public class SystemMethods {
     
     public static boolean executeInteractiveCommandInDirectory(File directory, String command){
         ArrayList<String> commandArgs = new ArrayList<String>();
-        if (directory==null) IJ.log("warning: execute command: null file");
+        if (directory==null) IJ.log("warning: execute command: mongo not configured ? try running configure>\"Configure Database module\" command");
         commandArgs.add(directory.getAbsolutePath());
         if(IJ.isWindows()) commandArgs.add("\""+command+"\"");
         else commandArgs.add(command);

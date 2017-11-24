@@ -16,6 +16,7 @@ import tango.gui.Core;
 import tango.parameter.*;
 import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
 import tango.plugin.filter.LaplacianOfGaussian3D;
+import static tango.util.Utils.getObjects3D;
 
 /*
  * To change this template, choose Tools | Templates and open the template in
@@ -285,7 +286,7 @@ public class TestFeatures implements MeasurementObject {
         if (doErodeNuc.getSelectedIndex()==1) { // constant radius
             float erodeRad = radErodeNuc.getFloatValue(3) * (float)raw.getMask().getScaleXY();
             mask = raw.getMask().erode(erodeRad, nCPUs);
-            Object3DVoxels[]  os = mask.getObjects3D();
+            Object3DVoxels[]  os = getObjects3D(mask);
             if (verbose) {
                 mask.showDuplicate("Eroded Mask: rad::"+erodeRad);
                 IJ.log("nb objects:"+os.length);
