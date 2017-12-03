@@ -2,16 +2,17 @@
 package tango.util;
 
 import ij.IJ;
-import java.awt.Color;
+import mcib3d.geom.Object3DVoxels;
+import mcib3d.image3d.ImageInt;
+import mcib3d.image3d.ImageLabeller;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.*;
-import mcib3d.geom.Object3D;
-import mcib3d.geom.Object3DFactory;
-import mcib3d.geom.Object3DVoxels;
-import mcib3d.image3d.ImageInt;
 
 /**
  *
@@ -42,8 +43,13 @@ public class Utils {
     static Pattern p = Pattern.compile("[^a-z0-9_-]", Pattern.CASE_INSENSITIVE);
     public static Object3DVoxels[] getObjects3D(ImageInt im) {
         try {
-            Object3DFactory oc = new Object3DFactory(im);
-            return oc.getObjects(false);
+            //Object3DFactory oc = new Object3DFactory(im);
+            //return oc.getObjects(false);
+            ImageLabeller imageLabeller=new ImageLabeller();
+            ArrayList<Object3DVoxels> object3DVoxels=imageLabeller.getObjects(im);
+            Object3DVoxels[] voxels=new Object3DVoxels[object3DVoxels.size()];
+            voxels= object3DVoxels.toArray(voxels);
+            return voxels;
         } catch (Exception e) { 
             return null;
         }
