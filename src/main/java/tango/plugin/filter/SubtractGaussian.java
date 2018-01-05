@@ -1,8 +1,6 @@
 package tango.plugin.filter;
 
-import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
 import tango.parameter.BooleanParameter;
 import tango.parameter.ConditionalParameter;
@@ -58,7 +56,7 @@ public class SubtractGaussian implements PreFilter {
         else voisz=voisZ_P.getDoubleValue(voisz);
         ImageHandler bck = getBackground(input);
         if (debug) bck.show("Subtract Gaussian:: background. SmoothXY:"+voisx+" SmooothZ:"+voisz);
-        return input.substractImage(bck);
+        return input.subtractImage(bck);
     }
     
     private ImageHandler getBackground(ImageHandler input) {

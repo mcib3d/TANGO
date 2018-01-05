@@ -2,7 +2,6 @@ package tango.plugin.filter;
 
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
 import tango.parameter.BooleanParameter;
 import tango.parameter.ConditionalParameter;
@@ -74,7 +73,7 @@ public class DifferenceOfGaussians implements PreFilter {
             gaussSmall.show("Subtract Gaussian:: SmoothXY:"+voisx1+" SmooothZ:"+voisz1);
             gaussLarge.show("Subtract Gaussian:: SmoothXY:"+voisx2+" SmooothZ:"+voisz2);
         }
-        return gaussSmall.substractImage(gaussLarge);
+        return gaussSmall.subtractImage(gaussLarge);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package tango.plugin.measurement;
 
 import ij.IJ;
-import java.util.ArrayList;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
@@ -16,6 +15,9 @@ import tango.gui.Core;
 import tango.parameter.*;
 import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
 import tango.plugin.filter.LaplacianOfGaussian3D;
+
+import java.util.ArrayList;
+
 import static tango.util.Utils.getObjects3D;
 
 /*
@@ -337,7 +339,7 @@ public class TestFeatures implements MeasurementObject {
                     if (isOneKeySelected(DOG, idx)) {
                         ImageFloat gaussSmall = ImageFeaturesCore.gaussianSmooth(rawSignal, s, s*Zfactor, nCPUs);
                         ImageFloat gaussLarge = ImageFeaturesCore.gaussianSmooth(rawSignal, l, l*Zfactor, nCPUs);
-                        filteredImages[idx] = gaussSmall.substractImage(gaussLarge);
+                        filteredImages[idx] = gaussSmall.subtractImage(gaussLarge);
                     }
                     idx++;
                 }

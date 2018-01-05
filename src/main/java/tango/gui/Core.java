@@ -1,20 +1,10 @@
 package tango.gui;
-import tango.gui.util.Displayer;
-import mcib3d.utils.exceptionPrinter;
+
 import ij.IJ;
 import ij.WindowManager;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.Experiment;
+import tango.gui.util.Displayer;
 import tango.gui.util.VerticalTextIcon;
 import tango.helper.Helper;
 import tango.mongo.MongoConnector;
@@ -22,6 +12,14 @@ import tango.parameter.SettingsParameter;
 import tango.plugin.PluginFactory;
 import tango.util.ImageUtils;
 import tango.util.Progressor;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 /**
  *
  **
@@ -49,7 +47,7 @@ import tango.util.Progressor;
  */
 public class Core extends JFrame implements Displayer {
     public static boolean SPATIALSTATS=true;
-    public static double VERSION  = 0.96;
+    public static double VERSION = 0.97;
     public static boolean TESTING=false;
     public static boolean ANALYSIS = false;
     public static boolean MONGODB = true;
@@ -377,7 +375,7 @@ public class Core extends JFrame implements Displayer {
     public void close() {
         if (mongoConnector!=null) mongoConnector.close();
         if (helper!=null) Core.helper.close();
-        if (this.progressor!=null) {
+        if (progressor != null) {
             progressor.dispose();
             progressor=null;
         }

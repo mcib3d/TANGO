@@ -1,17 +1,9 @@
 package tango.dataStructure;
+
+import mcib3d.geom.Object3DVoxels;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageInt;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import mcib3d.utils.exceptionPrinter;
-import org.bson.types.ObjectId;
-import java.io.*;
-import mcib3d.geom.*;
-import mcib3d.image3d.*;
-import ij.*;
-import ij.gui.ImageWindow;
-import java.util.ArrayList;
 import tango.gui.Core;
 import tango.mongo.MongoConnector;
 /**
@@ -72,7 +64,7 @@ public class Nucleus extends AbstractStructure {
     public void createObjects() {
         try {
             ImageInt S = cell.segImages.getImage(idx);
-            Object3DVoxels nucleus = new Object3DVoxels(S.getImagePlus(), (int)S.getMax(null));
+            Object3DVoxels nucleus = new Object3DVoxels(S, (int) S.getMax(null));
             nucleus.setValue(1);
             cell.segImages.setObjects(new Object3DVoxels[]{nucleus}, idx); 
         } catch (Exception e) {

@@ -1,18 +1,15 @@
 package tango.plugin.filter;
 
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.AutoThresholder;
 import mcib3d.geom.Object3D;
-import mcib3d.geom.Object3DFactory;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
-import mcib3d.image3d.*;
+import mcib3d.image3d.ImageFloat;
+import mcib3d.image3d.ImageHandler;
+import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
 import tango.parameter.*;
 import tango.plugin.TangoPlugin;
-import tango.plugin.thresholder.AutoThreshold;
-import tango.plugin.thresholder.Thresholder;
+
 import static tango.util.Utils.getObjects3D;
 
 /**
