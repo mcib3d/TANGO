@@ -1,21 +1,12 @@
 package tango.plugin.segmenter;
 
 import ij.IJ;
-import java.util.*;
-import mcib3d.geom.Object3DVoxels;
-import mcib3d.geom.Voxel3D;
-import mcib3d.image3d.*;
-import mcib3d.utils.ThreadRunner;
-import mcib3d.utils.exceptionPrinter;
-import tango.dataStructure.InputCellImages;
+import mcib3d.image3d.ImageFloat;
+import mcib3d.image3d.ImageHandler;
+import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
-import tango.gui.Core;
 import tango.parameter.*;
 import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
-import tango.plugin.filter.GaussianFit;
-import tango.plugin.filter.Structure;
-import tango.plugin.segmenter.SpotSegmenter;
-import tango.util.ImageUtils;
 
 /**
  *

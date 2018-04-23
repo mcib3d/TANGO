@@ -6,7 +6,6 @@
 package tango.util;
 
 import com.mongodb.BasicDBObject;
-import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -70,7 +69,7 @@ public class ProcessingChainsToText {
             return "";
         }
         String res = "";
-        for (String key : (Set<String>)js.keySet()) {
+        for (String key : js.keySet()) {
             Object O = js.get(key);
             if (O instanceof JSONObject) {
                 res = res.concat(key + "\n");

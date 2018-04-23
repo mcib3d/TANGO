@@ -4,19 +4,10 @@
  */
 package tango.plugin.filter;
 
-import ij.IJ;
-import java.util.HashMap;
-import java.util.TreeMap;
-import mcib3d.geom.Object3D;
-import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageInt;
-import tango.dataStructure.InputCellImages;
-import tango.dataStructure.InputImages;
-import tango.parameter.BooleanParameter;
-import tango.parameter.ConditionalParameter;
-import tango.parameter.IntParameter;
-import tango.parameter.Parameter;
 import mcib3d.image3d.ImageLabeller;
+import tango.dataStructure.InputImages;
+import tango.parameter.Parameter;
 
 /**
  *
@@ -75,6 +66,6 @@ public class ReLabel implements PostFilter {
 
     @Override
     public String getHelp() {
-        return "Re-label image. 6-connected labelling";
+        return "Re-label image.";
     }
 }
