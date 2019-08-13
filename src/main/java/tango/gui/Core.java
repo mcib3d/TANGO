@@ -20,40 +20,40 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+
 /**
- *
- **
+ * *
  * /**
  * Copyright (C) 2012 Jean Ollion
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * This file is part of tango
- *
+ * <p>
  * tango is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @author Jean Ollion
  */
 public class Core extends JFrame implements Displayer {
-    public static boolean SPATIALSTATS=true;
-    public static double VERSION = 0.97;
-    public static boolean TESTING=false;
+    public static boolean SPATIALSTATS = true;
+    public static double VERSION = 0.99;
+    public static boolean TESTING = false;
     public static boolean ANALYSIS = false;
     public static boolean MONGODB = true;
     public static boolean VIRTUALSTRUCTURES = false;
     private Component[] panels, processingPanels;
-    private JTabbedPane tabs,processingTabs;
+    public static boolean GUIMode = true;
     public static MongoConnector mongoConnector;
     private static Experiment experiment;
     //private static AnalysisCore analysis;
@@ -68,13 +68,14 @@ public class Core extends JFrame implements Displayer {
     private int selectedTab, selectedProcessingTab;
     private JScrollPane scroll;
     public static Dimension minSize = new Dimension(1024, 700);
-    public static boolean GUIMode=true;
-    public static boolean debug=false;
+    public static boolean debug = false;
+    private JTabbedPane tabs, processingTabs;
     private static Progressor progressor;
     protected static boolean experimentModifiedFromAnalyzer;
-    
+
+
     public Core() {
-        super("TANGO: Tools for Analysis of Nuclear Genome Organisation - Version: "+VERSION);
+        super("TANGO: Tools for Analysis of Nuclear Genome Organisation - Version: " + VERSION);
         setResizable(true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         toFront();
@@ -83,127 +84,127 @@ public class Core extends JFrame implements Displayer {
         experimentModifiedFromAnalyzer = true;
         if (GUIMode) ImageUtils.initIcons();
     }
-    
+
     public static boolean experimentModifiedFromAnalyzer() {
         return experimentModifiedFromAnalyzer;
     }
-    
+
     public static void setExperimentModifiedFromAnalyzer(boolean modified) {
-        experimentModifiedFromAnalyzer=modified;
+        experimentModifiedFromAnalyzer = modified;
     }
-    
+
     public static synchronized Progressor getProgressor() {
-        if (progressor==null) {
-            progressor=new Progressor();
+        if (progressor == null) {
+            progressor = new Progressor();
             progressor.setVisible(true);
             progressor.toFront();
         }
         return progressor;
     }
-    
+
     public static synchronized void killProgressor() {
-        if (progressor!=null) {
+        if (progressor != null) {
             progressor.dispose();
-            progressor=null;
+            progressor = null;
         }
     }
-    
-    public synchronized void toggleIsRunning (boolean isRunning) {
-        System.out.println("toggle is runing :"+isRunning);
-        if (this.xpEditor!=null) xpEditor.toggleIsRunning(isRunning);
-        if (this.connector!=null) connector.toggleIsRunning(isRunning);
-        if (cellManager!=null) cellManager.toggleIsRunning(isRunning);
-        if (fieldManager!=null) fieldManager.toggleIsRunning(isRunning);
-        if (!isRunning) killProgressor();
+
+    public static double getAvailableMemory() { // in Mb
+        return Runtime.getRuntime().freeMemory() / (1024 * 1024);
     }
-    
+
     public static int getMaxCPUs() {
         return Connector.maxThreads.getValue();
     }
-    
+
     public static int getMaxCellProcess() {
         return Connector.maxCellsProcess.getValue();
     }
-    
+
     public static int getMaxCellMeasurement() {
         return Connector.maxCellsMeasure.getValue();
     }
-    
-    public static double getAvailableMemory() { // in Mb
-        return Runtime.getRuntime().freeMemory()/(1024*1024);
-    }
-    
+
     public static double getMaxMemory() { // in Mb
-        return IJ.maxMemory() / (1024*1024);
+        return IJ.maxMemory() / (1024 * 1024);
     }
-    
+
+    public static MongoConnector getMongoConnector() {
+        if (mongoConnector == null) mongoConnector = new MongoConnector("localhost");
+        return mongoConnector;
+    }
+
+    public static void setXP(Experiment xp) {
+        Core.experiment = xp;
+        Core.experimentModifiedFromAnalyzer = true;
+    }
+
+    public synchronized void toggleIsRunning(boolean isRunning) {
+        System.out.println("toggle is runing :" + isRunning);
+        if (this.xpEditor != null) xpEditor.toggleIsRunning(isRunning);
+        if (this.connector != null) connector.toggleIsRunning(isRunning);
+        if (cellManager != null) cellManager.toggleIsRunning(isRunning);
+        if (fieldManager != null) fieldManager.toggleIsRunning(isRunning);
+        if (!isRunning) killProgressor();
+    }
+
+    public Connector getConnector() {
+        return connector;
+    }
+
+    public JScrollPane getScrollPane() {
+        return scroll;
+    }
+
+    public XPEditor getXPEditor() {
+        return xpEditor;
+    }
+
+    public ProcessingSequenceEditorTemplateNucleus getProcessingSequenceEditorNucleus() {
+        return nucleusTemplateEditor;
+    }
+
+    public ProcessingSequenceEditorTemplateStructure getProcessingSequenceEditorStructure() {
+        return structureTemplateEditor;
+    }
+
+    public ProcessingSequenceEditor getProcessingSequenceEditor() {
+        return this.processingChainEditor;
+    }
+
+    public FieldManager getFieldManager() {
+        return fieldManager;
+    }
+
+    public CellManager getCellManager() {
+        return cellManager;
+    }
+
     public void setRedirectSysOutToFile() {
         // TODO pas encore testée. utile en cas de crash
         String path = IJ.getDirectory("imagej");
-        File file  = new File(path+"/sysout.log");
+        File file = new File(path + "/sysout.log");
         try {
             file.createNewFile();
             PrintStream printStream = new PrintStream(new FileOutputStream(file));
             System.setOut(printStream);
-            System.out.println("Execution time: "+System.currentTimeMillis());
+            System.out.println("Execution time: " + System.currentTimeMillis());
         } catch (Exception e) {
             exceptionPrinter.print(e, "", Core.GUIMode);
         }
     }
-    
-    public static MongoConnector getMongoConnector(){
-        if(mongoConnector==null) mongoConnector = new MongoConnector("localhost");
-        return mongoConnector;
-    }
-    
-    public Connector getConnector() {
-        return connector;
-    }
-    
-    public JScrollPane getScrollPane() {
-        return scroll;
-    }
-    
-    public XPEditor getXPEditor() {
-        return xpEditor;
-    }
-    
-    public ProcessingSequenceEditorTemplateNucleus getProcessingSequenceEditorNucleus() {
-        return nucleusTemplateEditor;
-    }
-    
-    public ProcessingSequenceEditorTemplateStructure getProcessingSequenceEditorStructure() {
-        return structureTemplateEditor;
-    }
-    
-    public ProcessingSequenceEditor getProcessingSequenceEditor() {
-        return this.processingChainEditor;
-    }
-    
-    public FieldManager getFieldManager() {
-        return fieldManager;
-    }
-    
-    public CellManager getCellManager() {
-        return cellManager;
-    }
-    
+
     public void setExperiment(Experiment xp) {
         System.out.println("Set XP!!");
-        Core.experiment=xp;
-        Core.experimentModifiedFromAnalyzer=true;
-        processingChainEditor=new ProcessingSequenceEditor(this);
+        Core.experiment = xp;
+        Core.experimentModifiedFromAnalyzer = true;
+        processingChainEditor = new ProcessingSequenceEditor(this);
         processingPanels[0] = processingChainEditor.getPanel();
         processingTabs.setSelectedIndex(0);
         this.selectProcessingTab(0);
-        if (fieldManager!=null) fieldManager.setXP(xp);
-    } 
-    
-    public static void setXP(Experiment xp) {
-        Core.experiment=xp;
-        Core.experimentModifiedFromAnalyzer=true;
+        if (fieldManager != null) fieldManager.setXP(xp);
     }
-    
+
     public static Experiment getExperiment() {
         return Core.experiment;
     }
@@ -219,8 +220,8 @@ public class Core extends JFrame implements Displayer {
         initPanel();
         IJ.showStatus("TANGO: adding tabs ...");
         scroll = new JScrollPane(tabs, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        Dimension scrollSize = new Dimension(minSize.width+15, minSize.height+15);
-        scroll.setPreferredSize(scrollSize); 
+        Dimension scrollSize = new Dimension(minSize.width + 15, minSize.height + 15);
+        scroll.setPreferredSize(scrollSize);
         add(scroll, java.awt.BorderLayout.CENTER);
         setPreferredSize(scrollSize);
         pack();
@@ -232,7 +233,7 @@ public class Core extends JFrame implements Displayer {
         IJ.showStatus("");
     }
 
-    private void initPanel()  {
+    private void initPanel() {
         panels = new Component[6];
         if (IJ.isMacOSX() || IJ.isMacintosh()) {
             processingTabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
@@ -248,13 +249,13 @@ public class Core extends JFrame implements Displayer {
         processingPanels = new Component[3];
         connector = new Connector(this);
         panels[0] = connector;
-        panels[2]=processingTabs;
+        panels[2] = processingTabs;
         tabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
         tabs.addTab("Connect", panels[0]);
         tabs.addTab("Edit Experiment", new JPanel());
         tabs.addTab("Edit Processing Chains", new JPanel());
         tabs.addTab("Data", new JPanel());
-        if(ANALYSIS){
+        if (ANALYSIS) {
                /*analysis = new AnalysisCore(this);
                panels[4]=analysis.getPanel();
                tabs.addTab("Analysis", new JPanel());*/
@@ -267,13 +268,13 @@ public class Core extends JFrame implements Displayer {
                 //dimensions[selectedTab]=new Dimension(getSize().width, getSize().height);
                 //dimensions[selectedTab]=new Dimension(getSize().width, getSize().height);
                 tabs.setComponentAt(selectedTab, new JPanel());
-                if (selectedTab==0) { //connector
+                if (selectedTab == 0) { //connector
                     connector.saveOptions();
                 }
-                
+
                 selectedTab = tabs.getSelectedIndex();
                 if (selectedTab == 1) { //xpEditor
-                    
+
                 } else if (selectedTab == 3) { //data
                     try {
                         Core.experiment.refresh();
@@ -292,7 +293,7 @@ public class Core extends JFrame implements Displayer {
                 tabs.setComponentAt(selectedTab, panels[selectedTab]);
                 //setPreferredSize(dimensions[selectedTab]);
                 refreshDisplay();
-                
+
             }
         });
         processingTabs.addChangeListener(new ChangeListener() {
@@ -301,13 +302,13 @@ public class Core extends JFrame implements Displayer {
             }
         });
     }
-    
+
     protected void selectProcessingTab(int newTab) {
         //if (selectedTab==2) dimensions[2]=new Dimension(getSize().width, getSize().height);
         processingTabs.setComponentAt(selectedProcessingTab, new JPanel());
-        
+
         selectedProcessingTab = newTab;
-        
+
         processingTabs.setComponentAt(selectedProcessingTab, processingPanels[selectedProcessingTab]);
         //setPreferredSize(dimensions[2]);
         refreshDisplay();
@@ -322,15 +323,15 @@ public class Core extends JFrame implements Displayer {
             structureTemplateEditor = new ProcessingSequenceEditorTemplateStructure(this);
             processingPanels[2] = structureTemplateEditor.getPanel();
             processingTabs.setComponentAt(1, processingPanels[1]);
-            selectedProcessingTab=1;
+            selectedProcessingTab = 1;
             processingTabs.setSelectedIndex(1);
             xpEditor = new XPEditor(this);
             panels[1] = xpEditor;
             fieldManager = new FieldManager(this);
             fieldManager.setXP(experiment);
             panels[3] = fieldManager.getPanel();
-            cellManager=fieldManager.getCellManager();
-            if (helper!=null) {
+            cellManager = fieldManager.getCellManager();
+            if (helper != null) {
                 helper.registerComponents();
                 helper.register();
             }
@@ -340,9 +341,9 @@ public class Core extends JFrame implements Displayer {
     }
 
     public void toggleEnableTabs(boolean xpSet) {
-        if (tabs==null) return;
-        int dec=xpSet?0:1;
-        for (int i = 1; i < tabs.getTabCount()-dec; i++) {
+        if (tabs == null) return;
+        int dec = xpSet ? 0 : 1;
+        for (int i = 1; i < tabs.getTabCount() - dec; i++) {
             tabs.setEnabledAt(i, true);
         }
         if (!xpSet) {
@@ -354,34 +355,34 @@ public class Core extends JFrame implements Displayer {
     }
 
     public void disableTabs() {
-       if (tabs==null) return;
-       for (int i = 1; i < tabs.getTabCount(); i++) {
+        if (tabs == null) return;
+        for (int i = 1; i < tabs.getTabCount(); i++) {
             tabs.setEnabledAt(i, false);
-       }
-       processingTabs.setEnabledAt(0, false);
+        }
+        processingTabs.setEnabledAt(0, false);
     }
-    
+
     public void updateSettings() {
         SettingsParameter.setSettings();
-        if (this.xpEditor!=null) xpEditor.refreshParameters();
-        if (this.nucleusTemplateEditor!=null) nucleusTemplateEditor.refreshParameters();
-        if (this.structureTemplateEditor!=null) structureTemplateEditor.refreshParameters();
-        if (this.processingChainEditor!=null) processingChainEditor.refreshParameters();
-        if (this.cellManager!=null && Core.getExperiment()!=null) cellManager.updateXP();
-        if (this.fieldManager!=null && Core.getExperiment()!=null) fieldManager.updateXP();
+        if (this.xpEditor != null) xpEditor.refreshParameters();
+        if (this.nucleusTemplateEditor != null) nucleusTemplateEditor.refreshParameters();
+        if (this.structureTemplateEditor != null) structureTemplateEditor.refreshParameters();
+        if (this.processingChainEditor != null) processingChainEditor.refreshParameters();
+        if (this.cellManager != null && Core.getExperiment() != null) cellManager.updateXP();
+        if (this.fieldManager != null && Core.getExperiment() != null) fieldManager.updateXP();
     }
-    
-    
+
+
     public void close() {
-        if (mongoConnector!=null) mongoConnector.close();
-        if (helper!=null) Core.helper.close();
+        if (mongoConnector != null) mongoConnector.close();
+        if (helper != null) Core.helper.close();
         if (progressor != null) {
             progressor.dispose();
-            progressor=null;
+            progressor = null;
         }
-        Main_.core=null;
+        Main_.core = null;
     }
-    
+
     @Override
     public void dispose() {
         super.dispose();
@@ -392,4 +393,5 @@ public class Core extends JFrame implements Displayer {
         setPreferredSize(getSize());
         pack();
     }
+
 }

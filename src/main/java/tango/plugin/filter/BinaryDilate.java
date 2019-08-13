@@ -1,13 +1,18 @@
 package tango.plugin.filter;
 
-import mcib3d.utils.exceptionPrinter;
 import ij.IJ;
-import java.util.HashMap;
+import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.ImageLabeller;
 import mcib3d.image3d.processing.BinaryMorpho;
+import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.InputImages;
-import tango.parameter.*;
+import tango.parameter.BooleanParameter;
+import tango.parameter.ConditionalParameter;
+import tango.parameter.DoubleParameter;
+import tango.parameter.Parameter;
+
+import java.util.HashMap;
 
 /**
  *
@@ -76,10 +81,11 @@ public class BinaryDilate implements PostFilter {
                 radZ = radiusZ.getFloatValue(1);
             }
             if (debug) {
-                IJ.log("binaryDilate: radius XY" + radXY + " radZ:" + radZ);
+                IJ.log("BinaryDilate: radius XY" + radXY + " radZ:" + radZ);
             }
             ImageLabeller label = new ImageLabeller(debug);
-            return label.getLabels(BinaryMorpho.binaryDilate(input.thresholdAboveExclusive(0), radXY, radZ, nbCPUs));
+            ImageHandler thld = input.thresholdAboveExclusive(0);
+            return label.getLabels(BinaryMorpho.binaryDilate(thld, radXY, radZ, nbCPUs));
 
         } catch (Exception e) {
             exceptionPrinter.print(e, "", true);
@@ -92,7 +98,7 @@ public class BinaryDilate implements PostFilter {
     }
 
     public String getHelp() {
-        return "Morphological dilate using distance maps, optimized for large radius.\n Note thay the number of objects may change due to some mergings.";
+        return "Morphological dilate using distance maps, optimized for large radius.\n Note that the number of objects may change due to some merging.";
     }
 
 }
