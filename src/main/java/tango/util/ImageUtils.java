@@ -1,16 +1,22 @@
 package tango.util;
 
-import sc.fiji.i5d.Image5D;
-import sc.fiji.i5d.cal.ChannelDisplayProperties;
-import sc.fiji.i5d.gui.ChannelControl;
-//import i5d.Image5D;
-//import i5d.cal.ChannelDisplayProperties;
-//import i5d.gui.ChannelControl;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Plot;
 import ij.process.ImageProcessor;
+import mcib3d.geom.Object3DVoxels;
+import mcib3d.geom.Voxel3D;
+import mcib3d.image3d.ImageFloat;
+import mcib3d.image3d.ImageHandler;
+import mcib3d.image3d.ImageInt;
+import mcib3d.image3d.ImageShort;
+import mcib3d.image3d.distanceMap3d.EDT;
+import sc.fiji.i5d.Image5D;
+import sc.fiji.i5d.cal.ChannelDisplayProperties;
+import sc.fiji.i5d.gui.ChannelControl;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyListener;
@@ -19,34 +25,31 @@ import java.awt.image.ColorModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import javax.swing.ImageIcon;
-import mcib3d.geom.Object3DVoxels;
-import mcib3d.geom.Voxel3D;
-import mcib3d.image3d.ImageFloat;
-import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
-import mcib3d.image3d.ImageShort;
+import java.util.LinkedList;
+
+//import i5d.Image5D;
+//import i5d.cal.ChannelDisplayProperties;
+//import i5d.gui.ChannelControl;
 
 /**
- *
- **
+ * *
  * /**
  * Copyright (C) 2012 Jean Ollion
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * This file is part of tango
- *
+ * <p>
  * tango is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -155,8 +158,9 @@ public class ImageUtils {
 
     public static void setObjectDistancesToPeriphery(Object3DVoxels object, int nbCPUs) {
         //ImageInt map = object.createSegImageMini(object.getValue(), 0);
-        ImageInt map = object.getLabelImage();
-        ImageFloat dm = map.getDistanceMapInsideMask(nbCPUs);
+        ImageHandler map = object.getLabelImage();
+        ImageFloat dm = EDT.run(map, 0, false, nbCPUs);
+        //ImageFloat dm = map.getDistanceMapInsideMask(nbCPUs);
         /*ij.IJ.log("set dm values object:"+object.getValue());
          if (object.getValue()==7) {
          map.show();
@@ -229,8 +233,8 @@ public class ImageUtils {
 
     public static Object3DVoxels[] getLayers(Object3DVoxels object, double[][] layers, boolean correctionLimit, boolean verbose) {
         Object3DVoxels[] objectLayers = new Object3DVoxels[layers.length];
-        ArrayList<Voxel3D> vox = object.getVoxels();
-        Collections.sort(vox, new Comparator<Voxel3D>() {
+        LinkedList<Voxel3D> voxels = object.getVoxels();
+        Collections.sort(voxels, new Comparator<Voxel3D>() {
             public int compare(Voxel3D v1, Voxel3D v2) {
                 if (v1.value < v2.value) {
                     return -1;
@@ -242,10 +246,10 @@ public class ImageUtils {
             }
         });
         for (int i = 0; i < layers.length; i++) {
-            int idxStart = (int) (layers[i][0] * (vox.size() - 1) + 0.5);
-            int idxStop = (int) (layers[i][1] * (vox.size() - 1) + 0.5);
+            int idxStart = (int) (layers[i][0] * (voxels.size() - 1) + 0.5);
+            int idxStop = (int) (layers[i][1] * (voxels.size() - 1) + 0.5);
             if (verbose) {
-                IJ.log("object: " + object.getValue() + " idxStart: " + idxStart + " value: " + vox.get(idxStart).getValue() + "idxStop: " + idxStop + " value:" + vox.get(idxStop).getValue() + " value 0 : " + vox.get(0).getValue() + " value " + (vox.size() - 1) + " : " + vox.get(vox.size() - 1).getValue());
+                IJ.log("object: " + object.getValue() + " idxStart: " + idxStart + " value: " + voxels.get(idxStart).getValue() + "idxStop: " + idxStop + " value:" + voxels.get(idxStop).getValue() + " value 0 : " + voxels.get(0).getValue() + " value " + (voxels.size() - 1) + " : " + voxels.get(voxels.size() - 1).getValue());
             }
             // Correction valeurs limites
             if (correctionLimit) {
@@ -270,22 +274,22 @@ public class ImageUtils {
                  if (verbose) IJ.log("object: "+object.getValue()+" correction limit int: new idxStart: "+idxStart+" value: "+vox.get(idxStart).getValue());
                  } //else idxStart = getLeftIndex(vox, idxStart);
                  */
-                if (layers[i][1] == 1 && layers[i][0] > 0 && vox.get(idxStart).value == vox.get(0).value) {
+                if (layers[i][1] == 1 && layers[i][0] > 0 && voxels.get(idxStart).value == voxels.get(0).value) {
                     if (verbose) {
-                        IJ.log("object: " + object.getValue() + " correction limit start: idxStart: " + idxStart + " idxStop: " + idxStop + " value: " + vox.get(vox.size() - 1).getValue());
+                        IJ.log("object: " + object.getValue() + " correction limit start: idxStart: " + idxStart + " idxStop: " + idxStop + " value: " + voxels.get(voxels.size() - 1).getValue());
                     }
-                    idxStart = getRightIndex(vox, idxStart);
-                    if (idxStart < vox.size() - 2) {
+                    idxStart = getRightIndex(voxels, idxStart);
+                    if (idxStart < voxels.size() - 2) {
                         ++idxStart;
                     }
                     if (verbose) {
-                        IJ.log("object: " + object.getValue() + " correction limit start: new idxStart: " + idxStart + " value: " + vox.get(idxStart).getValue());
+                        IJ.log("object: " + object.getValue() + " correction limit start: new idxStart: " + idxStart + " value: " + voxels.get(idxStart).getValue());
                     }
-                } else if (layers[i][0] == 0 && layers[i][1] < 1 && vox.get(idxStop).value == vox.get(0).value) {
+                } else if (layers[i][0] == 0 && layers[i][1] < 1 && voxels.get(idxStop).value == voxels.get(0).value) {
                     if (verbose) {
-                        IJ.log("object: " + object.getValue() + " correction limit stop: idxStart: " + idxStart + " idxStop: " + idxStop + " value: " + vox.get(0).getValue());
+                        IJ.log("object: " + object.getValue() + " correction limit stop: idxStart: " + idxStart + " idxStop: " + idxStop + " value: " + voxels.get(0).getValue());
                     }
-                    idxStop = getRightIndex(vox, idxStop);
+                    idxStop = getRightIndex(voxels, idxStop);
                     if (verbose) {
                         IJ.log("object: " + object.getValue() + " correction limit stop: new idxStop: " + idxStop);
                     }
@@ -293,17 +297,17 @@ public class ImageUtils {
 
             }
 
-            ArrayList<Voxel3D> voxObj = new ArrayList<Voxel3D>(idxStop - idxStart + 1);
+            LinkedList<Voxel3D> voxObj = new LinkedList<>();
             for (int j = idxStart; j <= idxStop; j++) {
-                voxObj.add(vox.get(j));
+                voxObj.add(voxels.get(j));
             }
             if (voxObj.isEmpty()) {
-                if (idxStop < (vox.size() - 1)) {
-                    voxObj.add(vox.get(idxStop + 1));
+                if (idxStop < (voxels.size() - 1)) {
+                    voxObj.add(voxels.get(idxStop + 1));
                 } else if (idxStart > 0) {
-                    voxObj.add(vox.get(idxStart - 1));
+                    voxObj.add(voxels.get(idxStart - 1));
                 } else {
-                    voxObj = vox;
+                    voxObj = voxels;
                 }
             }
             objectLayers[i] = new Object3DVoxels(voxObj);
@@ -321,7 +325,7 @@ public class ImageUtils {
         return idxMin;
     }
 
-    private static int getRightIndex(ArrayList<Voxel3D> sorted, int idx) {
+    private static int getRightIndex(LinkedList<Voxel3D> sorted, int idx) {
         int idxMax = idx;
         double ref = sorted.get(idx).getValue();
         int limit = sorted.size() - 1;
@@ -332,7 +336,7 @@ public class ImageUtils {
     }
 
     public static int[][] getNeighbourhood(float radius, float radiusZ) {
-        float r = (float) radius / radiusZ;
+        float r = radius / radiusZ;
         int rad = (int) (radius + 0.5f);
         int radZ = (int) (radiusZ + 0.5f);
         int[][] temp = new int[3][(2 * rad + 1) * (2 * rad + 1) * (2 * radZ + 1)];
@@ -343,7 +347,7 @@ public class ImageUtils {
             for (int yy = -rad; yy <= rad; yy++) {
                 for (int xx = -rad; xx <= rad; xx++) {
                     float d2 = zz * r * zz * r + yy * yy + xx * xx;
-                    if (d2 <= rad2 && d2 > 0) {	//exclusion du point central
+                    if (d2 <= rad2 && d2 > 0) {    //exclusion du point central
                         temp[0][count] = xx;
                         temp[1][count] = yy;
                         temp[2][count] = zz;
@@ -377,7 +381,7 @@ public class ImageUtils {
             radiusZ = 1;
         }
         //IJ.log("neigh: XY:"+radius+" Z:"+radiusZ+ " Thickness:"+thickness);
-        float r = (float) radius / radiusZ;
+        float r = radius / radiusZ;
         int rad = (int) (radius + 0.5f);
         int radZ = (int) (radiusZ + 0.5f);
         int[][] temp = new int[3][(2 * rad + 1) * (2 * rad + 1) * (2 * radZ + 1)];
@@ -413,7 +417,7 @@ public class ImageUtils {
             radiusZ = 1;
         }
         //IJ.log("neigh: XY:"+radius+" Z:"+radiusZ+ " Thickness:"+thickness);
-        float r = (float) radius / radiusZ;
+        float r = radius / radiusZ;
         int rad = (int) (radius + 0.5f);
         int radZ = (int) (radiusZ + 0.5f);
         int[][] temp = new int[3][(2 * rad + 1) * (2 * rad + 1) * (2 * radZ + 1)];

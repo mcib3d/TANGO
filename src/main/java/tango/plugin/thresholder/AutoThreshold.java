@@ -1,18 +1,16 @@
 package tango.plugin.thresholder;
 
-import tango.parameter.ChoiceParameter;
-import tango.parameter.Parameter;
-import ij.ImagePlus;
 import ij.process.AutoThresholder;
 import mcib3d.image3d.ImageHandler;
+import mcib3d.image3d.ImageInt;
+import mcib3d.image3d.ImageStats;
+import tango.dataStructure.InputImages;
+import tango.parameter.ChoiceParameter;
+import tango.parameter.Parameter;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import mcib3d.image3d.ImageInt;
-import mcib3d.image3d.ImageStats;
-import tango.dataStructure.InputCellImages;
-import tango.dataStructure.InputImages;
-import tango.plugin.thresholder.Thresholder;
 
 /**
  *
@@ -54,8 +52,8 @@ public class AutoThreshold implements Thresholder, ThresholderHistogram {
         put("MEAN", AutoThresholder.Method.Mean);
         put("RENYIENTROPY", AutoThresholder.Method.RenyiEntropy);
         put("SHANBHAG", AutoThresholder.Method.Shanbhag);
-        put("TRIANGLE", AutoThresholder.Method.Triangle);
-        put("YEN", AutoThresholder.Method.Yen);
+        //put("TRIANGLE", AutoThresholder.Method.Triangle);
+        //put("YEN", AutoThresholder.Method.Yen);
         put("HUANG", AutoThresholder.Method.Huang);
         put("PERCENTILE", AutoThresholder.Method.Percentile);
         put("MAXENTROPY", AutoThresholder.Method.MaxEntropy);

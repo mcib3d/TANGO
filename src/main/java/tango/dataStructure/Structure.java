@@ -13,6 +13,7 @@ import tango.mongo.MongoConnector;
 import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.filter.PreFilterSequence;
 import tango.plugin.segmenter.SpotSegmenterRunner;
+
 import static tango.util.Utils.getObjects3D;
 
 /**
@@ -194,8 +195,9 @@ public class Structure extends AbstractStructure {
 
     public ImageInt postFilter(ImageInt input) {
         PostFilterSequence pofs = xp.getPostFilterSequence(idx, cell.nbCPUs, cell.verbose);
+        pofs.imageName = cell.field.name + "::" + cell.name;
         if (!pofs.isEmpty()) {
-            ImageInt S = (ImageInt) pofs.run(idx, input, cell.inputImages);
+            ImageInt S = pofs.run(idx, input, cell.inputImages);
             S.setTitle(name + "::PostFiltered");
             return S;
         }

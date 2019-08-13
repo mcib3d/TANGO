@@ -1,7 +1,5 @@
 package tango.plugin.measurement;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageHandler;
@@ -9,7 +7,9 @@ import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
 import tango.parameter.*;
-import tango.plugin.measurement.MeasurementObject;
+
+import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  *
@@ -86,7 +86,7 @@ public class Quantiles implements MeasurementObject {
     
     public static double[] getQuantiles(Object3D mask, ImageHandler signal, double[] quantiles) {
         double[] mes = new double[quantiles.length];
-        ArrayList<Voxel3D> vox = mask.getVoxels();
+        LinkedList<Voxel3D> vox = mask.getVoxels();
         if (vox.size()>1000) { // using histo (approx)
             double[] minMax = signal.getMinAndMaxArray(vox);
             int[] histo = signal.getHistogram(vox, 256, minMax[0], minMax[1]);
@@ -116,11 +116,11 @@ public class Quantiles implements MeasurementObject {
             Arrays.sort(vals);
             for (int quantIdx = 0; quantIdx<quantiles.length; quantIdx++) {
                 double index = quantiles[quantIdx] * vals.length;
-                if (index<=0) mes[quantIdx]=(double)vals[0];
-                else if (index>=(vals.length-1)) mes[quantIdx]= (double)  vals[vals.length-1];
+                if (index <= 0) mes[quantIdx] = vals[0];
+                else if (index >= (vals.length - 1)) mes[quantIdx] = vals[vals.length - 1];
                 else {
                 double d = index-(int)index;
-                    if (d==0) mes[quantIdx]= (double) vals[(int)index];
+                    if (d == 0) mes[quantIdx] = vals[(int) index];
                     else {
                         double val1 = vals[(int)index];
                         double val2 = vals[(int)(index+1)];

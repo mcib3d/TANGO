@@ -1,169 +1,170 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 	http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<properties>
-		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+    </properties>
 
-	<groupId>fr.mnhn.biophysique</groupId>
-	<artifactId>TANGO</artifactId>
-	<version>_0.96</version>
-	<packaging>jar</packaging>
+    <groupId>fr.mnhn.biophysique</groupId>
+    <artifactId>TANGO</artifactId>
+    <version>_0.96</version>
+    <packaging>jar</packaging>
 
-	<name>TANGO</name>
-	<description>ImageJ plugin for batch processing and analysis of the nuclear genome organization.</description>
-	<url>http://biophysique.mnhn.fr/tango</url>
-	<inceptionYear>2012</inceptionYear>
+    <name>TANGO</name>
+    <description>ImageJ plugin for batch processing and analysis of the nuclear genome organization.</description>
+    <url>http://biophysique.mnhn.fr/tango</url>
+    <inceptionYear>2012</inceptionYear>
 
-	<licenses>
-		<license>
-			<name>GNU General Public License</name>
-			<url>https://gnu.org/licenses/gpl.html</url>
-			<distribution>repo</distribution>
-			<comments>Version 3 of the License or (at your option) any later version.</comments>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>GNU General Public License</name>
+            <url>https://gnu.org/licenses/gpl.html</url>
+            <distribution>repo</distribution>
+            <comments>Version 3 of the License or (at your option) any later version.</comments>
+        </license>
+    </licenses>
 
-	<developers>
-		<developer>
+    <developers>
+        <developer>
             <id>jeanollion</id>
-			<name>Jean Ollion</name>
-			<email>ollion@mnhn.fr</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-                        <timezone>2</timezone>
-		</developer>
-                <developer>
-			<name>Thomas Boudier</name>
-			<email>thomas.boudier@upmc.fr</email>
-			<roles>
-				<role>developer</role>
-			</roles>
-		</developer>
-	</developers>
+            <name>Jean Ollion</name>
+            <email>ollion@mnhn.fr</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>2</timezone>
+        </developer>
+        <developer>
+            <name>Thomas Boudier</name>
+            <email>thomas.boudier@upmc.fr</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
-	<contributors>
-		<contributor>
-			<name>Julien Cochennec</name>
-			<email>julien.cochennec@mnhn.fr</email>
-			<roles>
-				<role>past developer (R integration within TANGO)</role>
-			</roles>
-		</contributor>
-	</contributors>
+    <contributors>
+        <contributor>
+            <name>Julien Cochennec</name>
+            <email>julien.cochennec@mnhn.fr</email>
+            <roles>
+                <role>past developer (R integration within TANGO)</role>
+            </roles>
+        </contributor>
+    </contributors>
 
-	<scm>
-		<connection>scm:git:git://gitorious.org/mcib3d/TANGO</connection>
-		<developerConnection>scm:git:git@gitorious.org:mcib3d/TANGO</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/mcib3d/TANGO</url>
-	</scm>
-	<!--
-	TODO add a issueManagement field once there is a bug tracker
-	-->
+    <scm>
+        <connection>scm:git:git://gitorious.org/mcib3d/TANGO</connection>
+        <developerConnection>scm:git:git@gitorious.org:mcib3d/TANGO</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/mcib3d/TANGO</url>
+    </scm>
+    <!--
+    TODO add a issueManagement field once there is a bug tracker
+    -->
 
-	<dependencies>
-            <dependency>
-                <groupId>net.imagej</groupId>
-                <artifactId>ij</artifactId>
-                <version>RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongo-java-driver</artifactId>
-				<version>3.4.2</version>
-            </dependency>
-            <dependency>
-                <groupId>ome</groupId>
-                <artifactId>bio-formats_plugins</artifactId>
-				<version>5.7.3</version>
-            </dependency>
-            <dependency>
-                <groupId>sc.fiji</groupId>
-                <artifactId>Image_5D</artifactId>
-                <version>2.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>sc.fiji</groupId>
-                <artifactId>3D_Viewer</artifactId>
-                <version>4.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>sc.fiji</groupId>
-                <artifactId>imagescience</artifactId>
-                <version>RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>sc.fiji</groupId>
-                <artifactId>imageware</artifactId>
-				<version>2.0.1-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>net.htmlparser.jericho</groupId>
-                <artifactId>jericho-html</artifactId>
-                <version>RELEASE</version>
-            </dependency>
-            <dependency>
-                <groupId>org.json</groupId>
-                <artifactId>json</artifactId>
-				<version>20171018</version>
-            </dependency>
-            <dependency>
-                <groupId>org.scijava</groupId>
-                <artifactId>j3dcore</artifactId>
-                <version>1.6.0-scijava-2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mcib3d</groupId>
-                <artifactId>mcib3d-core</artifactId>
-				<version>master-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.ebmoll</groupId>
-                <artifactId>lipid-droplet-counter</artifactId>
-                <version>master-v1.0.0-gcb6b613-1</version>
-            </dependency>
-	</dependencies>
-	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-	</repositories>
-<!-- 	<pluginRepositories>
-	<pluginRepository>
-	<id>sonatype-public-repository</id>
-	<url>https://oss.sonatype.org/content/groups/public</url>
-	<snapshots>
-		<enabled>true</enabled>
-	</snapshots>
-	<releases>
-		<enabled>true</enabled>
-	</releases>
-</pluginRepository>
-	</pluginRepositories> -->
-	<build>
-		<plugins>
-			<plugin>
-				<!-- We depend on at least java 1.5. -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			
-		</plugins>
-	</build>
+    <dependencies>
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>ome</groupId>
+            <artifactId>bio-formats_plugins</artifactId>
+            <version>5.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>Image_5D</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>3D_Viewer</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>imagescience</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>imageware</artifactId>
+            <version>2.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.htmlparser.jericho</groupId>
+            <artifactId>jericho-html</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20180813</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>j3dcore</artifactId>
+            <version>1.6.0-scijava-2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.mcib3d</groupId>
+            <artifactId>mcib3d-core</artifactId>
+            <version>3.96</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ebmoll</groupId>
+            <artifactId>lipid-droplet-counter</artifactId>
+            <version>master-v1.0.0-gcb6b613-1</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>imagej.public</id>
+            <url>http://maven.imagej.net/content/groups/public</url>
+        </repository>
+    </repositories>
+    <!-- 	<pluginRepositories>
+        <pluginRepository>
+        <id>sonatype-public-repository</id>
+        <url>https://oss.sonatype.org/content/groups/public</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+    </pluginRepository>
+        </pluginRepositories> -->
+    <build>
+        <plugins>
+            <plugin>
+                <!-- We depend on at least java 1.5. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
 
 </project>

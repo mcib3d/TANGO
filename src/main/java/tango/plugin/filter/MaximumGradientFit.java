@@ -1,19 +1,18 @@
 package tango.plugin.filter;
 
 import ij.gui.Plot;
-import ij.measure.CurveFitter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.TreeSet;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Voxel3D;
-import mcib3d.image3d.*;
-import mcib3d.utils.ArrayUtil;
+import mcib3d.image3d.ImageFloat;
+import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
-import tango.parameter.*;
+import tango.parameter.DoubleParameter;
+import tango.parameter.IntParameter;
+import tango.parameter.Parameter;
 import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
+
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  *
@@ -67,7 +66,7 @@ public class MaximumGradientFit extends SpotLocalThresholder implements PostFilt
     
     @Override
     public double getLocalThreshold(Object3D s) {
-        ArrayList<Voxel3D> voxels = s.getVoxels();
+        LinkedList<Voxel3D> voxels = s.getVoxels();
         int size = voxels.size();
         for (Voxel3D v : voxels) v.setValue(intensityMap.getPixel(v.getRoundX(), v.getRoundY(), v.getRoundZ()));
         Collections.sort(voxels);
@@ -85,8 +84,8 @@ public class MaximumGradientFit extends SpotLocalThresholder implements PostFilt
             count++;
             currentIdx++;
             if ((currentLayerIdx<(nbLayers-1) && count==layerSize) || (currentLayerIdx==(nbLayers-1) && currentIdx==size)) {
-                layerGradient[currentLayerIdx]/=(double)count;
-                layerIntensity[currentLayerIdx]/=(double)count;
+                layerGradient[currentLayerIdx] /= count;
+                layerIntensity[currentLayerIdx] /= count;
                 count=0;
                 currentLayerIdx++;
             }

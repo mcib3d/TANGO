@@ -1,28 +1,28 @@
 package tango.dataStructure;
 
-import java.util.HashMap;
 import tango.parameter.KeyParameterObjectNumber;
 
+import java.util.HashMap;
+
 /**
- *
- **
+ * *
  * /**
  * Copyright (C) 2012 Jean Ollion
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * This file is part of tango
- *
+ * <p>
  * tango is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -35,23 +35,37 @@ public class ObjectQuantifications {
 
     public ObjectQuantifications() {
     }
+
     public ObjectQuantifications(int nbObjects) {
         measurementObject = new HashMap<String, Object>();
-        this.nbObjects=nbObjects;
+        this.nbObjects = nbObjects;
     }
-    
+
     public void setQuantificationObjectNumber(KeyParameterObjectNumber key, double[] values) {
-        if (values.length==nbObjects) measurementObject.put(key.getKey(), values);
-        else ij.IJ.log("Wrong objects number for key"+key.getKey()+ " "+values.length+" instead of:"+nbObjects);
+        if (values.length == nbObjects)
+            measurementObject.put(key.getKey(), values);
+        else
+            ij.IJ.log("Wrong objects number for key" + key.getKey() + " " + values.length + " instead of:" + nbObjects);
     }
-    
+
     public void setQuantificationObjectNumber(KeyParameterObjectNumber key, int[] values) {
-        if (values.length==nbObjects) measurementObject.put(key.getKey(), values);
-        else ij.IJ.log("Wrong objects number for key"+key.getKey()+ " "+values.length+" instead of:"+nbObjects);
+        if (values.length == nbObjects)
+            measurementObject.put(key.getKey(), values);
+        else
+            ij.IJ.log("Wrong objects number for key" + key.getKey() + " " + values.length + " instead of:" + nbObjects);
     }
-    
+
+    public void setQuantificationObjectNumber(KeyParameterObjectNumber key, String[] values) {
+        if (values.length == nbObjects)
+            measurementObject.put(key.getKey(), values);
+        else
+            ij.IJ.log("Wrong objects number for key" + key.getKey() + " " + values.length + " instead of:" + nbObjects);
+    }
+
+
+
     public HashMap<String, Object> getQuantifObject() {
         return measurementObject;
     }
-    
+
 }

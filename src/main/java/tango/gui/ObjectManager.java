@@ -1,56 +1,39 @@
 package tango.gui;
 
-import tango.gui.util.LCRenderer;
-import mcib3d.utils.exceptionPrinter;
-import tango.dataStructure.Structure;
-import tango.dataStructure.Nucleus;
-import tango.dataStructure.Cell;
 import com.mongodb.BasicDBList;
-import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.MouseWheelEvent;
-import javax.swing.event.ListSelectionEvent;
-import tango.mongo.MongoConnector;
-import mcib3d.image3d.ImageHandler;
-import java.util.*;
-import java.io.*;
-import java.awt.Dimension;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import tango.dataStructure.AbstractStructure;
-import tango.dataStructure.Experiment;
-import tango.dataStructure.Field;
-import tango.dataStructure.Object3DGui;
-import mcib3d.utils.ThreadRunner;
-import ij.*;
-import ij.gui.NewImage;
-import ij.gui.PointRoi;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
 import ij.gui.Roi;
 import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseWheelListener;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import mcib3d.geom.Object3D;
-import mcib3d.geom.Voxel3D;
-import mcib3d.image3d.*;
+import mcib3d.image3d.ImageByte;
+import mcib3d.image3d.ImageHandler;
+import mcib3d.image3d.ImageInt;
+import mcib3d.image3d.ImageShort;
 import mcib3d.image3d.processing.ManualSpot;
+import mcib3d.utils.exceptionPrinter;
 import org.bson.types.ObjectId;
 import tango.dataStructure.*;
-import tango.gui.util.CellManagerLayout;
+import tango.gui.util.LCRenderer;
 import tango.gui.util.ObjectManagerLayout;
 import tango.helper.HelpManager;
 import tango.parameter.DoubleParameter;
-import tango.parameter.Parameter;
-import tango.parameter.StructureParameter;
 import tango.plugin.measurement.MeasurementKey;
 import tango.plugin.measurement.MeasurementObject;
 import tango.util.ImageUtils;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.*;
 
 /**
  *
@@ -651,7 +634,7 @@ public class ObjectManager implements ListSelectionListener, AdjustmentListener,
     protected boolean split(Object3DGui og) {
         if (!(this instanceof NucleusManager) && og.getChannel() instanceof Nucleus) {
             if (Core.GUIMode) {
-                ij.IJ.log("Cannont split nucleus!");
+                ij.IJ.log("Cannot split nucleus!");
             }
             return false;
         }

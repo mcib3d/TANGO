@@ -117,7 +117,8 @@ public class FieldManager implements ListSelectionListener {
                         IJ.showStatus("Nuclei segmentation: " + (i + 1) + "/" + fields.length);
                     }
                     System.out.println("Nuclei segmentation: " + (i + 1) + "/" + fields.length);
-                    Field field = (Field) fields[i];
+                    Field field = fields[i];
+
                     field.setVerbose(false);
                     field.hide();
                     boolean goOnCrop = true;
@@ -162,7 +163,7 @@ public class FieldManager implements ListSelectionListener {
                     Core.getProgressor().resetProgress(fields.length);
                 }
                 for (int i = 0; i < fields.length; i++) {
-                    Field field = (Field) fields[i];
+                    Field field = fields[i];
                     field.setVerbose(false);
                     field.hide();
                     if (Core.GUIMode) {
@@ -350,7 +351,7 @@ public class FieldManager implements ListSelectionListener {
                 nucleusManager.setStructures(null, new ArrayList());
             } else {
                 List tmp = new ArrayList<>();
-                tmp.add((Field) list.getSelectedValue());
+                tmp.add(list.getSelectedValue());
                 nucleusManager.setStructures(null, tmp);
             }
         } catch (Exception e) {

@@ -14,9 +14,6 @@ import org.bson.types.ObjectId;
 import sc.fiji.i5d.Image5D;
 import sc.fiji.i5d.cal.ChannelDisplayProperties;
 import sc.fiji.i5d.gui.ChannelControl;
-//import i5d.Image5D;
-//import i5d.cal.ChannelDisplayProperties;
-//import i5d.gui.ChannelControl;
 import tango.gui.Core;
 import tango.mongo.MongoConnector;
 import tango.parameter.PreFilterSequenceParameter;
@@ -24,13 +21,17 @@ import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.filter.PreFilterSequence;
 import tango.plugin.segmenter.NucleusSegmenterRunner;
 import tango.util.ImageUtils;
+import tango.util.Utils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.ColorModel;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import tango.util.Utils;
+
+//import i5d.Image5D;
+//import i5d.cal.ChannelDisplayProperties;
+//import i5d.gui.ChannelControl;
 
 /**
  * *
@@ -337,6 +338,7 @@ public class Field implements ObjectStructure, StructureContainer {
     public ImageInt postFilterStructure(ImageInt input, int structureIdx) {
         System.gc();
         PostFilterSequence pfs = xp.getPostFilterSequence(0, nbCPUs, verbose);
+        pfs.imageName = getName();
         ImageInt res = pfs.run(0, input, inputImages);
         System.gc();
         return res;

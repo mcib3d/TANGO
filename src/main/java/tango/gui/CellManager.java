@@ -34,8 +34,8 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 import static tango.gui.Connector.recordWindowsPosition;
 
@@ -140,7 +140,7 @@ public class CellManager implements ListSelectionListener, AdjustmentListener, M
                         public void run() {
                             for (int cidx = tr.ai.getAndIncrement(); cidx < tr.end; cidx = tr.ai.getAndIncrement()) {
                                 try {
-                                    System.out.println("Mesurements: " + (cidx + 1) + "/" + tr.end + " nbThreads:" + tr.threads.length);
+                                    System.out.println("Measurements: " + (cidx + 1) + "/" + tr.end + " nbThreads:" + tr.threads.length);
                                     if (cells[cidx] != null && cells[cidx].getTag().getTag() >= 0) {
                                         cells[cidx].setVerbose(false);
                                         cells[cidx].setNbCPUs(1); // TODO more CPUs if less cells at the same time
@@ -148,7 +148,7 @@ public class CellManager implements ListSelectionListener, AdjustmentListener, M
                                         cells[cidx].close();
                                     }
                                     if (Core.GUIMode) Core.getProgressor().incrementStep();
-                                    System.out.println("Mesurements: " + (cidx + 1) + "/" + tr.end + " done.");
+                                    System.out.println("Measurements: " + (cidx + 1) + "/" + tr.end + " done.");
                                     //close field images if no cell is open anymore
                                     Field f = cells[cidx].getField();
                                     if (!f.hasOpenedCellImages()) {
@@ -156,7 +156,7 @@ public class CellManager implements ListSelectionListener, AdjustmentListener, M
                                         f.closeOutputImages();
                                     }
                                 } catch (Exception e) {
-                                    exceptionPrinter.print(e, "mesure:" + cidx + " " + ((cells[cidx] != null) ? cells[cidx].getFieldName() + "::" + cells[cidx].getName() : "cell==null"), Core.GUIMode);
+                                    exceptionPrinter.print(e, "measure:" + cidx + " " + ((cells[cidx] != null) ? cells[cidx].getFieldName() + "::" + cells[cidx].getName() : "cell==null"), Core.GUIMode);
                                 }
                             }
                         }
@@ -170,7 +170,7 @@ public class CellManager implements ListSelectionListener, AdjustmentListener, M
         for (Cell c : cells) c.close(); //hide is sufficient
         if (Core.GUIMode) {
             Core.getProgressor().setAction("Processing cells");
-            System.out.println("processing cells");
+            System.out.println("Processing cells");
         }
         if (Core.GUIMode) {
             Core.getProgressor().resetProgress(cells.length);
@@ -895,7 +895,7 @@ public class CellManager implements ListSelectionListener, AdjustmentListener, M
             if (this.objectManager != null) this.objectManager.toggleShowROIs(false);
         } else {
             this.hideRois();
-            CellManagerLayout lay = (CellManagerLayout) layout;
+            CellManagerLayout lay = layout;
             if (lay.showROIs.isSelected()) lay.showROIs.setSelected(false);
         }
     }

@@ -69,6 +69,10 @@ public class SegmentedCellImages extends StructureImages {
     }
 
 
+    public int getNbSegmentedImages() {
+        return images.length;
+    }
+
     @Override
     public synchronized ImageInt getImage(int structureIdx) {
         if (structureIdx < 0 || structureIdx >= images.length) return null;

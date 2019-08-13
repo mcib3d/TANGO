@@ -1,18 +1,16 @@
 package tango.plugin.measurement.radialAnalysis;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageFloat;
-import mcib3d.image3d.ImageHandler;
 import tango.dataStructure.InputCellImages;
 import tango.dataStructure.ObjectQuantifications;
 import tango.dataStructure.SegmentedCellImages;
 import tango.parameter.*;
 import tango.plugin.measurement.MeasurementObject;
+
+import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  *
@@ -71,7 +69,7 @@ public class ErodedVolumeFractionExtended implements MeasurementObject {
     
     private float[] getDistanceDistribution(ImageFloat dm, Object3DVoxels o) {
         float[] res = new float[o.getVolumePixels()];
-        ArrayList<Voxel3D> al = o.getVoxels();
+        LinkedList<Voxel3D> al = o.getVoxels();
         int i=0;
         for (Voxel3D v : al) res[i++] = Math.min(1, dm.pixels[v.getRoundZ()][v.getXYCoord(dm.sizeX)]);
         Arrays.sort(res);

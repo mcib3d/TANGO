@@ -5,8 +5,6 @@
 package tango.plugin.filter;
 
 import ij.IJ;
-import java.util.ArrayList;
-import java.util.TreeSet;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
@@ -14,14 +12,13 @@ import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import tango.dataStructure.InputImages;
-import tango.parameter.BooleanParameter;
-import tango.parameter.ChoiceParameter;
-import tango.parameter.ConditionalParameter;
-import tango.parameter.DoubleParameter;
-import tango.parameter.Parameter;
-import tango.parameter.SliderDoubleParameter;
-import tango.parameter.StructureParameter;
+import tango.parameter.*;
 import tango.plugin.filter.FeatureJ.ImageFeaturesCore;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.TreeSet;
+
 import static tango.util.Utils.getObjects3D;
 /**
  *
@@ -276,8 +273,8 @@ public abstract class SpotLocalThresholder {
                 heap.add(vox);
             }
         }
-        ArrayList<Voxel3D> voxels = spot.getVoxels();
-        ArrayList<Voxel3D> newVoxels = new ArrayList<>();
+        LinkedList<Voxel3D> voxels = spot.getVoxels();
+        LinkedList<Voxel3D> newVoxels = new LinkedList<>();
         for (Voxel3D v : voxels) {
             int xy = v.getRoundX() + v.getRoundY()*sizeX;
             if (segMap.getPixelInt(xy, v.getRoundZ())==negLabel) segMap.setPixel(xy, v.getRoundZ(), 0);
@@ -299,7 +296,7 @@ public abstract class SpotLocalThresholder {
                 }
                 if (max>thld) { // && max>globalThld
                     change=true;
-                    ArrayList<Voxel3D> vox = new ArrayList<Voxel3D>();
+                    LinkedList<Voxel3D> vox = new LinkedList<Voxel3D>();
                     float min = thld;
                     for (Voxel3D v : voxels) {
                         int xy = v.getRoundX() + v.getRoundY()*sizeX;

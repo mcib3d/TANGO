@@ -473,7 +473,7 @@ public class WatershedTransform3D {
         }
 
         public Object3DVoxels toObject3D() {
-            ArrayList<Voxel3D> al = new ArrayList<Voxel3D>(voxels.size());
+            LinkedList<Voxel3D> al = new LinkedList<Voxel3D>();
             for (Vox3D v : voxels) al.add(v.toVoxel3D(label));
             return new Object3DVoxels(al);
         }

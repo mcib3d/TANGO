@@ -3,17 +3,6 @@ package tango.gui;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.Roi;
-import java.awt.Color;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import tango.gui.util.LCRenderer;
 import tango.gui.util.LCRendererROI;
 import tango.helper.HelpManager;
 import tango.helper.ID;
@@ -21,28 +10,38 @@ import tango.helper.RetrieveHelp;
 import tango.util.ImageUtils;
 import tango.util.RoiInterpolator;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
+
 /**
- *
- **
+ * *
  * /**
  * Copyright (C) 2012 Jean Ollion
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * This file is part of tango
- *
+ * <p>
  * tango is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Class to preform manual segmentation
  *
  * @author Jean Ollion
  */
@@ -54,9 +53,10 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
     boolean populatingObjects;
     ImagePlus currentImage;
     NucleusManager nucleusManager;
+
     public RoiManager3D(NucleusManager nucleusManager) {
         initComponents();
-        this.nucleusManager=nucleusManager;
+        this.nucleusManager = nucleusManager;
         this.listModel = new DefaultListModel();
         this.list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         list.setModel(listModel);
@@ -64,7 +64,7 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
         listSelectionModel.addListSelectionListener(this);
         list.setPreferredSize(null);
     }
-    
+
     public void toggleIsRunning(boolean isRunning) {
         this.add.setEnabled(!isRunning);
         this.drawROIs.setEnabled(!isRunning);
@@ -75,19 +75,19 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
         this.remove.setEnabled(!isRunning);
         this.show.setEnabled(!isRunning);
     }
-    
+
     public void populateRois(int nbSlices) {
-        System.out.println("populate Rois:"+nbSlices);
-        this.nbSlices=nbSlices;
+        System.out.println("populate Rois:" + nbSlices);
+        this.nbSlices = nbSlices;
         this.populatingObjects = true;
         listModel.removeAllElements();
-        for (int i = 0; i<nbSlices; i++) listModel.addElement(null);
+        for (int i = 0; i < nbSlices; i++) listModel.addElement(null);
         this.populatingObjects = false;
         this.list.repaint();
         this.list.revalidate();
-        
+
     }
-    
+
     public void registerComponents(HelpManager hm) {
         hm.objectIDs.put(this.add, new ID(RetrieveHelp.manualNucPage, "Add_or_Update_ROI"));
         hm.objectIDs.put(this.remove, new ID(RetrieveHelp.manualNucPage, "Remove"));
@@ -97,7 +97,7 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
         hm.objectIDs.put(this.drawROIs, new ID(RetrieveHelp.manualNucPage, "ROIs_to_Mask"));
         hm.objectIDs.put(this.getROIs, new ID(RetrieveHelp.manualNucPage, "Mask_to_ROIs"));
     }
-    
+
     protected void registerActiveImage() {
         ImagePlus activeImage = WindowManager.getCurrentImage();
         if (activeImage != null && activeImage.getProcessor() != null && activeImage.getImageStackSize() > 1) {
@@ -115,9 +115,9 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
             }
         }
     }
-    
+
     protected void hideRois() {
-        if (currentImage==null) return;
+        if (currentImage == null) return;
         currentImage.killRoi();
         if (currentImage.isVisible()) {
             currentImage.updateAndDraw();
@@ -125,50 +125,51 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
         }
         currentImage = null;
     }
-    
+
     protected void updateRoi() {
-        if (currentImage==null || !currentImage.isVisible() || currentImage.getNSlices()!=nbSlices || populatingObjects) return;
-        Object o = listModel.get(currentImage.getSlice()-1);
-        if (o!=null) {
+        if (currentImage == null || !currentImage.isVisible() || currentImage.getNSlices() != nbSlices || populatingObjects)
+            return;
+        Object o = listModel.get(currentImage.getSlice() - 1);
+        if (o != null) {
             //Roi r = (Roi)o;
-            currentImage.setRoi(((Roi)o));
+            currentImage.setRoi(((Roi) o));
         } else {
             currentImage.killRoi();
         }
         currentImage.updateAndDraw();
     }
-    
+
     public void addROIs(Roi[] rois, boolean ignoreNULL) {
-        this.populatingObjects=true;
-        for (int i = 0; i<rois.length; i++) {
+        this.populatingObjects = true;
+        for (int i = 0; i < rois.length; i++) {
             Roi r = rois[i];
-            if (ignoreNULL && r==null) continue;
+            if (ignoreNULL && r == null) continue;
             if (ignoreNULL) {
-                if (r==null) continue;
-                int idx = r.getPosition()-1;
-                if (idx>=0) {
+                if (r == null) continue;
+                int idx = r.getPosition() - 1;
+                if (idx >= 0) {
                     listModel.remove(idx);
                     listModel.add(idx, r);
                 }
             } else {
-                int idx = r==null?i:r.getPosition()-1;
-                if (r!=null || rois.length==nbSlices) {
+                int idx = r == null ? i : r.getPosition() - 1;
+                if (r != null || rois.length == nbSlices) {
                     listModel.remove(idx);
                     listModel.add(idx, r);
                 }
             }
-            
+
         }
-        this.populatingObjects=false;
+        this.populatingObjects = false;
     }
-    
+
     public Roi[] getROIs() {
-        ArrayList<Roi> rois=new ArrayList<Roi>(this.nbSlices);
-        for (int i = 0; i<nbSlices; i++) if (listModel.get(i)!=null) rois.add((Roi)listModel.get(i));
+        ArrayList<Roi> rois = new ArrayList<Roi>(this.nbSlices);
+        for (int i = 0; i < nbSlices; i++) if (listModel.get(i) != null) rois.add((Roi) listModel.get(i));
         Roi[] roisArr = new Roi[rois.size()];
         return rois.toArray(roisArr);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -275,38 +276,38 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(listScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(remove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(interpolate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(show, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(newObject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(getROIs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(drawROIs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(listScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(remove, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(interpolate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(show, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(newObject, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(getROIs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(drawROIs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(remove, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(interpolate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(show, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(newObject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(getROIs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(drawROIs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(listScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(remove, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(interpolate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(show, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(newObject, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(getROIs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(drawROIs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(listScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -326,36 +327,37 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
 
     private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
         ImagePlus activeImage = WindowManager.getCurrentImage();
-        if (activeImage==null) return;
+        if (activeImage == null) return;
         Roi current = activeImage.getRoi();
-        if (current==null) return;
-        current = (Roi)current.clone();
+        if (current == null) return;
+        current = (Roi) current.clone();
         int slice = activeImage.getSlice();
         current.setPosition(slice);
-        this.populatingObjects=true;
-        listModel.remove(slice-1);
-        listModel.add(slice-1, current);
-        list.setSelectedIndex(slice-1);
-        this.populatingObjects=false;
+        this.populatingObjects = true;
+        listModel.remove(slice - 1);
+        listModel.add(slice - 1, current);
+        list.setSelectedIndex(slice - 1);
+        this.populatingObjects = false;
     }//GEN-LAST:event_addActionPerformed
 
     private void removeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeActionPerformed
         int[] sel = list.getSelectedIndices();
-        this.populatingObjects=true;
+        this.populatingObjects = true;
         for (int i : sel) {
             listModel.remove(i);
             listModel.add(i, null);
         }
-        this.populatingObjects=false;
+        this.populatingObjects = false;
     }//GEN-LAST:event_removeActionPerformed
 
     private void interpolateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_interpolateActionPerformed
-        Roi[] newRois=RoiInterpolator.run(getROIs());
+        Roi[] newRois = RoiInterpolator.run(getROIs());
         this.addROIs(newRois, true);
     }//GEN-LAST:event_interpolateActionPerformed
 
     private void newObjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newObjectActionPerformed
-        if (nucleusManager.maskChange && JOptionPane.showConfirmDialog(this, "Save current Changes on Mask?", "TANGO", JOptionPane.OK_CANCEL_OPTION) == 0) nucleusManager.saveMask();
+        if (nucleusManager.maskChange && JOptionPane.showConfirmDialog(this, "Save current Changes on Mask?", "TANGO", JOptionPane.OK_CANCEL_OPTION) == 0)
+            nucleusManager.saveMask();
         nucleusManager.newObject();
     }//GEN-LAST:event_newObjectActionPerformed
 
@@ -382,11 +384,11 @@ public class RoiManager3D extends javax.swing.JPanel implements ListSelectionLis
 
     @Override
     public void valueChanged(ListSelectionEvent lse) {
-        if (populatingObjects || list.getSelectedIndex()==-1) return;
+        if (populatingObjects || list.getSelectedIndex() == -1) return;
         ImagePlus activeImage = WindowManager.getCurrentImage();
-        if (activeImage!=null) {
-            activeImage.setSlice(list.getSelectedIndex()+1);
-            if (list.getSelectedValue()!=null) activeImage.setRoi((Roi)list.getSelectedValue(), true);
+        if (activeImage != null) {
+            activeImage.setSlice(list.getSelectedIndex() + 1);
+            if (list.getSelectedValue() != null) activeImage.setRoi((Roi) list.getSelectedValue(), true);
             else {
                 activeImage.killRoi();
                 activeImage.updateAndDraw();
