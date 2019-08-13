@@ -4,15 +4,17 @@
  */
 package tango.gui.util;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import java.util.ArrayList;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Objects3DPopulation;
+import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  *
@@ -84,12 +86,12 @@ public class ColocFactory {
                         } else if (mode == COLOC_UNION) {
                             ob3.addVoxelsUnion(ob1, ob2);
                         } else if (mode == COLOC_INDIVIDUAL) {
-                            ArrayList al = ind == 1 ? ob1.getVoxels() : ob2.getVoxels();
+                            LinkedList<Voxel3D> al = ind == 1 ? ob1.getVoxels() : ob2.getVoxels();
                             ob3.addVoxels(al);
                         }
                         ob3.setValue(nbob);
                         nbob++;
-                        pop3.addObject((Object3DVoxels) ob3);
+                        pop3.addObject(ob3);
                     }
                     if (!keeps[0]) {
                         ob1.draw(imasegs[0].getImageStack(), 0);
@@ -113,8 +115,7 @@ public class ColocFactory {
      * Create a new ImagePlus from two input ImagePlus where objects are
      * collocalized (multifish experiment)
      *
-     * @param plus1 The first segmented channel with labelled objects
-     * @param plus2 The second segmented channel with labelled objects
+     * @param plus The  segmented channels with labelled objects
      * @param pc The percentage (o-100) of colocalization between objects
      * @return a new colo image (input images are also modified)
      */
@@ -163,7 +164,7 @@ public class ColocFactory {
                                 }
                             }
                             if (mode != COLOC_NONE) {
-                                popColoc.addObject((Object3DVoxels) obColoc);
+                                popColoc.addObject(obColoc);
                             }
                             // remove from original images
                             if (!keeps[0]) {

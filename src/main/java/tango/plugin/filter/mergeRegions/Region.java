@@ -1,20 +1,17 @@
 package tango.plugin.filter.mergeRegions;
 
-import ij.IJ;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.ImageShort;
-import tango.gui.Core;
 import tango.util.SpearmanPairWiseCorrelationTest;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  *
@@ -109,12 +106,36 @@ public class Region {
         public boolean hasNoInteractant() {
             return interfaces==null || interfaces.isEmpty() || (interfaces.size()==1 && interfaces.get(0).r1.label==0);
         }
-        
-        public Object3DVoxels toObject3D() {
-            ArrayList<Voxel3D> al = new ArrayList<Voxel3D>(voxels.size());
-            for (Vox3D v : voxels) al.add(v.toVoxel3D(label));
-            return new Object3DVoxels(al);
+
+    public static double getHessianMeanValue(HashSet<Vox3D>[] voxIt, ImageFloat hessian, double erode, int nbCPUs) {
+        int[] bb = getBoundingBox(voxIt);
+        if (bb == null) return 0;
+        ImageInt map = createSegImageMini(1, null, bb, voxIt);
+        ImageFloat dm = map.getDistanceMapInsideMask(nbCPUs);
+        // set voxel value to distanceMap
+        int size = 0;
+        for (HashSet<Vox3D> h : voxIt) {
+            size += h.size();
+            for (Vox3D v : h) v.value = dm.getPixel(v.x - bb[0], v.y - bb[1], v.z - bb[2]);
         }
+        ArrayList<Vox3D> al;
+        if (voxIt.length == 1) al = new ArrayList(voxIt[0]);
+        else {
+            al = new ArrayList<Vox3D>(size);
+            for (HashSet<Vox3D> h : voxIt) al.addAll(h);
+        }
+        Collections.sort(al);
+        int idx = (int) ((size - 1) * erode + 0.5);
+
+        double mean = 0;
+        for (int i = idx; i < size; i++) {
+            Vox3D v = al.get(i);
+            mean += hessian.pixels[v.z][v.xy];
+        }
+        if (idx < size) mean /= size - idx;
+        //IJ.log("getHessMeanVal Sort: 0:"+al.get(0).value+" "+(size-1)+":"+al.get(size-1).value + "idx: "+idx+ " : "+al.get(idx).value + " mean value: "+mean);
+        return mean;
+    }
         
         @Override 
         public boolean equals(Object o) {
@@ -162,35 +183,11 @@ public class Region {
         }
         return SpearmanPairWiseCorrelationTest.computeRho(distances, values);
     }
-    
-    public static double getHessianMeanValue(HashSet<Vox3D>[] voxIt, ImageFloat hessian, double erode, int nbCPUs) {
-        int[] bb= getBoundingBox(voxIt);
-        if (bb==null) return 0;
-        ImageInt map = createSegImageMini(1, null, bb, voxIt );
-        ImageFloat dm = map.getDistanceMapInsideMask(nbCPUs);
-        // set voxel value to distanceMap
-        int size = 0;
-        for (HashSet<Vox3D> h : voxIt) {
-            size+=h.size();
-            for (Vox3D v : h) v.value=dm.getPixel(v.x-bb[0], v.y-bb[1], v.z-bb[2]);
-        }
-        ArrayList<Vox3D> al;
-        if (voxIt.length==1) al = new ArrayList(voxIt[0]);
-        else {
-            al = new ArrayList<Vox3D>(size);
-            for (HashSet<Vox3D> h : voxIt) al.addAll(h);
-        }
-        Collections.sort(al);
-        int idx = (int)((size-1) * erode + 0.5);
-        
-        double mean = 0;
-        for (int i = idx; i<size; i++) {
-            Vox3D v = al.get(i);
-            mean+=hessian.pixels[v.z][v.xy];
-        }
-        if (idx<size) mean/=(double)(size-idx);
-        //IJ.log("getHessMeanVal Sort: 0:"+al.get(0).value+" "+(size-1)+":"+al.get(size-1).value + "idx: "+idx+ " : "+al.get(idx).value + " mean value: "+mean);
-        return mean;
+
+    public Object3DVoxels toObject3D() {
+        LinkedList<Voxel3D> al = new LinkedList<>();
+        for (Vox3D v : voxels) al.add(v.toVoxel3D(label));
+        return new Object3DVoxels(al);
     }
         
     protected static int[] getBoundingBox(HashSet<Vox3D>[] voxIt) {

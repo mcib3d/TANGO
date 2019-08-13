@@ -1,8 +1,6 @@
 package tango.plugin.filter;
 
-import ij.ImagePlus;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.distanceMap3d.EDT;
 import mcib3d.image3d.distanceMap3d.EDT;
 import tango.dataStructure.InputImages;
 import tango.parameter.BooleanParameter;
@@ -34,7 +32,7 @@ import tango.parameter.ThresholdParameter;
  * @author Jean Ollion
  */
 
-public class LocalThickness implements PreFilter {
+public class LocalThickness implements PreFilter { // Does not seem to work ;)
     boolean debug;
     int nbCPUs=1;
     ThresholdParameter threshold = new ThresholdParameter("Binarization Threshold: ", "threshold", null);

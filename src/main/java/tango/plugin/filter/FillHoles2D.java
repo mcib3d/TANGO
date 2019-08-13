@@ -81,7 +81,7 @@ public class FillHoles2D implements PostFilter {
     @Override
     public ImageInt runPostFilter(int currentStructureIdx, ImageInt input, InputImages images) {
         ImageInt fill = fillHoles2D(input);
-        if (useInterior.isSelected()) fill = fill.substractImage(input); //  interior = filled - original
+        if (useInterior.isSelected()) fill = fill.subtractImage(input); //  interior = filled - original
         return fill;
     }
 

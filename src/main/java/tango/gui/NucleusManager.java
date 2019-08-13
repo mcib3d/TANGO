@@ -1,28 +1,13 @@
 package tango.gui;
 
 import com.mongodb.BasicDBObject;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.WindowManager;
 import ij.gui.Roi;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.MouseWheelEvent;
-import java.util.*;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import mcib3d.geom.Object3D;
 import mcib3d.geom.Object3DVoxels;
-import mcib3d.geom.Vector3D;
 import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
-import mcib3d.utils.exceptionPrinter;
 import org.bson.types.ObjectId;
 import tango.dataStructure.Field;
 import tango.dataStructure.InputCroppedImages;
@@ -30,15 +15,19 @@ import tango.dataStructure.Object3DGui;
 import tango.dataStructure.ObjectStructure;
 import tango.gui.util.LCRenderer;
 import tango.gui.util.NucleusManagerLayout;
-import tango.gui.util.ObjectManagerLayout;
 import tango.helper.HelpManager;
 import tango.parameter.DoubleParameter;
 import tango.parameter.IntParameter;
-import tango.parameter.Parameter;
 import tango.plugin.filter.PostFilterSequence;
 import tango.plugin.segmenter.NucleusSegmenterRunner;
 import tango.util.ImageUtils;
-import tango.util.RoiInterpolator;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import static tango.util.Utils.getObjects3D;
 
 /**
@@ -103,7 +92,7 @@ public class NucleusManager extends ObjectManager {
     }
 
     protected ImageInt getMask() {
-        return ((Field) this.currentChannels[0]).getSegmented();
+        return this.currentChannels[0].getSegmented();
     }
 
     protected ImageHandler getInput() {
@@ -279,7 +268,7 @@ public class NucleusManager extends ObjectManager {
         maskImage.getImagePlus().setSlice(roi.getPosition());
         maskImage.getImagePlus().setRoi(roi2);
 
-        ArrayList<Voxel3D> vox = o.getObject3D().getVoxels();
+        LinkedList<Voxel3D> vox = o.getObject3D().getVoxels();
         ImageProcessor p = maskImage.getImagePlus().getProcessor();
         p.setColor(l);
         p.fill(roi2);
@@ -316,7 +305,7 @@ public class NucleusManager extends ObjectManager {
         if (l == 0) {
             return;
         }
-        ArrayList<Voxel3D> vox = o.getObject3D().getVoxels();
+        LinkedList<Voxel3D> vox = o.getObject3D().getVoxels();
         if (vox == null) {
             return;
         }

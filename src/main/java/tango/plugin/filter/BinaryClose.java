@@ -4,8 +4,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
-import java.util.HashMap;
-import java.util.TreeMap;
 import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;
@@ -16,6 +14,9 @@ import tango.parameter.BooleanParameter;
 import tango.parameter.ConditionalParameter;
 import tango.parameter.DoubleParameter;
 import tango.parameter.Parameter;
+
+import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  *
@@ -43,7 +44,6 @@ import tango.parameter.Parameter;
  * @author Jean Ollion
  */
 public class BinaryClose implements PostFilter, PlugIn {
-
     boolean debug;
     int nbCPUs = 1;
     // TODO utiliser une methode classique si le rayon est petit
@@ -107,13 +107,13 @@ public class BinaryClose implements PostFilter, PlugIn {
                         tango.util.FillHoles2D.fill(mask, 255, 0);
                     }
                     fill = ImageHandler.merge3DBinary(masks, input.sizeX, input.sizeY, input.sizeZ);
-                    holes=fill.substractImage(input);
+                    holes = fill.subtractImage(input);
                     holes.invertBackground(0, 1);
                 } else if (bounds.size() == 1) {
                     ImageByte ib = new ImageByte(input, true);
                     tango.util.FillHoles2D.fill(ib, 255, 0);
                     fill = ib;
-                    holes=fill.substractImage(input.thresholdAboveExclusive(0));
+                    holes = fill.subtractImage(input.thresholdAboveExclusive(0));
                     holes.invertBackground(0, 1);                    
                 }                
                 // intersect with close
