@@ -2,7 +2,6 @@
 package tango.util;
 
 import ij.IJ;
-import mcib3d.geom.Object3DFactory;
 import mcib3d.geom.Object3DVoxels;
 import mcib3d.geom.Objects3DPopulation;
 import mcib3d.image3d.ImageInt;

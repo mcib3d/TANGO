@@ -1,4 +1,4 @@
-package tango.dev;
+package tango.plugin.filter;
 
 import ij.IJ;
 import mcib3d.image3d.ImageInt;
@@ -6,7 +6,6 @@ import tango.dataStructure.InputImages;
 import tango.parameter.FileParameter;
 import tango.parameter.Parameter;
 import tango.parameter.TextParameter;
-import tango.plugin.filter.PostFilter;
 
 import java.io.File;
 

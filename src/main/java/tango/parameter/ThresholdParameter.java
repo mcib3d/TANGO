@@ -1,43 +1,39 @@
 package tango.parameter;
 
-import mcib3d.utils.exceptionPrinter;
-import ij.ImagePlus;
 import ij.gui.GenericDialog;
-import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.ImageStats;
+import mcib3d.utils.exceptionPrinter;
 import tango.dataStructure.InputImages;
 import tango.gui.Core;
 import tango.plugin.PluginFactory;
 import tango.plugin.TangoPlugin;
 import tango.plugin.thresholder.Thresholder;
 import tango.plugin.thresholder.ThresholderHistogram;
-import tango.spatialStatistics.SDIEvaluator.SDIEvaluator;
 import tango.util.Utils;
+
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
- *
- **
+ * *
  * /**
  * Copyright (C) 2012 Jean Ollion
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * This file is part of tango
- *
+ * <p>
  * tango is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation; either version 3 of the License, or (at your option) any later
  * version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  *
@@ -49,7 +45,7 @@ public class ThresholdParameter extends PluginParameter {
         super(label, id, defMethod);
         initChoice();
     }
-    
+
     public ThresholdParameter(String label, String id, String defMethod, Parameter[] defParameters) {
         super(label, id, defMethod);
         initChoice();
@@ -83,7 +79,7 @@ public class ThresholdParameter extends PluginParameter {
     @Override
     protected void getPlugin(String method) {
         plugin = PluginFactory.getThresholder(method);
-        if (plugin==null) plugin = PluginFactory.getThresholderHisto(method);
+        if (plugin == null) plugin = PluginFactory.getThresholderHisto(method);
     }
 
     public Double getThreshold(ImageHandler in, InputImages images, int nCPUs, boolean verbose) {
@@ -116,10 +112,11 @@ public class ThresholdParameter extends PluginParameter {
     }
     * 
     */
-    
+
     public void setThresholder(TangoPlugin t) {
-        if (t==null) plugin = null;
-        else if (Thresholder.class.isAssignableFrom(t.getClass()) || ThresholderHistogram.class.isAssignableFrom(t.getClass())) this.plugin=t;
+        if (t == null) plugin = null;
+        else if (Thresholder.class.isAssignableFrom(t.getClass()) || ThresholderHistogram.class.isAssignableFrom(t.getClass()))
+            this.plugin = t;
     }
 
     @Override
