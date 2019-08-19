@@ -1,12 +1,12 @@
 package tango.plugin.segmenter;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.plugin.ZProjector;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.ParticleAnalyzer;
-import ij.process.AutoThresholder;
 import ij.process.Blitter;
 import ij.process.ImageProcessor;
 import mcib3d.image3d.ImageHandler;
@@ -14,11 +14,14 @@ import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.ImageShort;
 import tango.dataStructure.InputImages;
 import tango.parameter.Parameter;
-import tango.plugin.thresholder.AutoThreshold;
+import tango.parameter.ThresholdParameter;
 
 public class DeepSeg_ implements NucleusSegmenter {
-    //ThresholdParameter thresholdParameter = new ThresholdParameter("threshold","threshold","TRIANGLE");
-    Parameter[] parameters = new Parameter[]{};
+    ThresholdParameter thresholdParameter = new ThresholdParameter("threshold", "threshold", "TRIANGLE");
+    Parameter[] parameters = new Parameter[]{thresholdParameter};
+
+    int nbCpus;
+    boolean verb;
 
     @Override
     public ImageInt runNucleus(int currentStructureIdx, ImageHandler input, InputImages rawImages) {
@@ -31,7 +34,8 @@ public class DeepSeg_ implements NucleusSegmenter {
         zProjector.doProjection();
         ImagePlus plus = zProjector.getProjection();
         // find threshold
-        int threshold = (int) AutoThreshold.run(ImageInt.wrap(plus), null, AutoThresholder.Method.Triangle);
+        int threshold = thresholdParameter.getThreshold(ImageInt.wrap(plus), rawImages, nbCpus, verb).intValue();
+        IJ.log("threshold (2D) :" + threshold);
         plus.getProcessor().threshold(threshold);
         ImagePlus bin2 = duplicateImage(plus.getProcessor());
         // fill holes
@@ -66,12 +70,12 @@ public class DeepSeg_ implements NucleusSegmenter {
 
     @Override
     public void setVerbose(boolean verbose) {
-
+        verb = verbose;
     }
 
     @Override
     public void setMultithread(int nCPUs) {
-
+        nbCpus = nCPUs;
     }
 
     private ImagePlus duplicateImage(ImageProcessor iProcessor) {
