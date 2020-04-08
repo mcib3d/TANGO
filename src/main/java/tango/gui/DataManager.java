@@ -5,6 +5,15 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import ij.IJ;
 import ij.measure.ResultsTable;
+import mcib3d.utils.exceptionPrinter;
+import org.bson.types.ObjectId;
+import tango.dataStructure.Experiment;
+import tango.mongo.MongoConnector;
+import tango.mongo.MultiKey2D;
+import tango.mongo.MultiKey3D;
+import tango.mongo.MultiKey4D;
+import tango.util.MultiKey;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -15,15 +24,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import mcib3d.utils.exceptionPrinter;
-import org.bson.types.ObjectId;
-import tango.dataStructure.Experiment;
-import tango.mongo.MultiKey2D;
-import tango.mongo.MultiKey3D;
-import tango.mongo.MultiKey4D;
-import tango.mongo.MongoConnector;
-import tango.plugin.measurement.MeasurementSequence;
-import tango.util.MultiKey;
 
 /**
  *
@@ -80,15 +80,16 @@ public class DataManager {
         for (int i = 0; i < channelNames.length; i++) {
             //File f = new File(dir.getAbsolutePath() + File.separator + channelNames[i] + ".csv");
             //writeObjects(f, i, false);// CSV R format
-            File f = new File(dir.getAbsolutePath() + File.separator + channelNames[i] + ".xls");
-            writeObjects(f, i, true);// XLS IJ FORMAT
+            // changed to csv format TB
+            File file = new File(dir.getAbsolutePath() + File.separator + channelNames[i] + ".csv");
+            writeObjects(file, i, true);// XLS IJ FORMAT
             try {
-                ResultsTable res = ResultsTable.open(f.getAbsolutePath());
+                ResultsTable res = ResultsTable.open(file.getAbsolutePath());
                 if (res != null) {
                     res.show("Results_" + channelNames[i]);
                 }
             } catch (IOException ex) {
-                IJ.log("Pb reading results " + f.getName());
+                IJ.log("Pb reading results " + file.getName());
             }
         }
         for (MultiKey dk : c2cKeys.keySet()) {
@@ -99,7 +100,8 @@ public class DataManager {
             //File f = new File(dir.getAbsolutePath() + File.separator + channelNames[dk.getKey(0)] + "_" + channelNames[dk.getKey(1)] + ".csv");
             //writeObjects2Objects(f, dk, false);
             // excel IJ format
-            File f = new File(dir.getAbsolutePath() + File.separator + channelNames[dk.getKey(0)] + "_" + channelNames[dk.getKey(1)] + ".xls");
+            // changed to csv format TB
+            File f = new File(dir.getAbsolutePath() + File.separator + channelNames[dk.getKey(0)] + "_" + channelNames[dk.getKey(1)] + ".csv");
             writeObjects2Objects(f, dk, true);// XLS IJ FORMAT
             try {
                 ResultsTable res = ResultsTable.open(f.getAbsolutePath());
